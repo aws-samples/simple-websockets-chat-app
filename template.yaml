@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    simple-websockets-chat-app
+
+    SAM Template for simple-websockets-chat-app that has the DynamoDB table and Lambda
+    functions needed to demonstrate the Websocket protocol on API Gateway.
+    
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Parameters:
+    SimpleChatTableName:
+        Type: simplechat
+  Function:
+    Runtime: nodejs8.10
+    Timeout: 180
+    Environment:
+      Variables:
+        DDBTABLE: !ref SimpleChatTableName
+        REGION: us-west-1
+
+Resources:
+    UserListTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          AttributeDefinitions:
+            -
+              AttributeName: "connectionId"
+              AttributeType: "S"
+          KeySchema:
+            -
+              AttributeName: "connectionId"
+              KeyType: "HASH"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+          SSESpecification:
+            SSEEnabled: True
+          TableName: ${SimpleChatTableName}
+
+    OnConnectFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: onConnect/
+            Handler: app.handler
+            MemorySize: 256
+            Runtime: nodejs8.10
+            Policies:
+              - Statement:
+                - Effect: Allow
+                  Action:
+                    - 'DynamoDB:*'
+                  Resource:
+                    - 'arn:aws:dynamodb:*:*:table/${SimpleChatTableName}'
+
+    OnDisconnectFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: onDisconnect/
+            Handler: app.handler
+            MemorySize: 256
+            Runtime: nodejs8.10
+            Policies:
+              - Statement:
+                - Effect: Allow
+                  Action:
+                    - 'DynamoDB:*'
+                  Resource:
+                    - 'arn:aws:dynamodb:*:*:table/${SimpleChatTableName}'
+
+    SendMessageFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: sendMessage/
+            Handler: app.handler
+            MemorySize: 256
+            Runtime: nodejs8.10
+            Environment:
+              Variables:
+                HOST: wss://samplehost.execute-api.us-west-1.amazonaws.com
+                ACCESSKEY: samplekey
+                SECRET: samplesecret
+            Policies:
+              - Statement:
+                - Effect: Allow
+                  Action:
+                    - 'DynamoDB:*'
+                  Resource:
+                    - 'arn:aws:dynamodb:*:*:table/${SimpleChatTableName}'
+              - Statement:
+                - Effect: Allow
+                  Action:
+                    - 'execute-api:ManageConnections'
+                  Resource:
+                    - 'arn:aws:execute-api:*:*:*/*/@connections/*'                
+
+Outputs:
+    SimpleChatTable:
+      Description: "DynamoDB Table for simplechat ARN"
+      Value: !GetAtt SimpleChatTable.Arn
+
+    OnConnectFunction:
+      Description: "OnConnect function ARN"
+      Value: !GetAtt OnConnectFunction.Arn
+
+    OnDisconnectFunction:
+      Description: "OnDisconnect function ARN"
+      Value: !GetAtt OnDisconnectFunction.Arn
+
+    SendMessageFunction:
+      Description: "SendMessage function ARN"
+      Value: !GetAtt SendMessageFunction.Arn
