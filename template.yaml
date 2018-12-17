@@ -1,112 +1,99 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-    simple-websockets-chat-app
+  simple-websockets-chat-app
 
-    SAM Template for simple-websockets-chat-app that has the DynamoDB table and Lambda
-    functions needed to demonstrate the Websocket protocol on API Gateway.
-    
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-Globals:
-  Parameters:
-    SimpleChatTableName:
-        Type: simplechat
-  Function:
-    Runtime: nodejs8.10
-    Timeout: 180
-    Environment:
-      Variables:
-        DDBTABLE: !ref SimpleChatTableName
-        REGION: us-west-1
+  SAM Template for simple-websockets-chat-app that has the DynamoDB table and Lambda
+  functions needed to demonstrate the Websocket protocol on API Gateway.
+
+Parameters:
+  TableName:
+    Type: String
+    Default: 'simplechat_connections'
+    Description: (Required) The name of the new DynamoDB to store connection identifiers for each connected clients. Minimum 3 characters
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: ^[A-Za-z_]+$
+    ConstraintDescription: 'Required. Can be characters and underscore only. No numbers or special characters allowed.'
 
 Resources:
-    UserListTable:
-        Type: AWS::DynamoDB::Table
-        Properties:
-          AttributeDefinitions:
-            -
-              AttributeName: "connectionId"
-              AttributeType: "S"
-          KeySchema:
-            -
-              AttributeName: "connectionId"
-              KeyType: "HASH"
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
-          SSESpecification:
-            SSEEnabled: True
-          TableName: ${SimpleChatTableName}
+  ConnectionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: "connectionId"
+        AttributeType: "S"
+      KeySchema:
+      - AttributeName: "connectionId"
+        KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      SSESpecification:
+        SSEEnabled: True
+      TableName: !Ref TableName
 
-    OnConnectFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: onConnect/
-            Handler: app.handler
-            MemorySize: 256
-            Runtime: nodejs8.10
-            Policies:
-              - Statement:
-                - Effect: Allow
-                  Action:
-                    - 'DynamoDB:*'
-                  Resource:
-                    - 'arn:aws:dynamodb:*:*:table/${SimpleChatTableName}'
+  OnConnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: onConnect/
+      Handler: app.handler
+      MemorySize: 256
+      Runtime: nodejs8.10
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
 
-    OnDisconnectFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: onDisconnect/
-            Handler: app.handler
-            MemorySize: 256
-            Runtime: nodejs8.10
-            Policies:
-              - Statement:
-                - Effect: Allow
-                  Action:
-                    - 'DynamoDB:*'
-                  Resource:
-                    - 'arn:aws:dynamodb:*:*:table/${SimpleChatTableName}'
+  OnDisconnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: onDisconnect/
+      Handler: app.handler
+      MemorySize: 256
+      Runtime: nodejs8.10
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
 
-    SendMessageFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: sendMessage/
-            Handler: app.handler
-            MemorySize: 256
-            Runtime: nodejs8.10
-            Environment:
-              Variables:
-                HOST: wss://samplehost.execute-api.us-west-1.amazonaws.com
-                ACCESSKEY: samplekey
-                SECRET: samplesecret
-            Policies:
-              - Statement:
-                - Effect: Allow
-                  Action:
-                    - 'DynamoDB:*'
-                  Resource:
-                    - 'arn:aws:dynamodb:*:*:table/${SimpleChatTableName}'
-              - Statement:
-                - Effect: Allow
-                  Action:
-                    - 'execute-api:ManageConnections'
-                  Resource:
-                    - 'arn:aws:execute-api:*:*:*/*/@connections/*'                
+  SendMessageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: sendMessage/
+      Handler: app.handler
+      MemorySize: 256
+      Runtime: nodejs8.10
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - 'arn:aws:execute-api:*:*:*/@connections/*'
 
 Outputs:
-    SimpleChatTable:
-      Description: "DynamoDB Table for simplechat ARN"
-      Value: !GetAtt SimpleChatTable.Arn
+  ConnectionsTableArn:
+    Description: "Connections table ARN"
+    Value: !GetAtt ConnectionsTable.Arn
 
-    OnConnectFunction:
-      Description: "OnConnect function ARN"
-      Value: !GetAtt OnConnectFunction.Arn
+  OnConnectFunctionArn:
+    Description: "OnConnect function ARN"
+    Value: !GetAtt OnConnectFunction.Arn
 
-    OnDisconnectFunction:
-      Description: "OnDisconnect function ARN"
-      Value: !GetAtt OnDisconnectFunction.Arn
+  OnDisconnectFunctionArn:
+    Description: "OnDisconnect function ARN"
+    Value: !GetAtt OnDisconnectFunction.Arn
 
-    SendMessageFunction:
-      Description: "SendMessage function ARN"
-      Value: !GetAtt SendMessageFunction.Arn
+  SendMessageFunctionArn:
+    Description: "SendMessage function ARN"
+    Value: !GetAtt SendMessageFunction.Arn

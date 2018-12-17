@@ -1,5 +1,5 @@
 {
-  "name": "sendMessage",
+  "name": "send-message",
   "version": "1.0.0",
   "description": "sendMessage example for WebSockets on API Gateway",
   "main": "src/app.js",

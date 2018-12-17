@@ -1,7 +1,7 @@
 {
-  "name": "sendMessage",
+  "name": "on-disconnect",
   "version": "1.0.0",
-  "description": "sendMessage example for WebSockets on API Gateway",
+  "description": "OnDisconnect example for WebSockets on API Gateway",
   "main": "src/app.js",
   "author": "SAM CLI",
   "license": "MIT"

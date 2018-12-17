@@ -3,20 +3,20 @@
 
 var AWS = require("aws-sdk");
 AWS.config.update({ region: process.env.AWS_REGION });
-var ddb = new AWS.DynamoDB({ apiVersion: "2012-10-08" });
+var DDB = new AWS.DynamoDB({ apiVersion: "2012-10-08" });
 
-exports.handler = async (event, context, callback) => {
-    var putParams = {
-        TableName: "simplechat",
-        Item: {
-            connectionId: { S: event.requestContext.connectionId }
-        }
-    };
+exports.handler = function (event, context, callback) {
+  var putParams = {
+    TableName: process.env.TABLE_NAME,
+    Item: {
+      connectionId: { S: event.requestContext.connectionId }
+    }
+  };
 
-    ddb.putParams(putParams, function(err, data) {
-        callback(null, {
-            statusCode: err ? 500 : 200,
-            body: JSON.stringify(data);
-        });
+  DDB.putItem(putParams, function (err) {
+    callback(null, {
+      statusCode: err ? 500 : 200,
+      body: err ? "Failed to connect: " + JSON.stringify(err) : "Connected."
     });
+  });
 };

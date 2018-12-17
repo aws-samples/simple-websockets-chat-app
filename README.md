@@ -5,10 +5,10 @@ This is the template for simple-websocket-chat-app - Below is a brief explanatio
 ```
 .
 ├── README.md                   <-- This instructions file
-├── onconnect                   <-- Source code onconnect excerpt
-├── ondisconnect                <-- Source code ondisconnect excerpt
-├── sendmessage                 <-- Source code sendmessage excerpt
-└── template.yaml               <-- SAM template with Lambda Functions and DDB
+├── onConnect                   <-- Source code onConnect
+├── onDisconnect                <-- Source code onDisconnect
+├── sendMessage                 <-- Source code sendMessage
+└── template.yaml               <-- SAM template for Lambda Functions and DDB
 ```
 
 

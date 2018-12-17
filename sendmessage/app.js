@@ -2,40 +2,40 @@
 // SPDX-License-Identifier: MIT-0
 
 var AWS = require('aws-sdk');
-AWS.config.update({region: process.env.AWS_REGION});
-var ddb = new AWS.DynamoDB({apiVersion: "2012-10-08"});
+AWS.config.update({ region: process.env.AWS_REGION });
+var DDB = new AWS.DynamoDB({ apiVersion: "2012-10-08" });
 
-exports.handler = function (event) {
+require('aws-sdk/clients/apigatewaymanagementapi');
+
+exports.handler = function (event, context, callback) {
   var scanParams = {
-    TableName: "sipmlechat",
+    TableName: process.env.TABLE_NAME,
     ProjectionExpression: "connectionId"
   };
 
-  ddb.scan(scanParams, function (err, data) {
+  DDB.scan(scanParams, function (err, data) {
     if (err) {
       callback(null, {
         statusCode: 500,
-        body: JSON.stringify(data)
+        body: JSON.stringify(err)
       });
     } else {
-      var apigwManagementApi = new AWS.ApiGatewayManagementApi({
+      var apigwManagementApi = new AWS.APIGatewayManagementAPI({
         apiVersion: "2018-11-29",
-        endpoint: event.context.apiId + ".execute-api." + process.env.AWS_REGION + ".amazonaws.com/" + event.context.stage
+        endpoint: event.requestContext.domainName + "/" + event.requestContext.stage
       });
-      var body = JSON.parse(event.body);
+      var postParams = {
+        Data: JSON.parse(event.body).data
+      };
+      var count = 0;
 
       data.Items.forEach(function (element) {
-        var postParams = {
-          connectionId: element.connectionId.S,
-          data: body.message
-        };
-
-        apigwManagementApi.postToConnection(postParams, function (err, data) {
+        postParams.ConnectionId = element.connectionId.S;
+        apigwManagementApi.postToConnection(postParams, function (err) {
           if (err) {
-            // API Gateway returns a status of 410 GONE 
-            // when the connection is no longer available.  
-            // If this happens, we simply delete the 
-            // identifier from our DynamoDB table.
+            // API Gateway returns a status of 410 GONE when the connection is no
+            // longer available. If this happens, we simply delete the identifier
+            // from our DynamoDB table.
             if (err.statusCode === 410) {
               console.log("Found stale connection, deleting " + postParams.connectionId);
               DDB.deleteItem({ TableName: process.env.TABLE_NAME,
@@ -43,14 +43,16 @@ exports.handler = function (event) {
             } else {
               console.log("Failed to post. Error: " + JSON.stringify(err));
             }
+          } else {
+            count++;
           }
         });
       });
 
       callback(null, {
         statusCode: 200,
-        body: "Sent."
+        body: "Data send to " + count + " connection" + (count === 1 ? "" : "s")
       });
     }
-  })
+  });
 };
