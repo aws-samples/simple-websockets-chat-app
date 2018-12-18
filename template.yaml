@@ -36,7 +36,7 @@ Resources:
   OnConnectFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: onConnect/
+      CodeUri: onconnect/
       Handler: app.handler
       MemorySize: 256
       Runtime: nodejs8.10
@@ -50,7 +50,7 @@ Resources:
   OnDisconnectFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: onDisconnect/
+      CodeUri: ondisconnect/
       Handler: app.handler
       MemorySize: 256
       Runtime: nodejs8.10
@@ -64,7 +64,7 @@ Resources:
   SendMessageFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: sendMessage/
+      CodeUri: sendmessage/
       Handler: app.handler
       MemorySize: 256
       Runtime: nodejs8.10
