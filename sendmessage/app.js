@@ -20,7 +20,7 @@ exports.handler = function (event, context, callback) {
         body: JSON.stringify(err)
       });
     } else {
-      var apigwManagementApi = new AWS.APIGatewayManagementAPI({
+      var apigwManagementApi = new AWS.ApiGatewayManagementApi({
         apiVersion: "2018-11-29",
         endpoint: event.requestContext.domainName + "/" + event.requestContext.stage
       });
