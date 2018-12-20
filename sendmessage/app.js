@@ -1,60 +1,49 @@
 // Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-var AWS = require("aws-sdk");
-AWS.config.update({ region: process.env.AWS_REGION });
-var DDB = new AWS.DynamoDB({ apiVersion: "2012-10-08" });
+const AWS = require('aws-sdk');
 
-require("aws-sdk/clients/apigatewaymanagementapi");
+// Add ApiGatewayManagementApi to the AWS namespace
+require('aws-sdk/clients/apigatewaymanagementapi');
 
-exports.handler = function(event, context, callback) {
-  var scanParams = {
-    TableName: process.env.TABLE_NAME,
-    ProjectionExpression: "connectionId"
-  };
+const ddb = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
 
-  DDB.scan(scanParams, function(err, data) {
-    if (err) {
-      callback(null, {statusCode: 500,body: JSON.stringify(err)});
-    } else {
-      var apigwManagementApi = new AWS.ApiGatewayManagementApi({
-        apiVersion: "2018-11-29",
-        endpoint:
-          event.requestContext.domainName + "/" + event.requestContext.stage
-      });
-      var postParams = {Data: JSON.parse(event.body).data};
-      let callbackArray = data.Items.map( async(el) => {postNotifications(apigwManagementApi, postParams, el)});
-      Promise.all(callbackArray);
+const { TABLE_NAME } = process.env;
 
-      callback(null, {
-        statusCode: 200,
-        body: "Data sent."
-      });
-    }
+exports.handler = async (event, context) => {
+  let connectionData;
+  
+  try {
+    connectionData = await ddb.scan({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId' }).promise();
+  } catch (e) {
+    return { statusCode: 500, body: e.stack };
+  }
+  
+  const apigwManagementApi = new AWS.ApiGatewayManagementApi({
+    apiVersion: '2018-11-29',
+    endpoint: event.requestContext.domainName + '/' + event.requestContext.stage
   });
-};
-
-function postNotifications(api, postparams, el){
-  var localPostParam = postparams;
-  localPostParam.ConnectionId = el.connectionId.S;
-  api.postToConnection(localPostParam, function(err) {
-    if (err) {
-      // API Gateway returns a status of 410 GONE when the connection is no
-      // longer available. If this happens, we simply delete the identifier
-      // from our DynamoDB table.
-      if (err.statusCode === 410) {
-        console.log(
-          "Found stale connection, deleting " + localPostParam.connectionId
-        );
-        DDB.deleteItem({
-          TableName: process.env.TABLE_NAME,
-          Key: { connectionId: { S: localPostParam.connectionId } }
-        });
-      } 
-      else {
-        console.log("Failed to post. Error: " + JSON.stringify(err));
+  
+  const postData = JSON.parse(event.body).data;
+  
+  const postCalls = connectionData.Items.map(async ({ connectionId }) => {
+    try {
+      await apigwManagementApi.postToConnection({ ConnectionId: connectionId, Data: postData }).promise();
+    } catch (e) {
+      if (e.statusCode === 410) {
+        console.log(`Found stale connection, deleting ${connectionId}`);
+        await ddb.deleteItem({ TableName: TABLE_NAME, Key: { connectionId } }).promise();
+      } else {
+        throw e;
       }
     }
-    return true;
   });
-}
+  
+  try {
+    await Promise.all(postCalls);
+  } catch (e) {
+    return { statusCode: 500, body: e.stack };
+  }
+
+  return { statusCode: 200, body: 'Data sent.' };
+};
