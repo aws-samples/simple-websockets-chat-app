@@ -16,6 +16,8 @@ Parameters:
     AllowedPattern: ^[A-Za-z_]+$
     ConstraintDescription: 'Required. Can be characters and underscore only. No numbers or special characters allowed.'
 
+    # Add TableName for current estimations per room.
+
 Resources:
   ConnectionsTable:
     Type: AWS::DynamoDB::Table
