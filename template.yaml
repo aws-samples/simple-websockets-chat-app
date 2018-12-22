@@ -1,15 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  simple-websockets-chat-app
+  planningpoker
 
-  SAM Template for simple-websockets-chat-app that has the DynamoDB table and Lambda
-  functions needed to demonstrate the Websocket protocol on API Gateway.
+  SAM Template for setting up Planning Poker app including DynamoDB tables and lambda functions.
+  API Gateway configuration is not handled via this template at the moment and has to be done manually.
 
 Parameters:
   TableName:
     Type: String
-    Default: 'simplechat_connections'
+    Default: 'planningpoker_connections'
     Description: (Required) The name of the new DynamoDB to store connection identifiers for each connected clients. Minimum 3 characters
     MinLength: 3
     MaxLength: 50
@@ -80,6 +80,8 @@ Resources:
           - 'execute-api:ManageConnections'
           Resource:
           - 'arn:aws:execute-api:*:*:*/@connections/*'
+
+# ToDo: also create API Gateway via SAM.
 
 Outputs:
   ConnectionsTableArn:
