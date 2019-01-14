@@ -32,7 +32,7 @@ exports.handler = async (event, context) => {
     } catch (e) {
       if (e.statusCode === 410) {
         console.log(`Found stale connection, deleting ${connectionId}`);
-        await ddb.deleteItem({ TableName: TABLE_NAME, Key: { connectionId } }).promise();
+        await ddb.delete({ TableName: TABLE_NAME, Key: { connectionId } }).promise();
       } else {
         throw e;
       }
