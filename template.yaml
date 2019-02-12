@@ -205,4 +205,4 @@ Outputs:
 
   WebSocketURI:
     Description: "The WSS Protocol URI to connect to"
-    Value: !Join [ '', [ 'wss://', !Ref SimpleChatWebSocket, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]]
+    Value: !Join [ '', [ 'wss://', !Ref SimpleChatWebSocket, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]
