@@ -4,5 +4,8 @@
   "description": "OnDisconnect example for WebSockets on API Gateway",
   "main": "src/app.js",
   "author": "SAM CLI",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.404.0"
+  }
 }
