@@ -175,7 +175,7 @@ Resources:
           Action:
           - 'execute-api:ManageConnections'
           Resource:
-          - 'arn:aws:execute-api:*:*:*/@connections/*'
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*'
   SendMessagePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
