@@ -67,7 +67,7 @@ Resources:
     Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref SimpleChatWebSocket
-      RouteKey: sendMessage
+      RouteKey: sendmessage
       AuthorizationType: NONE
       OperationName: SendRoute
       Target: !Join

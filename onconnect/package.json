@@ -1,7 +1,7 @@
 {
   "name": "on-connect",
   "version": "1.0.0",
-  "description": "OnConnect example for WebSockets on API Gateway",
+  "description": "onconnect example for WebSockets on API Gateway",
   "main": "src/app.js",
   "author": "SAM CLI",
   "license": "MIT",

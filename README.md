@@ -5,9 +5,9 @@ This is the code and template for the simple-websocket-chat-app.  There are thre
 ```
 .
 ├── README.md                   <-- This instructions file
-├── onConnect                   <-- Source code onConnect
-├── onDisconnect                <-- Source code onDisconnect
-├── sendMessage                 <-- Source code sendMessage
+├── onconnect                   <-- Source code onconnect
+├── ondisconnect                <-- Source code ondisconnect
+├── sendmessage                 <-- Source code sendmessage
 └── template.yaml               <-- SAM template for Lambda Functions and DDB
 ```
 
