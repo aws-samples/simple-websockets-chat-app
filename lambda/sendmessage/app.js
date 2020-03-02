@@ -9,6 +9,7 @@ const { TABLE_NAME } = process.env;
 
 exports.handler = async event => {
   let connectionData;
+  console.log(event)
   
   try {
     connectionData = await ddb.scan({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId' }).promise();
