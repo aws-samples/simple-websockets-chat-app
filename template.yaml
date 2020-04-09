@@ -130,7 +130,6 @@ Resources:
     Type: AWS::Lambda::Permission
     DependsOn:
       - SimpleChatWebSocket
-      - OnConnectFunction
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref OnConnectFunction
@@ -152,7 +151,6 @@ Resources:
     Type: AWS::Lambda::Permission
     DependsOn:
       - SimpleChatWebSocket
-      - OnDisconnectFunction
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref OnDisconnectFunction
@@ -180,7 +178,6 @@ Resources:
     Type: AWS::Lambda::Permission
     DependsOn:
       - SimpleChatWebSocket
-      - SendMessageFunction
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref SendMessageFunction
