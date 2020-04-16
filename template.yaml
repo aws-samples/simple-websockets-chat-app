@@ -13,8 +13,8 @@ Parameters:
     Description: (Required) The name of the new DynamoDB to store connection identifiers for each connected clients. Minimum 3 characters
     MinLength: 3
     MaxLength: 50
-    AllowedPattern: ^[A-Za-z_]+$
-    ConstraintDescription: 'Required. Can be characters and underscore only. No numbers or special characters allowed.'
+    AllowedPattern: ^[A-Za-z_-]+$
+    ConstraintDescription: 'Required. Can be characters, dash, and underscore only. No numbers or special characters allowed.'
 
 Resources:
   SimpleChatWebSocket:
@@ -107,9 +107,7 @@ Resources:
       KeySchema:
       - AttributeName: "connectionId"
         KeyType: "HASH"
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
+      BillingMode: "PAY_PER_REQUEST"
       SSESpecification:
         SSEEnabled: True
       TableName: !Ref TableName
