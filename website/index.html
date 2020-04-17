@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background-color: whitesmoke;
+      }
+
+      #root {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        max-width: 600px;
+        margin: 0 auto;
+        border-left: solid #a1a1a17a 1px;
+        border-right: solid #a1a1a17a 1px;
+        background-color: white;
+      }
+
+      .connectionStatus {
+        text-align: center;
+        padding: 4px;
+      }
+
+      .connectionStatus.status-0,
+      .connectionStatus.status-1 {
+        display: none;
+      }
+      .connectionStatus.status-2,
+      .connectionStatus.status-3 {
+        background-color: red;
+      }
+
+      .messages {
+        overflow-y: auto;
+        flex-grow: 1;
+      }
+
+      ul.messages {
+        margin: 0;
+        padding: 4px;
+        list-style: none;
+      }
+
+      ul.messages li {
+        margin: 1px 0;
+        display: flex;
+      }
+
+      ul.messages li span {
+        max-width: 55%;
+        border-radius: 8px;
+        padding: 6px 12px;
+      }
+
+      ul.messages li.mine {
+        justify-content: flex-end;
+      }
+
+      ul.messages li.mine span.messageAuthor {
+        display: none;
+      }
+
+      ul.messages li.mine span {
+        background-color: #09f;
+        color: white;
+      }
+
+      ul.messages li.theirs {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      ul.messages li.theirs span {
+        background-color: #f1f0f0;
+        color: black;
+      }
+
+      ul.messages li.theirs span.messageAuthor {
+        background-color: unset;
+        font-weight: bold;
+      }
+
+      ul.messages li.scroll-to-bottom {
+        height: 0;
+        margin: 0;
+        padding: 0;
+        border: none;
+      }
+
+      .textbox {
+        padding: 8px;
+        display: flex;
+      }
+
+      .textbox input {
+        border-radius: 4px;
+        border: solid 1px #a1a1a17a;
+        padding: 8px;
+        flex-grow: 1;
+        font-size: large;
+      }
+
+      .textbox button {
+        border: 0;
+        margin-left: 4px;
+        font-size: large;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@^16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@^16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@^7/babel.min.js"></script>
+    <script type="text/babel">
+      const { useEffect, useState, useRef } = React;
+
+      // https://stackoverflow.com/a/2117523/1128216
+      function uuidv4() {
+        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+          (
+            c ^
+            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+          ).toString(16)
+        );
+      }
+    </script>
+    <script type="text/babel">
+      const validateWebsockets = () => {
+        const isSupported = "WebSocket" in window;
+        if (!isSupported) {
+          const message =
+            "WebSockets are not supported. Please change your browser";
+          alert(message);
+          throw new Error(message);
+        }
+      };
+      const getWebSocketConnection = (serverUrl) => {
+        validateWebsockets();
+        const connection = new WebSocket(serverUrl);
+        return connection;
+      };
+      // https://github.com/iamgyz/use-socket.io-client/blob/master/src/index.js
+    </script>
+
+    <script type="text/babel">
+      const AlwaysScrollToBottom = () => {
+        const elementRef = useRef();
+        useEffect(() => elementRef.current.scrollIntoView());
+        return <div ref={elementRef} className="scrollToBottom" />;
+      };
+      // Chat components
+      const Messages = ({ author, messages }) => {
+        return (
+          <ul className="messages">
+            {messages.map((message) => (
+              <li
+                key={message.id}
+                className={message.author == author ? "mine" : "theirs"}
+              >
+                <span className="messageAuthor">{message.author}</span>
+                <span className="messageText">{message.text}</span>
+              </li>
+            ))}
+            <AlwaysScrollToBottom />
+          </ul>
+        );
+      };
+
+      const TextBox = ({ author, onSend }) => {
+        const [text, setText] = useState("");
+        const onChange = ({ target }) => setText(target.value);
+        const onSubmit = (event) => {
+          event.preventDefault();
+          if (!text || !text.length) {
+            return;
+          }
+          onSend({
+            createdAt: new Date().toISOString(),
+            author,
+            text,
+            id: uuidv4(),
+          });
+          setText("");
+        };
+        return (
+          <form className="textbox" onSubmit={onSubmit}>
+            <input
+              type="text"
+              value={text}
+              placeholder="Type your message"
+              onChange={onChange}
+            />
+            <button>send</button>
+          </form>
+        );
+      };
+
+      const Chat = ({ connection, author }) => {
+        const [messages, setMessages] = useState([]);
+
+        const sortByCreatedAt = (messages) =>
+          messages.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 0));
+
+        const onSend = (message) => {
+          connection.send(
+            JSON.stringify({
+              message: "sendmessage",
+              data: JSON.stringify(message),
+            })
+          );
+          setMessages(sortByCreatedAt([...messages, message]));
+        };
+
+        useEffect(() => {
+          connection.onmessage = (event) => {
+            try {
+              const message = JSON.parse(event.data);
+              const isNewMessage = !messages.find(
+                ({ id }) => id === message.id
+              );
+              if (isNewMessage) {
+                setMessages(sortByCreatedAt([...messages, message]));
+              }
+            } catch (e) {
+              console.error("Unable to process event data", event.data);
+              console.error(e);
+            }
+          };
+        });
+
+        return (
+          <>
+            <Messages messages={messages} author={author} />
+            <TextBox onSend={onSend} author={author} />
+          </>
+        );
+      };
+    </script>
+    <script type="text/babel">
+      // App component
+      const ConnectionStatus = ({ connection }) => {
+        const { readyState } = connection;
+        const [connectionState, setConnectionState] = useState(readyState);
+        useEffect(() => {
+          connection.onopen = () => setConnectionState(connection.readyState);
+          connection.onclose = () => setConnectionState(connection.readyState);
+        }, [connection]);
+        return (
+          <div className={"connectionStatus status-" + readyState}>
+            {readyState < 2 ? "Connected" : "Disconnected"}
+          </div>
+        );
+      };
+
+      const App = ({ serverUrl, author }) => {
+        // close connection on unmount
+        useEffect(() => () => connection.close(), [connection]);
+
+        return (
+          <>
+            <ConnectionStatus connection={connection} />
+            <Chat connection={connection} author={author} />
+          </>
+        );
+      };
+    </script>
+    <script type="text/babel">
+      const serverUrl =
+        "wss://o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com/Prod";
+      const connection = getWebSocketConnection(serverUrl);
+      const rootElement = document.getElementById("root");
+      const author = uuidv4().slice(0, 3);
+      ReactDOM.render(
+        <App connection={connection} author={author} />,
+        rootElement
+      );
+    </script>
+  </body>
+</html>
