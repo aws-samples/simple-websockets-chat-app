@@ -9,18 +9,22 @@
         margin: 0;
         font-family: Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
+        background-color: whitesmoke;
       }
 
-      .app {
-        height: 100vh;
+      #root {
         display: flex;
         flex-direction: column;
-        background-color: yellow;
+        height: 100vh;
+        max-width: 600px;
+        margin: 0 auto;
+        border-left: solid #a1a1a17a 1px;
+        border-right: solid #a1a1a17a 1px;
+        background-color: white;
       }
 
       .connectionStatus {
         text-align: center;
-        color: white;
         padding: 4px;
       }
 
@@ -33,15 +37,8 @@
         background-color: red;
       }
 
-      .chat {
-        background-color: aquamarine;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-      }
-
       .messages {
-        background-color: white;
+        overflow-y: auto;
         flex-grow: 1;
       }
 
@@ -90,22 +87,30 @@
         font-weight: bold;
       }
 
+      ul.messages li.scroll-to-bottom {
+        height: 0;
+        margin: 0;
+        padding: 0;
+        border: none;
+      }
+
       .textbox {
-        display: flex;
-        background-color: white;
         padding: 8px;
-        border-top: solid #a1a1a17a 1px;
+        display: flex;
       }
 
       .textbox input {
-        flex-grow: 1;
         border-radius: 4px;
         border: solid 1px #a1a1a17a;
         padding: 8px;
+        flex-grow: 1;
+        font-size: large;
       }
 
-      .textbox input:focus {
-        border: solid 1px #000000d3;
+      .textbox button {
+        border: 0;
+        margin-left: 4px;
+        font-size: large;
       }
     </style>
   </head>
@@ -115,7 +120,7 @@
     <script src="https://unpkg.com/react-dom@^16/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone@^7/babel.min.js"></script>
     <script type="text/babel">
-      const { useEffect, useState } = React;
+      const { useEffect, useState, useRef } = React;
 
       // https://stackoverflow.com/a/2117523/1128216
       function uuidv4() {
@@ -146,6 +151,11 @@
     </script>
 
     <script type="text/babel">
+      const AlwaysScrollToBottom = () => {
+        const elementRef = useRef();
+        useEffect(() => elementRef.current.scrollIntoView());
+        return <div ref={elementRef} className="scrollToBottom" />;
+      };
       // Chat components
       const Messages = ({ author, messages }) => {
         return (
@@ -159,6 +169,7 @@
                 <span className="messageText">{message.text}</span>
               </li>
             ))}
+            <AlwaysScrollToBottom />
           </ul>
         );
       };
@@ -168,6 +179,9 @@
         const onChange = ({ target }) => setText(target.value);
         const onSubmit = (event) => {
           event.preventDefault();
+          if (!text || !text.length) {
+            return;
+          }
           onSend({
             createdAt: new Date().toISOString(),
             author,
@@ -184,6 +198,7 @@
               placeholder="Type your message"
               onChange={onChange}
             />
+            <button>send</button>
           </form>
         );
       };
@@ -222,10 +237,10 @@
         });
 
         return (
-          <div className="chat">
+          <>
             <Messages messages={messages} author={author} />
             <TextBox onSend={onSend} author={author} />
-          </div>
+          </>
         );
       };
     </script>
@@ -239,9 +254,9 @@
           connection.onclose = () => setConnectionState(connection.readyState);
         }, [connection]);
         return (
-          <span className={"connectionStatus status-" + readyState}>
+          <div className={"connectionStatus status-" + readyState}>
             {readyState < 2 ? "Connected" : "Disconnected"}
-          </span>
+          </div>
         );
       };
 
@@ -250,10 +265,10 @@
         useEffect(() => () => connection.close(), [connection]);
 
         return (
-          <div className="app">
+          <>
             <ConnectionStatus connection={connection} />
             <Chat connection={connection} author={author} />
-          </div>
+          </>
         );
       };
     </script>
