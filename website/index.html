@@ -245,10 +245,10 @@
         );
       };
 
-      const App = ({ serverUrl }) => {
+      const App = ({ serverUrl, author }) => {
         // close connection on unmount
         useEffect(() => () => connection.close(), [connection]);
-        const author = "jonathanmv";
+
         return (
           <div className="app">
             <ConnectionStatus connection={connection} />
@@ -262,7 +262,11 @@
         "wss://o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com/Prod";
       const connection = getWebSocketConnection(serverUrl);
       const rootElement = document.getElementById("root");
-      ReactDOM.render(<App connection={connection} />, rootElement);
+      const author = uuidv4().slice(0, 3);
+      ReactDOM.render(
+        <App connection={connection} author={author} />,
+        rootElement
+      );
     </script>
   </body>
 </html>
