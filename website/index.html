@@ -12,7 +12,7 @@
         background-color: whitesmoke;
       }
 
-      #root {
+      .root {
         display: flex;
         flex-direction: column;
         height: 100vh;
@@ -20,6 +20,19 @@
         margin: 0 auto;
         border-left: solid #a1a1a17a 1px;
         border-right: solid #a1a1a17a 1px;
+        background-color: white;
+      }
+
+      .newRoom {
+        text-align: center;
+        font-size: large;
+      }
+
+      .newRoom img {
+        max-width: 80%;
+        padding: 8px;
+        border: 1px solid gainsboro;
+        border-radius: 4px;
         background-color: white;
       }
 
@@ -34,6 +47,7 @@
       }
       .connectionStatus.status-2,
       .connectionStatus.status-3 {
+        color: white;
         background-color: red;
       }
 
@@ -131,19 +145,15 @@
         );
     </script>
     <script type="text/babel">
-      const validateWebsockets = () => {
-        const isSupported = "WebSocket" in window;
-        if (!isSupported) {
-          const message =
-            "WebSockets are not supported. Please change your browser";
-          alert(message);
-          throw new Error(message);
+      const connectToRoom = (serverUrl, room) => {
+        try {
+          const url = new URL(serverUrl);
+          url.searchParams.append("j", room);
+          return new WebSocket(url);
+        } catch (error) {
+          alert(error.message);
+          throw error;
         }
-      };
-      const getWebSocketConnection = (serverUrl) => {
-        validateWebsockets();
-        const connection = new WebSocket(serverUrl);
-        return connection;
       };
     </script>
 
@@ -257,26 +267,69 @@
         );
       };
 
-      const App = ({ serverUrl, author }) => {
-        // close connection on unmount
-        useEffect(() => () => connection.close(), [connection]);
+      const NewRoom = ({ room }) => {
+        const chatUrl = "https://d2349yxwn419ex.cloudfront.net/?j=" + room;
+        const data = encodeURIComponent(chatUrl);
+        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?data=${chatUrl}&size=300x300`;
 
         return (
-          <>
+          <div className="newRoom">
+            <h1>New chat room</h1>
+            <p>
+              Get the others to scan this code.
+              <br />
+              Click on it to join the chat.
+            </p>
+            <a className="qr-link" href={chatUrl}>
+              <img src={qrSrc} />
+            </a>
+          </div>
+        );
+      };
+
+      const App = ({ serverUrl, author, room }) => {
+        const connection = useRef(null);
+        useEffect(() => {
+          if (room) {
+            connection.current = getConnectionToRoom(serverUrl, room);
+          }
+          return () => {
+            if (connection.current) {
+              connection.current.close();
+            }
+          };
+        });
+
+        if (!room) {
+          return <NewRoom room={author} />;
+        }
+
+        return (
+          <div className="root">
             <ConnectionStatus connection={connection} />
             <Chat connection={connection} author={author} />
-          </>
+          </div>
         );
       };
     </script>
     <script type="text/babel">
+      const getRoomToJoin = (search) => {
+        try {
+          return new URLSearchParams(search).get("j");
+        } catch (error) {
+          return undefined;
+        }
+      };
+
+      const room = getRoomToJoin(window.location.search);
+      // const connection = { send: () => {}, readyState: 2 };
+      const rootElement = document.getElementById("root");
+      const author = uuid();
       const serverUrl =
         "wss://o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com/Prod";
-      const connection = getWebSocketConnection(serverUrl);
-      const rootElement = document.getElementById("root");
-      const author = uuid().slice(0, 3);
+
       ReactDOM.render(
-        <App connection={connection} author={author} />,
+        <App serverUrl={serverUrl} author={author} room={room} />,
         rootElement
       );
     </script>
