@@ -8,10 +8,10 @@ SAM = AWS_ACCESS_KEY_ID= AWS_PROFILE=$(AWS_PROFILE) sam
 create-deploy-bucket: check-vars
 	@$(AWS) s3 mb s3://$(DEPLOY_BUCKET)
 	
-local-start: check-local-vars
+start: check-local-vars
 	docker-compose up -d
 
-local-stop:
+stop:
 	docker-compose down
 
 create-table: check-local-vars
@@ -24,12 +24,13 @@ create-table: check-local-vars
     --table-name $(TABLE_NAME) \
     --attribute-definitions AttributeName=roomId,AttributeType=S AttributeName=connectionId,AttributeType=S \
     --key-schema AttributeName=roomId,KeyType=HASH AttributeName=connectionId,KeyType=RANGE \
-    --global-secondary-indexes IndexName=connectionId,KeySchema=["{AttributeName=connectionId,KeyType=HASH}"],Projection={ProjectionType=KEYS_ONLY},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}" \
+    --global-secondary-indexes IndexName=ConnectionIdIndex,KeySchema=["{AttributeName=connectionId,KeyType=HASH}"],Projection={ProjectionType=KEYS_ONLY},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}" \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
 call-%: check-local-vars
 	$(SAM) local invoke $(*)Function \
-		--parameter-overrides TableName=$(TABLE_NAME) \
+		--parameter-overrides \
+				TableName=$(TABLE_NAME) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 		--event test/$(*)Event.json
 

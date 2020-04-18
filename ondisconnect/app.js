@@ -13,6 +13,7 @@ const {
   AWS_REGION,
   LOCAL_DYNAMODB_ENDPOINT: endpoint,
   TABLE_NAME: TableName,
+  CONNECTION_ID_INDEX: IndexName,
 } = process.env;
 const ddb = new AWS.DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
@@ -20,20 +21,38 @@ const ddb = new AWS.DynamoDB.DocumentClient({
   endpoint: endpoint && endpoint.length ? endpoint : undefined,
 });
 
+const findRoomsForConnectionId = async (connectionId) => {
+  const query = {
+    TableName,
+    IndexName,
+    KeyConditionExpression: "connectionId = :connectionId",
+    ExpressionAttributeValues: { ":connectionId": connectionId },
+  };
+  const { Items } = await ddb.query(query).promise();
+  return Items;
+};
+
+const toDeleteRequest = ({ roomId, connectionId }) => ({
+  DeleteRequest: { Key: { roomId, connectionId } },
+});
+
 exports.handler = async (event) => {
   try {
-    const deleteParams = {
-      TableName,
-      Key: {
-        roomId: event.queryStringParameters.j,
-        connectionId: event.requestContext.connectionId,
-      },
-    };
-    await ddb.delete(deleteParams).promise();
+    const { connectionId } = event.requestContext;
+    const itemsToDelete = await findRoomsForConnectionId(connectionId);
+    if (itemsToDelete.length) {
+      const deleteRequests = itemsToDelete.map(toDeleteRequest);
+      const params = {
+        RequestItems: {
+          [TableName]: deleteRequests,
+        },
+      };
+      await ddb.batchWrite(params).promise();
+    }
   } catch (err) {
     return {
       statusCode: 500,
-      body: "Failed to disconnect: " + JSON.stringify(err),
+      body: "Failed to disconnect: " + err.message,
     };
   }
 

@@ -141,6 +141,7 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
+          CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
         - DynamoDBCrudPolicy:
@@ -163,7 +164,9 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
+          CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
+
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TableName
@@ -185,6 +188,7 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
+          CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
         - DynamoDBCrudPolicy:
