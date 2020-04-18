@@ -2,16 +2,20 @@
 
 include .env
 
+AWS = AWS_ACCESS_KEY_ID= AWS_PROFILE=$(AWS_PROFILE) aws
+SAM = AWS_ACCESS_KEY_ID= AWS_PROFILE=$(AWS_PROFILE) sam
+
+create-deploy-bucket: check-vars
+	@$(AWS) s3 mb s3://$(DEPLOY_BUCKET)
+	
 sam-package: check-vars
-	sam package \
-	--profile $(AWS_PROFILE) \
+	$(SAM) package \
 	--template-file template.yaml \
 	--output-template-file packaged.yaml \
 	--s3-bucket $(DEPLOY_BUCKET)
 
 sam-deploy: check-vars
-	sam deploy \
-		--profile $(AWS_PROFILE) \
+	$(SAM) deploy \
 		--stack-name=$(STACK_NAME) \
 		--template-file packaged.yaml \
 		--capabilities CAPABILITY_IAM \
@@ -20,11 +24,10 @@ sam-deploy: check-vars
 		--s3-bucket $(DEPLOY_BUCKET)
 
 website-deploy: check-vars
-	aws s3 sync --acl "public-read" ./website s3://$(WEBSITE_BUCKET) --profile $(AWS_PROFILE)
+	$(AWS) s3 sync --acl "public-read" ./website s3://$(WEBSITE_BUCKET)
 
 stack-describe: check-vars
-	aws cloudformation describe-stacks \
-		--profile $(AWS_PROFILE) \
+	$(AWS) cloudformation describe-stacks \
 		--stack-name=$(STACK_NAME) \
 		--query 'Stacks[].Outputs'
 	
