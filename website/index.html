@@ -181,7 +181,7 @@
         );
       };
 
-      const TextBox = ({ author, onSend }) => {
+      const TextBox = ({ author, onSend, room }) => {
         const [text, setText] = useState("");
         const onChange = ({ target }) => setText(target.value);
         const onSubmit = (event) => {
@@ -192,6 +192,7 @@
           onSend({
             createdAt: new Date().toISOString(),
             author,
+            roomId: room,
             text,
             id: uuid(),
           });
@@ -210,7 +211,7 @@
         );
       };
 
-      const Chat = ({ connection, author }) => {
+      const Chat = ({ connection, author, roomId }) => {
         const [messages, setMessages] = useState([]);
 
         const sortByCreatedAt = (messages) =>
@@ -246,7 +247,7 @@
         return (
           <>
             <Messages messages={messages} author={author} />
-            <TextBox onSend={onSend} author={author} />
+            <TextBox onSend={onSend} author={author} room={room} />
           </>
         );
       };
@@ -268,9 +269,10 @@
       };
 
       const NewRoom = ({ room }) => {
-        const chatUrl = "https://d2349yxwn419ex.cloudfront.net/?j=" + room;
-        const data = encodeURIComponent(chatUrl);
-        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?data=${chatUrl}&size=300x300`;
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.append("j", room);
+        const data = encodeURIComponent(currentUrl.href);
+        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?data=${data}&size=300x300`;
 
         return (
           <div className="newRoom">
@@ -280,7 +282,7 @@
               <br />
               Click on it to join the chat.
             </p>
-            <a className="qr-link" href={chatUrl}>
+            <a className="qr-link" href={currentUrl}>
               <img src={qrSrc} />
             </a>
           </div>
@@ -288,26 +290,30 @@
       };
 
       const App = ({ serverUrl, author, room }) => {
-        const connection = useRef(null);
+        const [connection, setConnection] = useState();
         useEffect(() => {
           if (room) {
-            connection.current = getConnectionToRoom(serverUrl, room);
+            setConnection(connectToRoom(serverUrl, room));
           }
           return () => {
-            if (connection.current) {
-              connection.current.close();
+            if (connection) {
+              connection.close();
             }
           };
-        });
+        }, []);
 
         if (!room) {
           return <NewRoom room={author} />;
         }
 
+        if (!connection) {
+          return null;
+        }
+
         return (
           <div className="root">
             <ConnectionStatus connection={connection} />
-            <Chat connection={connection} author={author} />
+            <Chat connection={connection} author={author} room={room} />
           </div>
         );
       };
@@ -322,11 +328,10 @@
       };
 
       const room = getRoomToJoin(window.location.search);
-      // const connection = { send: () => {}, readyState: 2 };
       const rootElement = document.getElementById("root");
       const author = uuid();
       const serverUrl =
-        "wss://o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com/Prod";
+        "wss://at7ejxghod.execute-api.eu-west-2.amazonaws.com/Prod";
 
       ReactDOM.render(
         <App serverUrl={serverUrl} author={author} room={room} />,

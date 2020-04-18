@@ -8,6 +8,26 @@ SAM = AWS_ACCESS_KEY_ID= AWS_PROFILE=$(AWS_PROFILE) sam
 create-deploy-bucket: check-vars
 	@$(AWS) s3 mb s3://$(DEPLOY_BUCKET)
 	
+local-start: check-local-vars
+	docker-compose up -d
+
+local-stop:
+	docker-compose down
+
+create-table: check-local-vars
+	$(AWS) dynamodb create-table \
+		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
+    --table-name $(TABLE_NAME) \
+    --attribute-definitions AttributeName=roomId,AttributeType=S AttributeName=connectionId,AttributeType=S \
+    --key-schema AttributeName=roomId,KeyType=HASH AttributeName=connectionId,KeyType=RANGE \
+    --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+
+call-%: check-local-vars
+	$(SAM) local invoke $(*)Function \
+		--parameter-overrides TableName=$(TABLE_NAME) \
+				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
+		--event test/$(*)Event.json
+
 sam-package: check-vars
 	$(SAM) package \
 	--template-file template.yaml \
@@ -44,7 +64,17 @@ guard-%:
 			exit 1; \
 	fi
 
-check-vars: guard-AWS_PROFILE guard-STACK_NAME guard-DEPLOY_BUCKET guard-TABLE_NAME guard-WEBSITE_BUCKET
-	@echo All env vars set
+check-vars:
+	@make guard-AWS_PROFILE
+	@make guard-STACK_NAME
+	@make guard-DEPLOY_BUCKET
+	@make guard-TABLE_NAME
+	@make guard-WEBSITE_BUCKET
 
-.PHONY: check-vars sam-package sam-deploy describe
+check-local-vars:
+	@make guard-STACK_NAME
+	@make guard-TABLE_NAME
+	@make guard-LOCAL_DYNAMODB_ENDPOINT
+	@make guard-LOCAL_DYNAMODB_PORT
+
+.PHONY: check-vars check-local-vars sam-package sam-deploy stack-describe
