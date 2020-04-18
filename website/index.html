@@ -12,7 +12,7 @@
         background-color: whitesmoke;
       }
 
-      #root {
+      .root {
         display: flex;
         flex-direction: column;
         height: 100vh;
@@ -20,6 +20,19 @@
         margin: 0 auto;
         border-left: solid #a1a1a17a 1px;
         border-right: solid #a1a1a17a 1px;
+        background-color: white;
+      }
+
+      .newRoom {
+        text-align: center;
+        font-size: large;
+      }
+
+      .newRoom img {
+        max-width: 80%;
+        padding: 8px;
+        border: 1px solid gainsboro;
+        border-radius: 4px;
         background-color: white;
       }
 
@@ -34,6 +47,7 @@
       }
       .connectionStatus.status-2,
       .connectionStatus.status-3 {
+        color: white;
         background-color: red;
       }
 
@@ -121,7 +135,6 @@
     <script src="https://unpkg.com/@babel/standalone@^7/babel.min.js"></script>
     <script type="text/babel">
       const { useEffect, useState, useRef } = React;
-
       // https://stackoverflow.com/a/2117523/1128216
       const uuid = () =>
         ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
@@ -132,21 +145,16 @@
         );
     </script>
     <script type="text/babel">
-      const validateWebsockets = () => {
-        const isSupported = "WebSocket" in window;
-        if (!isSupported) {
-          const message =
-            "WebSockets are not supported. Please change your browser";
-          alert(message);
-          throw new Error(message);
+      const connectToRoom = (serverUrl, room) => {
+        try {
+          const url = new URL(serverUrl);
+          url.searchParams.append("j", room);
+          return new WebSocket(url);
+        } catch (error) {
+          alert(error.message);
+          throw error;
         }
       };
-      const getWebSocketConnection = (serverUrl) => {
-        validateWebsockets();
-        const connection = new WebSocket(serverUrl);
-        return connection;
-      };
-      // https://github.com/iamgyz/use-socket.io-client/blob/master/src/index.js
     </script>
 
     <script type="text/babel">
@@ -173,7 +181,7 @@
         );
       };
 
-      const TextBox = ({ author, onSend }) => {
+      const TextBox = ({ author, onSend, room }) => {
         const [text, setText] = useState("");
         const onChange = ({ target }) => setText(target.value);
         const onSubmit = (event) => {
@@ -184,6 +192,7 @@
           onSend({
             createdAt: new Date().toISOString(),
             author,
+            roomId: room,
             text,
             id: uuid(),
           });
@@ -202,7 +211,7 @@
         );
       };
 
-      const Chat = ({ connection, author }) => {
+      const Chat = ({ connection, author, roomId }) => {
         const [messages, setMessages] = useState([]);
 
         const sortByCreatedAt = (messages) =>
@@ -238,7 +247,7 @@
         return (
           <>
             <Messages messages={messages} author={author} />
-            <TextBox onSend={onSend} author={author} />
+            <TextBox onSend={onSend} author={author} room={room} />
           </>
         );
       };
@@ -259,26 +268,73 @@
         );
       };
 
-      const App = ({ serverUrl, author }) => {
-        // close connection on unmount
-        useEffect(() => () => connection.close(), [connection]);
+      const NewRoom = ({ room }) => {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.append("j", room);
+        const data = encodeURIComponent(currentUrl.href);
+        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?data=${data}&size=300x300`;
 
         return (
-          <>
+          <div className="newRoom">
+            <h1>New chat room</h1>
+            <p>
+              Get the others to scan this code.
+              <br />
+              Click on it to join the chat.
+            </p>
+            <a className="qr-link" href={currentUrl}>
+              <img src={qrSrc} />
+            </a>
+          </div>
+        );
+      };
+
+      const App = ({ serverUrl, author, room }) => {
+        const [connection, setConnection] = useState();
+        useEffect(() => {
+          if (room) {
+            setConnection(connectToRoom(serverUrl, room));
+          }
+          return () => {
+            if (connection) {
+              connection.close();
+            }
+          };
+        }, []);
+
+        if (!room) {
+          return <NewRoom room={author} />;
+        }
+
+        if (!connection) {
+          return null;
+        }
+
+        return (
+          <div className="root">
             <ConnectionStatus connection={connection} />
-            <Chat connection={connection} author={author} />
-          </>
+            <Chat connection={connection} author={author} room={room} />
+          </div>
         );
       };
     </script>
     <script type="text/babel">
-      const serverUrl =
-        "wss://o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com/Prod";
-      const connection = getWebSocketConnection(serverUrl);
+      const getRoomToJoin = (search) => {
+        try {
+          return new URLSearchParams(search).get("j");
+        } catch (error) {
+          return undefined;
+        }
+      };
+
+      const room = getRoomToJoin(window.location.search);
       const rootElement = document.getElementById("root");
-      const author = uuid().slice(0, 3);
+      const author = uuid();
+      const serverUrl =
+        "wss://at7ejxghod.execute-api.eu-west-2.amazonaws.com/Prod";
+
       ReactDOM.render(
-        <App connection={connection} author={author} />,
+        <App serverUrl={serverUrl} author={author} room={room} />,
         rootElement
       );
     </script>

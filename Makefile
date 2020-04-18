@@ -2,16 +2,46 @@
 
 include .env
 
+AWS = AWS_ACCESS_KEY_ID= AWS_PROFILE=$(AWS_PROFILE) aws
+SAM = AWS_ACCESS_KEY_ID= AWS_PROFILE=$(AWS_PROFILE) sam
+
+create-deploy-bucket: check-vars
+	@$(AWS) s3 mb s3://$(DEPLOY_BUCKET)
+	
+start: check-local-vars
+	docker-compose up -d
+
+stop:
+	docker-compose down
+
+create-table: check-local-vars
+	@echo deleting $(TABLE_NAME)
+	-$(AWS) dynamodb delete-table \
+		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
+    --table-name $(TABLE_NAME)
+	$(AWS) dynamodb create-table \
+		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
+    --table-name $(TABLE_NAME) \
+    --attribute-definitions AttributeName=roomId,AttributeType=S AttributeName=connectionId,AttributeType=S \
+    --key-schema AttributeName=roomId,KeyType=HASH AttributeName=connectionId,KeyType=RANGE \
+    --global-secondary-indexes IndexName=ConnectionIdIndex,KeySchema=["{AttributeName=connectionId,KeyType=HASH}"],Projection={ProjectionType=KEYS_ONLY},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}" \
+    --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+
+call-%: check-local-vars
+	$(SAM) local invoke $(*)Function \
+		--parameter-overrides \
+				TableName=$(TABLE_NAME) \
+				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
+		--event test/$(*)Event.json
+
 sam-package: check-vars
-	sam package \
-	--profile $(AWS_PROFILE) \
+	$(SAM) package \
 	--template-file template.yaml \
 	--output-template-file packaged.yaml \
 	--s3-bucket $(DEPLOY_BUCKET)
 
 sam-deploy: check-vars
-	sam deploy \
-		--profile $(AWS_PROFILE) \
+	$(SAM) deploy \
 		--stack-name=$(STACK_NAME) \
 		--template-file packaged.yaml \
 		--capabilities CAPABILITY_IAM \
@@ -20,17 +50,18 @@ sam-deploy: check-vars
 		--s3-bucket $(DEPLOY_BUCKET)
 
 website-deploy: check-vars
-	aws s3 sync --acl "public-read" ./website s3://$(WEBSITE_BUCKET) --profile $(AWS_PROFILE)
+	$(AWS) s3 sync --acl "public-read" ./website s3://$(WEBSITE_BUCKET)
 
 stack-describe: check-vars
-	aws cloudformation describe-stacks \
-		--profile $(AWS_PROFILE) \
+	$(AWS) cloudformation describe-stacks \
 		--stack-name=$(STACK_NAME) \
 		--query 'Stacks[].Outputs'
 	
-deploy: sam-package
+deploy: 
+	make sam-package
 	make sam-deploy
 	make stack-describe
+	make website-deploy
 
 # Environment variables check
 guard-%:
@@ -39,7 +70,17 @@ guard-%:
 			exit 1; \
 	fi
 
-check-vars: guard-AWS_PROFILE guard-STACK_NAME guard-DEPLOY_BUCKET guard-TABLE_NAME guard-WEBSITE_BUCKET
-	@echo All env vars set
+check-vars:
+	@make guard-AWS_PROFILE
+	@make guard-STACK_NAME
+	@make guard-DEPLOY_BUCKET
+	@make guard-TABLE_NAME
+	@make guard-WEBSITE_BUCKET
 
-.PHONY: check-vars sam-package sam-deploy describe
+check-local-vars:
+	@make guard-STACK_NAME
+	@make guard-TABLE_NAME
+	@make guard-LOCAL_DYNAMODB_ENDPOINT
+	@make guard-LOCAL_DYNAMODB_PORT
+
+.PHONY: check-vars check-local-vars sam-package sam-deploy stack-describe

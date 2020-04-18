@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
   simple-websockets-chat-app
@@ -9,20 +9,24 @@ Description: >
 Parameters:
   TableName:
     Type: String
-    Default: 'simplechat-connections-table'
+    Default: "simplechat-connections-table"
     Description: (Required) The name of the new DynamoDB to store connection identifiers for each connected clients. Minimum 3 characters
     MinLength: 3
     MaxLength: 50
     AllowedPattern: ^[A-Za-z_-]+$
-    ConstraintDescription: 'Required. Can be characters, dash, and underscore only. No numbers or special characters allowed.'
+    ConstraintDescription: "Required. Can be characters, dash, and underscore only. No numbers or special characters allowed."
   WebsiteBucketName:
     Type: String
-    Default: 'simplechat-connections-bucket'
+    Default: "simplechat-connections-bucket"
     Description: (Required) The name of the new Bucket where the static webclient will be hosted. Minimum 3 characters
     MinLength: 3
     MaxLength: 60
     AllowedPattern: ^[A-Za-z-]+$
-    ConstraintDescription: 'Required. Can be characters and dash only. No numbers or special characters allowed.'
+    ConstraintDescription: "Required. Can be characters and dash only. No numbers or special characters allowed."
+  LocalDynamodbEndpoint:
+    Type: String
+    Default: ""
+    Description: Used for local testing
 
 Resources:
   SimpleChatWebSocket:
@@ -39,8 +43,8 @@ Resources:
       AuthorizationType: NONE
       OperationName: ConnectRoute
       Target: !Join
-        - '/'
-        - - 'integrations'
+        - "/"
+        - - "integrations"
           - !Ref ConnectInteg
   ConnectInteg:
     Type: AWS::ApiGatewayV2::Integration
@@ -48,9 +52,8 @@ Resources:
       ApiId: !Ref SimpleChatWebSocket
       Description: Connect Integration
       IntegrationType: AWS_PROXY
-      IntegrationUri: 
-        Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnConnectFunction.Arn}/invocations
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnConnectFunction.Arn}/invocations
   DisconnectRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -59,8 +62,8 @@ Resources:
       AuthorizationType: NONE
       OperationName: DisconnectRoute
       Target: !Join
-        - '/'
-        - - 'integrations'
+        - "/"
+        - - "integrations"
           - !Ref DisconnectInteg
   DisconnectInteg:
     Type: AWS::ApiGatewayV2::Integration
@@ -68,9 +71,8 @@ Resources:
       ApiId: !Ref SimpleChatWebSocket
       Description: Disconnect Integration
       IntegrationType: AWS_PROXY
-      IntegrationUri: 
-        Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnDisconnectFunction.Arn}/invocations
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnDisconnectFunction.Arn}/invocations
   SendRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -79,8 +81,8 @@ Resources:
       AuthorizationType: NONE
       OperationName: SendRoute
       Target: !Join
-        - '/'
-        - - 'integrations'
+        - "/"
+        - - "integrations"
           - !Ref SendInteg
   SendInteg:
     Type: AWS::ApiGatewayV2::Integration
@@ -88,15 +90,14 @@ Resources:
       ApiId: !Ref SimpleChatWebSocket
       Description: Send Integration
       IntegrationType: AWS_PROXY
-      IntegrationUri: 
-        Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SendMessageFunction.Arn}/invocations
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SendMessageFunction.Arn}/invocations
   Deployment:
     Type: AWS::ApiGatewayV2::Deployment
     DependsOn:
-    - ConnectRoute
-    - SendRoute
-    - DisconnectRoute
+      - ConnectRoute
+      - SendRoute
+      - DisconnectRoute
     Properties:
       ApiId: !Ref SimpleChatWebSocket
   Stage:
@@ -110,12 +111,23 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-      - AttributeName: "connectionId"
-        AttributeType: "S"
+        - AttributeName: roomId
+          AttributeType: S
+        - AttributeName: connectionId
+          AttributeType: S
       KeySchema:
-      - AttributeName: "connectionId"
-        KeyType: "HASH"
-      BillingMode: "PAY_PER_REQUEST"
+        - AttributeName: roomId
+          KeyType: HASH
+        - AttributeName: connectionId
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: ConnectionIdIndex
+          KeySchema:
+            - AttributeName: connectionId
+              KeyType: HASH
+          Projection:
+            ProjectionType: KEYS_ONLY
       SSESpecification:
         SSEEnabled: True
       TableName: !Ref TableName
@@ -129,9 +141,11 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
+          CONNECTION_ID_INDEX: ConnectionIdIndex
+          LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !Ref TableName
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
   OnConnectPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -150,9 +164,12 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
+          CONNECTION_ID_INDEX: ConnectionIdIndex
+          LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
+
       Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !Ref TableName
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
   OnDisconnectPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -171,15 +188,17 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
+          CONNECTION_ID_INDEX: ConnectionIdIndex
+          LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
-      - DynamoDBCrudPolicy:
-          TableName: !Ref TableName
-      - Statement:
-        - Effect: Allow
-          Action:
-          - 'execute-api:ManageConnections'
-          Resource:
-          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*'
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
+        - Statement:
+            - Effect: Allow
+              Action:
+                - "execute-api:ManageConnections"
+              Resource:
+                - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*"
   SendMessagePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -211,7 +230,7 @@ Resources:
             DomainName: !GetAtt S3Bucket.DomainName
             S3OriginConfig:
               # Restricting Bucket access through an origin access identity
-              OriginAccessIdentity: 
+              OriginAccessIdentity:
                 Fn::Sub: origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}
         # To connect the CDN to the origins you need to specify behaviours
         DefaultCacheBehavior:
@@ -224,13 +243,12 @@ Resources:
           ForwardedValues:
             QueryString: false
           TargetOriginId: s3-website
-          ViewerProtocolPolicy : redirect-to-https
+          ViewerProtocolPolicy: redirect-to-https
 
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref WebsiteBucketName
-      AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: 404.html
@@ -240,15 +258,14 @@ Resources:
     Properties:
       Bucket: !Ref S3Bucket
       PolicyDocument:
-      # Restricting access to cloudfront only.
+        # Restricting access to cloudfront only.
         Statement:
-          -
-            Effect: Allow
-            Action: 's3:GetObject'
+          - Effect: Allow
+            Action: "s3:GetObject"
             Resource:
               - !Sub "arn:aws:s3:::${S3Bucket}/*"
             Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"    
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
 
 Outputs:
   ConnectionsTableArn:
@@ -269,8 +286,19 @@ Outputs:
 
   WebSocketURI:
     Description: "The WSS Protocol URI to connect to"
-    Value: !Join [ '', [ 'wss://', !Ref SimpleChatWebSocket, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]
+    Value:
+      !Join [
+        "",
+        [
+          "wss://",
+          !Ref SimpleChatWebSocket,
+          ".execute-api.",
+          !Ref "AWS::Region",
+          ".amazonaws.com/",
+          !Ref "Stage",
+        ],
+      ]
 
   WebsitePublicUrl:
     Description: "Public endpoint to access the chat"
-    Value: !Join [ '', [ 'https://', !GetAtt CloudfrontDistribution.DomainName] ]
+    Value: !Join ["", ["https://", !GetAtt CloudfrontDistribution.DomainName]]

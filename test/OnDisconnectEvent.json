@@ -1,0 +1,44 @@
+{
+  "headers": {
+    "Host": "o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com",
+    "x-api-key": "",
+    "X-Forwarded-For": "",
+    "x-restapi": ""
+  },
+  "multiValueHeaders": {
+    "Host": ["o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com"],
+    "x-api-key": [""],
+    "X-Forwarded-For": [""],
+    "x-restapi": [""]
+  },
+  "requestContext": {
+    "routeKey": "$disconnect",
+    "messageId": null,
+    "eventType": "DISCONNECT",
+    "extendedRequestId": "LLOYlECiLPEFeHA=",
+    "requestTime": "18/Apr/2020:09:11:18 +0000",
+    "messageDirection": "IN",
+    "stage": "Prod",
+    "connectedAt": 1587201073604,
+    "requestTimeEpoch": 1587201078840,
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "cognitoIdentityId": null,
+      "principalOrgId": null,
+      "cognitoAuthenticationType": null,
+      "userArn": null,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36",
+      "accountId": null,
+      "caller": null,
+      "sourceIp": "77.20.249.92",
+      "accessKey": null,
+      "cognitoAuthenticationProvider": null,
+      "user": null
+    },
+    "requestId": "LLOYlECiLPEFeHA=",
+    "domainName": "o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com",
+    "connectionId": "LLOXxdOBrPEAbBw=",
+    "apiId": "o0y9gmaw4m"
+  },
+  "isBase64Encoded": false
+}
