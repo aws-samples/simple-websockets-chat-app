@@ -15,11 +15,16 @@ local-stop:
 	docker-compose down
 
 create-table: check-local-vars
+	@echo deleting $(TABLE_NAME)
+	-$(AWS) dynamodb delete-table \
+		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
+    --table-name $(TABLE_NAME)
 	$(AWS) dynamodb create-table \
 		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
     --table-name $(TABLE_NAME) \
     --attribute-definitions AttributeName=roomId,AttributeType=S AttributeName=connectionId,AttributeType=S \
     --key-schema AttributeName=roomId,KeyType=HASH AttributeName=connectionId,KeyType=RANGE \
+    --global-secondary-indexes IndexName=connectionId,KeySchema=["{AttributeName=connectionId,KeyType=HASH}"],Projection={ProjectionType=KEYS_ONLY},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}" \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
 call-%: check-local-vars
