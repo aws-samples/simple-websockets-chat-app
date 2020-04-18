@@ -1,0 +1,74 @@
+{
+  "headers": {
+    "Accept-Encoding": "gzip, deflate, br",
+    "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,de;q=0.7,es;q=0.6",
+    "Cache-Control": "no-cache",
+    "Cookie": "s_pers=%20s_vnum%3D1584030071733%2526vn%253D2%7C1584030071733%3B%20s_invisit%3Dtrue%7C1582374115013%3B%20s_nr%3D1582372315017-Repeat%7C1590148315017%3B",
+    "Host": "o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com",
+    "Origin": "file://",
+    "Pragma": "no-cache",
+    "Sec-WebSocket-Extensions": "permessage-deflate; client_max_window_bits",
+    "Sec-WebSocket-Key": "bsclA+lw+fKCJlMonBTc4Q==",
+    "Sec-WebSocket-Version": "13",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36",
+    "X-Amzn-Trace-Id": "Root=1-5e9a967a-9ec8c46ec25a2f761882688c",
+    "X-Forwarded-For": "77.20.249.92",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "multiValueHeaders": {
+    "Accept-Encoding": ["gzip, deflate, br"],
+    "Accept-Language": ["en-GB,en-US;q=0.9,en;q=0.8,de;q=0.7,es;q=0.6"],
+    "Cache-Control": ["no-cache"],
+    "Cookie": [
+      "s_pers=%20s_vnum%3D1584030071733%2526vn%253D2%7C1584030071733%3B%20s_invisit%3Dtrue%7C1582374115013%3B%20s_nr%3D1582372315017-Repeat%7C1590148315017%3B"
+    ],
+    "Host": ["o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com"],
+    "Origin": ["file://"],
+    "Pragma": ["no-cache"],
+    "Sec-WebSocket-Extensions": ["permessage-deflate; client_max_window_bits"],
+    "Sec-WebSocket-Key": ["bsclA+lw+fKCJlMonBTc4Q=="],
+    "Sec-WebSocket-Version": ["13"],
+    "User-Agent": [
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36"
+    ],
+    "X-Amzn-Trace-Id": ["Root=1-5e9a967a-9ec8c46ec25a2f761882688c"],
+    "X-Forwarded-For": ["77.20.249.92"],
+    "X-Forwarded-Port": ["443"],
+    "X-Forwarded-Proto": ["https"]
+  },
+  "queryStringParameters": { "j": "42c6938d-36c8-43f1-9557-3c61fc43b17e" },
+  "multiValueQueryStringParameters": {
+    "j": ["42c6938d-36c8-43f1-9557-3c61fc43b17e"]
+  },
+  "requestContext": {
+    "routeKey": "$connect",
+    "messageId": null,
+    "eventType": "CONNECT",
+    "extendedRequestId": "LKxzFFWyLPEFVyw=",
+    "requestTime": "18/Apr/2020:05:56:10 +0000",
+    "messageDirection": "IN",
+    "stage": "Prod",
+    "connectedAt": 1587189370086,
+    "requestTimeEpoch": 1587189370087,
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "cognitoIdentityId": null,
+      "principalOrgId": null,
+      "cognitoAuthenticationType": null,
+      "userArn": null,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36",
+      "accountId": null,
+      "caller": null,
+      "sourceIp": "77.20.249.92",
+      "accessKey": null,
+      "cognitoAuthenticationProvider": null,
+      "user": null
+    },
+    "requestId": "LKxzFFWyLPEFVyw=",
+    "domainName": "o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com",
+    "connectionId": "LLOXxdOBrPEAbBw=",
+    "apiId": "o0y9gmaw4m"
+  },
+  "isBase64Encoded": false
+}

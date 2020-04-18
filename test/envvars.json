@@ -1,0 +1,14 @@
+{
+  "OnConnect": {
+    "TABLE_NAME": "simple-websockets-chat-app-rooms",
+    "LOCAL_DYNAMODB_ENDPOINT": "http://localhost:8042"
+  },
+  "OnDisconnect": {
+    "TABLE_NAME": "simple-websockets-chat-app-rooms",
+    "LOCAL_DYNAMODB_ENDPOINT": "http://localhost:8042"
+  },
+  "SendFunction": {
+    "TABLE_NAME": "simple-websockets-chat-app-rooms",
+    "LOCAL_DYNAMODB_ENDPOINT": "http://localhost:8042"
+  }
+}
