@@ -1,0 +1,12 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "chat-backend"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1it9ru0n9kjyw"
+s3_prefix = "chat-backend"
+region = "us-east-1"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "TableName=\"chat_backend\""
+

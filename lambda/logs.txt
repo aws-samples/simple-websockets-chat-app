@@ -1,0 +1,6 @@
+[32mSTART RequestId: b44e2fab-39b2-1a1a-30e0-d283bfd3209e Version: $LATEST[0m
+2020-03-23T18:51:15.210Z	b44e2fab-39b2-1a1a-30e0-d283bfd3209e	INFO	undefined
+[32mEND RequestId: b44e2fab-39b2-1a1a-30e0-d283bfd3209e[0m
+[32mREPORT RequestId: b44e2fab-39b2-1a1a-30e0-d283bfd3209e	Init Duration: 586.15 ms	Duration: 9.34 ms	Billed Duration: 100 ms	Memory Size: 256 MB	Max Memory Used: 54 MB	[0m
+
+{"statusCode":200,"body":"Connected."}

@@ -1,6 +1,128 @@
-var jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
+const AWS = require("aws-sdk");
 
-const input =
-  "eyJraWQiOiJOa0xEaWZpMEV3Nml4YzJaMEJCVTRKNlJKbTVNV0ppd3o0Ylk3WTBmNzRrPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIxMGFiMzg1Mi0yZTZiLTQ2YTgtODAzYS0yOTRkZDMzMzFiYzkiLCJjb2duaXRvOmdyb3VwcyI6WyJBZG1pbiJdLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbVwvdXMtZWFzdC0xX3RyT0x0YXYxMyIsImNvZ25pdG86dXNlcm5hbWUiOiJhZG1pbkBleGFtcGxlLmNvbSIsImNvZ25pdG86cm9sZXMiOlsiYXJuOmF3czppYW06OjQ4NzMxMjE3NzYxNDpyb2xlXC9BZG1pbiJdLCJhdWQiOiI3NzZncjFiMTcwM2hjYmVzMnZuYjBkcThwbSIsImV2ZW50X2lkIjoiOGNiZGM3N2MtNTQ2ZS00YWUzLTgwOTEtNmQ1Y2QwYzJkYzFhIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE1ODM0NTA1NzAsImV4cCI6MTU4NDgxNjM5MCwiaWF0IjoxNTg0ODEyNzkwLCJlbWFpbCI6ImNobG1lc0BhbWF6b24uY29tIn0.M5TrLHSKR_5Y9Z6RBAZSCs9qzwMe3DcdaRLkQlrnulrhSbEbS2S3biw0364WMHCh4WRP9jzdV81Bz8jbjulPg24s9vTSZalcM2wpwv27BcYC7A-kxEQbJ8WzA0xGUFob6HATvSDREpvs3PzBu_JReZRlst3dI24XiDJS0UOoGV3VcqyUZuj6QTCBnEi2YFgmG_TKviUl4Sbg6ybgfx-HxxsNqUHQPlIs_CJkt-xO8oPpFPxGQd_4-x5Df5jIpQ17NeNUqTd6yxiYjVRQfSAR8bw3g1ibc0tiz8ogvMDVzB1QZl_yA_e_KWf9DAsQZF4zUg5aY8dckXJ00PsTEEhgdQ";
+const ddb = new AWS.DynamoDB.DocumentClient({
+  apiVersion: "2012-08-10",
+  region: process.env.AWS_REGION
+});
+const { TABLE_NAME } = process.env;
+const DEBUG = true
 
-console.log(jwt.decode(input).email);
+async function getAdminConnId() {
+  var params = {
+    KeyConditionExpression: 'PartitionKey = :role AND begins_with ( SortKey , :connid )',
+    ExpressionAttributeValues: {
+      ':role': "role:ADMIN",
+      ':connid': "cid"
+    },
+    TableName: TABLE_NAME
+  };
+
+  results = await ddb
+    .query(params)
+    .promise();
+  //console.log("AdminID: ", results.Items[0].cid)
+  return results.Items[0]
+}
+
+async function getCurrentSessions(adminId, userConnId) {
+  console.log(adminId, userConnId)
+  var params = {
+    KeyConditionExpression: 'PartitionKey = :userid AND SortKey = :adminid',
+    ExpressionAttributeValues: {
+      ':userid': `wsid:${userConnId}`,
+      ':adminid': `wsid:${adminId.cid}`
+    },
+    TableName: TABLE_NAME
+  };
+  result = await ddb
+    .query(params)
+    .promise();
+  console.log("results:", result)
+  return result
+}
+
+async function addAdminSession(adminData, userConnId) {
+
+  let sessions = await getCurrentSessions(adminData, userConnId)
+  time = Date.now()
+  console.log(time)
+  console.log("addAdminSession", "no current sessions found")
+  item = {
+    PartitionKey: `awsid:${adminData.cid}`,
+    SortKey: `cwsid:${userConnId}`,
+    cid: adminData.SortKey,
+    timestamp: time,
+
+
+  }
+  const putParams = {
+    TableName: process.env.TABLE_NAME,
+    Item: item,
+  };
+  await ddb.put(putParams).promise();
+}
+
+async function addUserSession(event, adminId) {
+  const apigwManagementApi = new AWS.ApiGatewayManagementApi({
+    apiVersion: "2018-11-29",
+    endpoint: event.requestContext.domainName + "/" + event.requestContext.stage
+  });
+
+  let payload = JSON.stringify({
+    message: adminId,
+    source: "SERVER"
+  });
+  if (!DEBUG) {
+    return apigwManagementApi
+      .postToConnection({ ConnectionId: adminId, Data: payload })
+      .promise();
+  }
+}
+
+exports.handler = async event => {
+  let connectionData;
+  let item;
+  let adminData
+
+  const putParams = {
+    TableName: process.env.TABLE_NAME,
+  };
+  // try {
+  //   adminData = await getAdminConnId()
+  // } catch (err) { return err }
+  // console.log("AdminData", adminData)
+  // If user sends valid JWT token we list them as an admin, otherwise we add them as a user.
+  try {
+    decodedToken = jwt.decode(JSON.parse(event.body).token);
+    item = {
+      PartitionKey: `role:ADMIN`,
+      SortKey: `cid:${decodedToken.sub}`,
+      cid: event.requestContext.connectionId,
+    }
+    putParams.Item = item
+    await ddb.put(putParams).promise();
+  } catch (err) {
+    console.log(err)
+    // item = {
+    //   PartitionKey: `role:USER`,
+    //   SortKey: `wsid:${event.requestContext.connectionId}`,
+    //   adminId: adminData.cid
+    // }
+  }
+
+  // try {
+  //   //await addUserSession(event, adminData)
+  //   await addAdminSession(adminData, event.requestContext.connectionId)
+
+  // } catch (err) {
+  //   console.log(err)
+  //   return {
+  //     statusCode: 500,
+  //     body: "Failed to connect: " + JSON.stringify(err)
+  //   };
+  // }
+
+  return { statusCode: 200, body: "Connected." };
+};
+
