@@ -92,29 +92,9 @@
         display: none;
       }
 
-      ul.messages li.mine span {
-        background-color: #09f;
-      }
-
       ul.messages li.theirs {
         flex-direction: column;
         align-items: flex-start;
-      }
-
-      ul.messages li.theirs span {
-        background-color: #f1f0f0;
-      }
-
-      ul.messages li.theirs span.messageAuthor {
-        background-color: unset;
-        font-weight: bold;
-      }
-
-      ul.messages li.scroll-to-bottom {
-        height: 0;
-        margin: 0;
-        padding: 0;
-        border: none;
       }
 
       .textbox {
@@ -153,6 +133,8 @@
             (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
           ).toString(16)
         );
+
+      const authorColor = (author) => "#" + author.substr(0, 6);
     </script>
     <script type="text/babel">
       const connectToRoom = (serverUrl, room) => {
@@ -168,11 +150,6 @@
     </script>
 
     <script type="text/babel">
-      const AlwaysScrollToBottom = () => {
-        const elementRef = useRef();
-        useEffect(() => elementRef.current.scrollIntoView());
-        return <div ref={elementRef} className="scrollToBottom" />;
-      };
       // Chat components
       const Messages = ({ author, messages }) => {
         return (
@@ -180,7 +157,7 @@
             <ul className="messages">
               {messages.map((message) => {
                 const style = {
-                  backgroundColor: "#" + message.author.substr(0, 6),
+                  backgroundColor: authorColor(message.author),
                 };
                 return (
                   <li
@@ -193,7 +170,6 @@
                   </li>
                 );
               })}
-              <AlwaysScrollToBottom />
             </ul>
           </div>
         );
@@ -216,8 +192,11 @@
           });
           setText("");
         };
+        const style = {
+          backgroundColor: authorColor(author),
+        };
         return (
-          <form className="textbox" onSubmit={onSubmit}>
+          <form className="textbox" onSubmit={onSubmit} style={style}>
             <input
               type="text"
               value={text}
