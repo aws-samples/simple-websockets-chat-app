@@ -81,6 +81,7 @@
         max-width: 55%;
         border-radius: 8px;
         padding: 6px 12px;
+        color: white;
       }
 
       ul.messages li.mine {
@@ -93,7 +94,6 @@
 
       ul.messages li.mine span {
         background-color: #09f;
-        color: white;
       }
 
       ul.messages li.theirs {
@@ -103,7 +103,6 @@
 
       ul.messages li.theirs span {
         background-color: #f1f0f0;
-        color: black;
       }
 
       ul.messages li.theirs span.messageAuthor {
@@ -179,15 +178,21 @@
         return (
           <div className="messagesContainer">
             <ul className="messages">
-              {messages.map((message) => (
-                <li
-                  key={message.id}
-                  className={message.author == author ? "mine" : "theirs"}
-                >
-                  <span className="messageAuthor">{message.author}</span>
-                  <span className="messageText">{message.text}</span>
-                </li>
-              ))}
+              {messages.map((message) => {
+                const style = {
+                  backgroundColor: "#" + message.author.substr(0, 6),
+                };
+                return (
+                  <li
+                    key={message.id}
+                    className={message.author === author ? "mine" : "theirs"}
+                  >
+                    <span className="messageText" style={style}>
+                      {message.text}
+                    </span>
+                  </li>
+                );
+              })}
               <AlwaysScrollToBottom />
             </ul>
           </div>
