@@ -100,6 +100,7 @@
       .textbox {
         padding: 8px;
         display: flex;
+        align-items: center;
         flex-shrink: 0;
       }
 
@@ -111,10 +112,42 @@
         font-size: large;
       }
 
-      .textbox button {
-        border: 0;
-        margin-left: 4px;
-        font-size: large;
+      span.arrow {
+        width: 1.25rem;
+        height: 1.25rem;
+        display: inline-block;
+        position: relative;
+        margin: 0 1rem;
+      }
+
+      span.arrow span {
+        top: 0.5rem;
+        position: absolute;
+        width: 1rem;
+        height: 0.2rem;
+        background-color: #efefef;
+        display: inline-block;
+        transition: all 0.2s ease;
+        right: 0.5rem;
+      }
+
+      span.arrow span:first-of-type {
+        transform: rotate(45deg);
+        transform-origin: bottom right;
+      }
+      span.arrow span:last-of-type {
+        transform: rotate(-45deg);
+        transform-origin: top right;
+      }
+
+      span.arrow.active span:first-of-type {
+        transform: rotate(-45deg);
+        transform-origin: bottom left;
+      }
+
+      span.arrow.active span:last-of-type {
+        transform: rotate(45deg);
+        transform-origin: top left;
       }
     </style>
   </head>
@@ -197,6 +230,10 @@
         };
         return (
           <form className="textbox" onSubmit={onSubmit} style={style}>
+            <span className="arrow">
+              <span></span>
+              <span></span>
+            </span>
             <input
               type="text"
               value={text}
