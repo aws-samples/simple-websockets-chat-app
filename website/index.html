@@ -5,21 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat</title>
     <style>
+      html,
       body {
+        height: 100%;
         margin: 0;
+        padding: 0;
+        display: block;
         font-family: Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         background-color: whitesmoke;
       }
 
-      .root {
+      #root {
+        height: 100%;
+      }
+
+      .room {
         display: flex;
+        height: 100%;
         flex-direction: column;
-        height: 100vh;
         max-width: 600px;
         margin: 0 auto;
-        border-left: solid #a1a1a17a 1px;
-        border-right: solid #a1a1a17a 1px;
+        padding: 0;
         background-color: white;
       }
 
@@ -51,9 +58,12 @@
         background-color: red;
       }
 
-      .messages {
+      .messagesContainer {
         overflow-y: auto;
         flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
       }
 
       ul.messages {
@@ -111,6 +121,7 @@
       .textbox {
         padding: 8px;
         display: flex;
+        flex-shrink: 0;
       }
 
       .textbox input {
@@ -166,18 +177,20 @@
       // Chat components
       const Messages = ({ author, messages }) => {
         return (
-          <ul className="messages">
-            {messages.map((message) => (
-              <li
-                key={message.id}
-                className={message.author == author ? "mine" : "theirs"}
-              >
-                <span className="messageAuthor">{message.author}</span>
-                <span className="messageText">{message.text}</span>
-              </li>
-            ))}
-            <AlwaysScrollToBottom />
-          </ul>
+          <div className="messagesContainer">
+            <ul className="messages">
+              {messages.map((message) => (
+                <li
+                  key={message.id}
+                  className={message.author == author ? "mine" : "theirs"}
+                >
+                  <span className="messageAuthor">{message.author}</span>
+                  <span className="messageText">{message.text}</span>
+                </li>
+              ))}
+              <AlwaysScrollToBottom />
+            </ul>
+          </div>
         );
       };
 
@@ -206,7 +219,6 @@
               placeholder="Type your message"
               onChange={onChange}
             />
-            <button>send</button>
           </form>
         );
       };
@@ -311,7 +323,7 @@
         }
 
         return (
-          <div className="root">
+          <div className="room">
             <ConnectionStatus connection={connection} />
             <Chat connection={connection} author={author} room={room} />
           </div>
