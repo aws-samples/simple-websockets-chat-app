@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=0"
+    />
     <title>Chat</title>
     <style>
       html,
@@ -149,6 +152,22 @@
         transform: rotate(45deg);
         transform-origin: top left;
       }
+
+      .share-room {
+        padding: 4px;
+        text-align: center;
+      }
+      .qr-image img {
+        background-color: white;
+        border: 4px solid rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        padding: 8px;
+      }
+
+      .copy-link {
+      }
+      .join-room {
+      }
     </style>
   </head>
   <body>
@@ -180,6 +199,57 @@
           throw error;
         }
       };
+      const getRoomUrl = (room) => {
+        const roomUrl = new URL(window.location.href);
+        roomUrl.searchParams.delete("j");
+        roomUrl.searchParams.append("j", room);
+        return roomUrl;
+      };
+      const getQrUrl = (url) => {
+        const data = encodeURIComponent(url);
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${data}&size=300x300`;
+        return qrUrl;
+      };
+    </script>
+
+    <script type="text/babel">
+      const ShareRoom = ({ room, showQr, showCopyLink, showJoinRoom }) => {
+        const copyInputRef = useRef(null);
+        const roomUrl = getRoomUrl(room);
+
+        const copyLink = () => {
+          if (copyInputRef.current) {
+            copyInputRef.current.select();
+            document.execCommand("copy");
+          }
+        };
+        return (
+          <div className="share-room">
+            {showQr && (
+              <div className="qr-image">
+                <img src={getQrUrl(roomUrl)} alt={roomUrl} />
+              </div>
+            )}
+            {showCopyLink && (
+              <div className="copy-link">
+                <input
+                  style={{ position: "absolute", left: "-9999px" }}
+                  type="text"
+                  readonly
+                  value={roomUrl}
+                  ref={copyInputRef}
+                />
+                <button onClick={copyLink}>Copy link</button>
+              </div>
+            )}
+            {showJoinRoom && (
+              <a className="join-room" href={roomUrl}>
+                Join room
+              </a>
+            )}
+          </div>
+        );
+      };
     </script>
 
     <script type="text/babel">
@@ -208,8 +278,19 @@
         );
       };
 
+      const OptionsToggle = ({ active, onClick }) => (
+        <span
+          className={"arrow" + (active ? " active" : "")}
+          onClick={() => onClick && onClick()}
+        >
+          <span></span>
+          <span></span>
+        </span>
+      );
+
       const TextBox = ({ author, onSend, room }) => {
         const [text, setText] = useState("");
+        const [isOptionsOpen, setIsOptionsOpen] = useState(false);
         const onChange = ({ target }) => setText(target.value);
         const onSubmit = (event) => {
           event.preventDefault();
@@ -229,18 +310,21 @@
           backgroundColor: authorColor(author),
         };
         return (
-          <form className="textbox" onSubmit={onSubmit} style={style}>
-            <span className="arrow">
-              <span></span>
-              <span></span>
-            </span>
-            <input
-              type="text"
-              value={text}
-              placeholder="Type your message"
-              onChange={onChange}
-            />
-          </form>
+          <div style={style}>
+            {isOptionsOpen && <ShareRoom room={room} showQr showCopyLink />}
+            <form className="textbox" onSubmit={onSubmit}>
+              <OptionsToggle
+                active={isOptionsOpen}
+                onClick={() => setIsOptionsOpen(!isOptionsOpen)}
+              />
+              <input
+                type="text"
+                value={text}
+                placeholder="Type your message"
+                onChange={onChange}
+              />
+            </form>
+          </div>
         );
       };
 
@@ -302,11 +386,7 @@
       };
 
       const NewRoom = ({ room }) => {
-        const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.append("j", room);
-        const data = encodeURIComponent(currentUrl.href);
-        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?data=${data}&size=300x300`;
-
+        const roomUrl = getRoomUrl(room);
         return (
           <div className="newRoom">
             <h1>New chat room</h1>
@@ -315,9 +395,7 @@
               <br />
               Click on it to join the chat.
             </p>
-            <a className="qr-link" href={currentUrl}>
-              <img src={qrSrc} />
-            </a>
+            <ShareRoom room={room} showCopyLink showQr showJoinRoom />
           </div>
         );
       };
