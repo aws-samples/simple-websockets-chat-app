@@ -83,4 +83,13 @@ check-local-vars:
 	@make guard-LOCAL_DYNAMODB_ENDPOINT
 	@make guard-LOCAL_DYNAMODB_PORT
 
+
+install-qrcode-terminal:
+	npm install -g qrcode-terminal
+
+LOCALIP=$(shell ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -1)
+run-local-server:
+	@echo 'http://${LOCALIP}:8000' | qrcode-terminal
+	@python3 -m http.server 8000 --directory website --bind=${LOCALIP}
+
 .PHONY: check-vars check-local-vars sam-package sam-deploy stack-describe
