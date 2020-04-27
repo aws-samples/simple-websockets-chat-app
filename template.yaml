@@ -153,6 +153,13 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TableName
+        - Statement:
+          - Effect: Allow
+            Action:
+              - "firehose:PutRecord"
+              - "firehose:PutRecordBatch"
+            Resource:
+              - !GetAtt EventsStream.Arn
   OnConnectPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -176,10 +183,16 @@ Resources:
           TABLE_NAME: !Ref TableName
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
-
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TableName
+        - Statement:
+          - Effect: Allow
+            Action:
+              - "firehose:PutRecord"
+              - "firehose:PutRecordBatch"
+            Resource:
+              - !GetAtt EventsStream.Arn
   OnDisconnectPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -212,6 +225,12 @@ Resources:
                 - "execute-api:ManageConnections"
               Resource:
                 - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*"
+            - Effect: Allow
+              Action:
+                - "firehose:PutRecord"
+                - "firehose:PutRecordBatch"
+              Resource:
+                - !GetAtt EventsStream.Arn
   SendMessagePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
