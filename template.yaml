@@ -136,6 +136,8 @@ Resources:
         SSEEnabled: True
       TableName: !Ref TableName
   OnConnectFunction:
+    DependsOn: 
+      - EventsStream
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: onconnect/
@@ -144,6 +146,7 @@ Resources:
       Runtime: nodejs12.x
       Environment:
         Variables:
+          EVENTS_STREAM: !GetAtt EventsStream.Arn
           TABLE_NAME: !Ref TableName
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
@@ -159,6 +162,8 @@ Resources:
       FunctionName: !Ref OnConnectFunction
       Principal: apigateway.amazonaws.com
   OnDisconnectFunction:
+    DependsOn: 
+      - EventsStream
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ondisconnect/
@@ -167,6 +172,7 @@ Resources:
       Runtime: nodejs12.x
       Environment:
         Variables:
+          EVENTS_STREAM: !GetAtt EventsStream.Arn
           TABLE_NAME: !Ref TableName
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
@@ -183,6 +189,8 @@ Resources:
       FunctionName: !Ref OnDisconnectFunction
       Principal: apigateway.amazonaws.com
   SendMessageFunction:
+    DependsOn: 
+      - EventsStream
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: sendmessage/
@@ -191,6 +199,7 @@ Resources:
       Runtime: nodejs12.x
       Environment:
         Variables:
+          EVENTS_STREAM: !GetAtt EventsStream.Arn
           TABLE_NAME: !Ref TableName
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
@@ -281,8 +290,8 @@ Resources:
       ExtendedS3DestinationConfiguration:
         BucketARN: !Join ["", ['arn:aws:s3:::', !Ref EventsS3Bucket]]
         BufferingHints:
-          IntervalInSeconds: 900
-          SizeInMBs: 128
+          IntervalInSeconds: 60
+          SizeInMBs: 1
         CompressionFormat: UNCOMPRESSED
         Prefix: firehose/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/
         ErrorOutputPrefix: firehoseError/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}
