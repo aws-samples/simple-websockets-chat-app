@@ -14,6 +14,7 @@ const {
   LOCAL_DYNAMODB_ENDPOINT: endpoint,
   TABLE_NAME: TableName,
   CONNECTION_ID_INDEX: IndexName,
+  EVENTS_STREAM, DeliveryStreamName
 } = process.env;
 const ddb = new AWS.DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
@@ -36,9 +37,19 @@ const toDeleteRequest = ({ roomId, connectionId }) => ({
   DeleteRequest: { Key: { roomId, connectionId } },
 });
 
+const kinesis = new AWS.Firehose();
+const trackEvents = (events) => {
+  return kinesis
+    .putRecordBatch({
+      DeliveryStreamName,
+      Records: [{ Data: events.map(record => JSON.stringify(record) + '\n' }],
+    })
+    .promise();
+};
+
 exports.handler = async (event) => {
   try {
-    const { connectionId } = event.requestContext;
+    const { connectionId, connectedAt: timestamp } = event.requestContext;
     const itemsToDelete = await findRoomsForConnectionId(connectionId);
     if (itemsToDelete.length) {
       const deleteRequests = itemsToDelete.map(toDeleteRequest);
@@ -48,6 +59,13 @@ exports.handler = async (event) => {
         },
       };
       await ddb.batchWrite(params).promise();
+      const events =  itemsToDelete.map(({ roomId, connectionId }) => ({
+        connectionId,
+        roomId,
+        timestamp,
+        event: 'left'
+      }))
+      await trackEvents(events)
     }
   } catch (err) {
     return {
