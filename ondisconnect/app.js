@@ -45,9 +45,9 @@ const trackEvents = (events) => {
 
   const payload = {
     DeliveryStreamName,
-    Records: [
-      { Data: events.map((record) => JSON.stringify(record)).join("\n") },
-    ],
+    Records: events.map((record) => ({
+      Data: JSON.stringify(record) + "\n",
+    })),
   };
 
   if (endpoint) {
