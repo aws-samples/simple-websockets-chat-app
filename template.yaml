@@ -309,8 +309,8 @@ Resources:
       ExtendedS3DestinationConfiguration:
         BucketARN: !Join ["", ['arn:aws:s3:::', !Ref EventsS3Bucket]]
         BufferingHints:
-          IntervalInSeconds: 60
-          SizeInMBs: 1
+          IntervalInSeconds: 900
+          SizeInMBs: 128
         CompressionFormat: UNCOMPRESSED
         Prefix: firehose/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/
         ErrorOutputPrefix: firehoseError/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}
