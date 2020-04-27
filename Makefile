@@ -32,6 +32,7 @@ call-%: check-local-vars
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
+				AppPrefix=$(STACK_NAME) \
 		--event test/$(*)Event.json
 
 sam-package: check-vars
@@ -45,8 +46,10 @@ sam-deploy: check-vars
 		--stack-name=$(STACK_NAME) \
 		--template-file packaged.yaml \
 		--capabilities CAPABILITY_IAM \
-		--parameter-overrides TableName=$(TABLE_NAME) \
+		--parameter-overrides \
+				TableName=$(TABLE_NAME) \
 				WebsiteBucketName=$(WEBSITE_BUCKET) \
+				AppPrefix=$(STACK_NAME) \
 		--s3-bucket $(DEPLOY_BUCKET)
 
 website-deploy: check-vars

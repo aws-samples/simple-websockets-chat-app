@@ -7,20 +7,50 @@ const {
   AWS_REGION,
   LOCAL_DYNAMODB_ENDPOINT: endpoint,
   TABLE_NAME: TableName,
+  EVENTS_STREAM: DeliveryStreamName,
 } = process.env;
 const ddb = new AWS.DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
   region: process.env.AWS_REGION,
   endpoint: endpoint && endpoint.length ? endpoint : undefined,
 });
+const kinesis = new AWS.Firehose();
+const trackEvents = (events) => {
+  if (!events || !events.length) {
+    return;
+  }
+
+  const payload = {
+    DeliveryStreamName,
+    Records: events.map((record) => ({
+      Data: JSON.stringify(record) + "\n",
+    })),
+  };
+
+  if (endpoint) {
+    console.log("tracking", payload);
+  }
+
+  return kinesis
+    .putRecordBatch(payload)
+    .promise()
+    .catch(({ message }) =>
+      console.error("Error while tracking data: " + message, payload)
+    );
+};
 
 exports.handler = async (event) => {
   let connectionData;
-  let roomId;
   const postData = JSON.parse(event.body).data;
+  const { roomId, author } = JSON.parse(postData);
+  const {
+    domainName,
+    stage,
+    connectionId: senderConnectionId,
+    connectedAt: timestamp,
+  } = event.requestContext;
 
   try {
-    const { roomId } = JSON.parse(postData);
     const query = {
       TableName,
       KeyConditionExpression: "roomId = :roomId",
@@ -35,29 +65,44 @@ exports.handler = async (event) => {
 
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
     apiVersion: "2018-11-29",
-    endpoint:
-      event.requestContext.domainName + "/" + event.requestContext.stage,
+    endpoint: domainName + "/" + stage,
   });
 
-  const postCalls = connectionData.Items.map(async ({ connectionId }) => {
-    try {
-      await apigwManagementApi
-        .postToConnection({ ConnectionId: connectionId, Data: postData })
-        .promise();
-    } catch (e) {
-      if (e.statusCode === 410) {
-        console.log(`Found stale connection, deleting ${connectionId}`);
-        await ddb
-          .delete({ TableName: TABLE_NAME, Key: { roomId, connectionId } })
-          .promise();
-      } else {
-        throw e;
+  const events = [];
+
+  const postCalls = connectionData.Items.map(
+    async ({ roomId, connectionId }) => {
+      try {
+        if (connectionId !== senderConnectionId) {
+          await apigwManagementApi
+            .postToConnection({ ConnectionId: connectionId, Data: postData })
+            .promise();
+          events.push({
+            roomId,
+            author,
+            senderConnectionId,
+            connectionId,
+            timestamp,
+            event: "message-sent",
+          });
+        }
+      } catch (e) {
+        if (e.statusCode === 410) {
+          console.log(`Found stale connection, deleting ${connectionId}`);
+          await ddb
+            .delete({ TableName: TABLE_NAME, Key: { roomId, connectionId } })
+            .promise();
+          events.push({ connectionId, roomId, timestamp, event: "left" });
+        } else {
+          throw e;
+        }
       }
     }
-  });
+  );
 
   try {
     await Promise.all(postCalls);
+    await trackEvents(events);
   } catch (e) {
     return { statusCode: 500, body: e.stack };
   }
