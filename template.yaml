@@ -7,6 +7,10 @@ Description: >
   functions needed to demonstrate the Websocket protocol on API Gateway.
 
 Parameters:
+  AppPrefix:
+    Type: String
+    Default: "simplechat-connections"
+    Description: Prefix to name the resources in the system
   TableName:
     Type: String
     Default: "simplechat-connections-table"
@@ -266,6 +270,72 @@ Resources:
               - !Sub "arn:aws:s3:::${S3Bucket}/*"
             Principal:
               AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
+
+  EventsStream:
+    DependsOn: 
+      - EventsStreamPolicy
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Join ["-", [!Ref AppPrefix, "events-stream"]]
+      DeliveryStreamType: DirectPut
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !Join ["", ['arn:aws:s3:::', !Ref EventsS3Bucket]]
+        BufferingHints:
+          IntervalInSeconds: 900
+          SizeInMBs: 128
+        CompressionFormat: UNCOMPRESSED
+        Prefix: firehose/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/
+        ErrorOutputPrefix: firehoseError/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}
+        RoleARN: !GetAtt EventsStreamRole.Arn
+
+  EventsS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join ["-", [!Ref AppPrefix, "events-bucket"]]
+
+  EventsStreamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal: 
+              Service: firehose.amazonaws.com
+            Action: 'sts:AssumeRole'
+            Condition:
+              StringEquals:
+                'sts:ExternalId': !Ref 'AWS::AccountId'
+                
+  EventsStreamPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Join ["-", [!Ref AppPrefix, "events-policy"]]
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:AbortMultipartUpload'
+              - 's3:GetBucketLocation'
+              - 's3:GetObject'
+              - 's3:ListBucket'
+              - 's3:ListBucketMultipartUploads'
+              - 's3:PutObject'
+            Resource:
+              - !Join ["", ['arn:aws:s3:::', !Ref EventsS3Bucket]]
+              - !Join ["", ['arn:aws:s3:::', !Ref EventsS3Bucket, '*']]
+      Roles:
+        - !Ref EventsStreamRole
+
+Outputs:
+  FunctionName:
+    Description: "Function name"
+    Value: !Ref LambdaFunction
+  StreamARN:
+    Description: "Stream ARN"
+    Value: !GetAtt stream.Arn
 
 Outputs:
   ConnectionsTableArn:
