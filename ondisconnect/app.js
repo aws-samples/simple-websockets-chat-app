@@ -14,7 +14,7 @@ const {
   LOCAL_DYNAMODB_ENDPOINT: endpoint,
   TABLE_NAME: TableName,
   CONNECTION_ID_INDEX: IndexName,
-  EVENTS_STREAM, DeliveryStreamName
+  EVENTS_STREAM: DeliveryStreamName,
 } = process.env;
 const ddb = new AWS.DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
@@ -39,12 +39,27 @@ const toDeleteRequest = ({ roomId, connectionId }) => ({
 
 const kinesis = new AWS.Firehose();
 const trackEvents = (events) => {
+  if (!events || !events.length) {
+    return;
+  }
+
+  const payload = {
+    DeliveryStreamName,
+    Records: [
+      { Data: events.map((record) => JSON.stringify(record)).join("\n") },
+    ],
+  };
+
+  if (endpoint) {
+    console.log("tracking", payload);
+  }
+
   return kinesis
-    .putRecordBatch({
-      DeliveryStreamName,
-      Records: [{ Data: events.map(record => JSON.stringify(record) + '\n' }],
-    })
-    .promise();
+    .putRecordBatch(payload)
+    .promise()
+    .catch(({ message }) =>
+      console.error("Error while tracking data: " + message, payload)
+    );
 };
 
 exports.handler = async (event) => {
@@ -59,13 +74,13 @@ exports.handler = async (event) => {
         },
       };
       await ddb.batchWrite(params).promise();
-      const events =  itemsToDelete.map(({ roomId, connectionId }) => ({
+      const events = itemsToDelete.map(({ roomId, connectionId }) => ({
         connectionId,
         roomId,
         timestamp,
-        event: 'left'
-      }))
-      await trackEvents(events)
+        event: "left",
+      }));
+      await trackEvents(events);
     }
   } catch (err) {
     return {

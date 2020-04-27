@@ -32,6 +32,7 @@ call-%: check-local-vars
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
+				AppPrefix=$(STACK_NAME) \
 		--event test/$(*)Event.json
 
 sam-package: check-vars

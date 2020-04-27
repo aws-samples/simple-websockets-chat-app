@@ -24,17 +24,27 @@ const saveConnection = (Item) => {
 };
 
 const kinesis = new AWS.Firehose();
-const track = (record) => {
+const track = (payload) => {
+  const record = {
+    DeliveryStreamName,
+    Record: { Data: JSON.stringify(payload) + "\n" },
+  };
+
+  if (endpoint) {
+    console.log("tracking", record);
+  }
+
   return kinesis
-    .putRecord({
-      DeliveryStreamName,
-      Record: { Data: JSON.stringify(record) + "\n" },
-    })
-    .promise();
+    .putRecord(record)
+    .promise()
+    .catch(({ message }) =>
+      console.error("Error while tracking data: " + message, record)
+    );
 };
 
 exports.handler = async (event) => {
   let record = {};
+  const timestamp = event.requestContext.connectedAt;
   try {
     record.roomId = event.queryStringParameters.j;
     record.connectionId = event.requestContext.connectionId;
@@ -42,7 +52,7 @@ exports.handler = async (event) => {
   } catch (err) {
     await track({
       ...record,
-      timestamp: event.requestContext.connectedAt,
+      timestamp,
       errorMessage: err.message,
       event: "error-joining",
     });
@@ -51,7 +61,7 @@ exports.handler = async (event) => {
       body: "Failed to connect: " + JSON.stringify(err),
     };
   }
-  await track({ ...record, event: "joined" });
+  await track({ ...record, timestamp, event: "joined" });
 
   return { statusCode: 200, body: "Connected." };
 };
