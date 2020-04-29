@@ -5,8 +5,8 @@ const ddb = new AWS.DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
   region: process.env.AWS_REGION
 });
-const { TABLE_NAME } = process.env;
-const DEBUG = true
+const { TABLE_NAME, DEBUG } = process.env;
+// const DEBUG = true
 
 async function getAdminConnId() {
   var params = {
@@ -53,8 +53,6 @@ async function addAdminSession(adminData, userConnId) {
     SortKey: `cwsid:${userConnId}`,
     cid: adminData.SortKey,
     timestamp: time,
-
-
   }
   const putParams = {
     TableName: process.env.TABLE_NAME,
@@ -63,18 +61,18 @@ async function addAdminSession(adminData, userConnId) {
   await ddb.put(putParams).promise();
 }
 
-async function addUserSession(event, adminId) {
+async function addUserSession(event, adminId, userData) {
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
     apiVersion: "2018-11-29",
     endpoint: event.requestContext.domainName + "/" + event.requestContext.stage
   });
 
   let payload = JSON.stringify({
-    message: adminId,
-    source: "SERVER"
+    event: "connchange",
+    userdata: userData
   });
   if (!DEBUG) {
-    return apigwManagementApi
+    await apigwManagementApi
       .postToConnection({ ConnectionId: adminId, Data: payload })
       .promise();
   }
@@ -88,10 +86,10 @@ exports.handler = async event => {
   const putParams = {
     TableName: process.env.TABLE_NAME,
   };
-  // try {
-  //   adminData = await getAdminConnId()
-  // } catch (err) { return err }
-  // console.log("AdminData", adminData)
+  try {
+    adminData = await getAdminConnId()
+  } catch (err) { return err }
+  console.log("AdminData", adminData)
   // If user sends valid JWT token we list them as an admin, otherwise we add them as a user.
   try {
     decodedToken = jwt.decode(JSON.parse(event.body).token);
@@ -103,12 +101,19 @@ exports.handler = async event => {
     putParams.Item = item
     await ddb.put(putParams).promise();
   } catch (err) {
-    console.log(err)
-    // item = {
-    //   PartitionKey: `role:USER`,
-    //   SortKey: `wsid:${event.requestContext.connectionId}`,
-    //   adminId: adminData.cid
-    // }
+    data = JSON.parse(event.body)
+    console.log(data)
+    item = {
+      PartitionKey: `uuid:${data.userdata.uuid}`,
+      name: data.userdata.name,
+      cid: event.requestContext.connectionId,
+      SortKey: `role:USER`,
+    }
+    putParams.Item = item
+    ddb.put(putParams).promise();
+    let userData = data.userdata
+    userData["connId"] = event.requestContext.connectionId
+    //addUserSession(event, adminData.cid, userData)
   }
 
   // try {

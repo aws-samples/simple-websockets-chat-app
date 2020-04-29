@@ -1,5 +1,5 @@
 {
-    "body": "{\"message\":\"sendmessage\",\"recipient\":\"admin\", \"body\":\"ping\"}",
+    "body": "{\"message\":\"sendmessage\",\"data\":{\"dest\":\"LhG-AfEKIAMCK_A=\", \"text\":\"ping\"}}",
     "resource": "/{proxy+}",
     "path": "/path/to/resource",
     "httpMethod": "POST",

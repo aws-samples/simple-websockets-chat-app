@@ -7,7 +7,7 @@ const ddb = new AWS.DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
   region: process.env.AWS_REGION
 });
-
+const DEBUG = process.env.AWS_REGION
 const { TABLE_NAME } = process.env;
 
 async function getAdminConnId() {
@@ -28,36 +28,48 @@ async function getAdminConnId() {
 }
 
 exports.handler = async event => {
-  let connectionData;
-  //console.log(event);
-
-  // try {
-  //   connectionData = await ddb
-  //     .scan({ TableName: TABLE_NAME, ProjectionExpression: "connectionId" })
-  //     .promise();
-  // } catch (e) {
-  //   return { statusCode: 500, body: e.stack };
-  // }
-  endpoint = "jhdk924ki7.execute-api.us-east-1.amazonaws.com/Prod/"
+  /*
+    inbound: dest, text
+    outbound: source, text
+  */
+  if (DEBUG) {
+    endpoint = "jhdk924ki7.execute-api.us-east-1.amazonaws.com/Prod/"
+  } else {
+    endpoint = event.requestContext.domainName + "/" + event.requestContext.stage
+  }
   adminId = await getAdminConnId()
   console.log(adminId.cid)
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
     apiVersion: "2018-11-29",
     endpoint: endpoint,
-    // endpoint: event.requestContext.domainName + "/" + event.requestContext.stage
   });
   console.log(event.body)
   const postData = JSON.parse(event.body);
+  if (!("userdata" in postData)) {
+    postData.userdata = {
+      uuid: null,
+      name: {
+        first: null,
+        last: null
+      }
+    }
+  }
+  postData.userdata.connId = event.requestContext.connectionId
   console.log(postData)
   // postData.body[connectionId] = connectionId;
   let payload = JSON.stringify({
     message: postData,
     source: event.requestContext.connectionId
   });
-
+  dest = ("dest" in postData) ? postData.dest : adminId.cid
   await apigwManagementApi
-    .postToConnection({ ConnectionId: adminId.cid, Data: event.body })
+    .postToConnection({ ConnectionId: dest, Data: JSON.stringify(postData) })
     .promise();
+
+
+  return { statusCode: 200, body: "Data sent." };
+};
+
   // const postCalls = connectionData.Items.map(async ({ connectionId }) => {
   //   try {
   // await apigwManagementApi
@@ -80,6 +92,3 @@ exports.handler = async event => {
   // } catch (e) {
   //   return { statusCode: 500, body: e.stack };
   // }
-
-  return { statusCode: 200, body: "Data sent." };
-};
