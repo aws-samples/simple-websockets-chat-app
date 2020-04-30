@@ -1,6 +1,21 @@
 // Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+/*
+Msg -> Admin: 
+{
+  src: {
+    connId: xxxx
+    uuid: xxxxxx-xxxxxx-xxxxxx
+  }
+  dest: {
+    connId:
+    uuid: admin | uuid
+  payload: {
+    text:
+  }
+}
 
+*/
 const AWS = require("aws-sdk");
 
 const ddb = new AWS.DynamoDB.DocumentClient({
@@ -10,12 +25,28 @@ const ddb = new AWS.DynamoDB.DocumentClient({
 const DEBUG = process.env.AWS_REGION
 const { TABLE_NAME } = process.env;
 
+async function storeMessage(uuid, message) {
+  const now = new Date();
+  console.log(now)
+  const putParams = {
+    TableName: process.env.TABLE_NAME,
+    Item: {
+      PartitionKey: `uuid:${uuid}`,
+      message: message,
+      SortKey: `ts:${now.toISOString()}`,
+    }
+  };
+
+
+  ddb.put(putParams).promise();
+}
+
 async function getAdminConnId() {
   var params = {
-    KeyConditionExpression: 'PartitionKey = :role AND begins_with ( SortKey , :connid )',
+    KeyConditionExpression: 'PartitionKey = :uuid AND SortKey = :role',
     ExpressionAttributeValues: {
-      ':role': "role:ADMIN",
-      ':connid': "cid"
+      ':uuid': "uuid:admin",
+      ':role': "role:admin"
     },
     TableName: TABLE_NAME
   };
@@ -23,7 +54,7 @@ async function getAdminConnId() {
   results = await ddb
     .query(params)
     .promise();
-  //console.log("AdminID: ", results.Items[0].cid)
+  console.log("AdminID: ", results.Items)
   return results.Items[0]
 }
 
@@ -56,16 +87,21 @@ exports.handler = async event => {
   }
   postData.userdata.connId = event.requestContext.connectionId
   console.log(postData)
-  // postData.body[connectionId] = connectionId;
+
   let payload = JSON.stringify({
     message: postData,
     source: event.requestContext.connectionId
   });
   dest = ("dest" in postData) ? postData.dest : adminId.cid
-  await apigwManagementApi
-    .postToConnection({ ConnectionId: dest, Data: JSON.stringify(postData) })
-    .promise();
+  storeMessage(postData.userdata.uuid, postData)
 
+  try {
+    await apigwManagementApi
+      .postToConnection({ ConnectionId: dest, Data: JSON.stringify(postData) })
+      .promise();
+  } catch (err) {
+    console.log(err)
+  }
 
   return { statusCode: 200, body: "Data sent." };
 };

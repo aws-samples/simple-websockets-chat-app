@@ -1,5 +1,5 @@
 {
-    "body": "{\"message\":\"sendmessage\",\"data\":{\"dest\":\"LhG-AfEKIAMCK_A=\", \"text\":\"ping\"}}",
+    "body": "{\"message\": \"sendmessage\",\"src\": {\"connId\": \"xxxx\",\"uuid\": \"xxxxxx-xxxxxx-xxxxxx\",\"userdata\": {}},\"dest\": {\"connId\": \"xxxx\",\"uuid\": \"admin\"},\"text\": {\"text\": \"message to admin\"}}",
     "resource": "/{proxy+}",
     "path": "/path/to/resource",
     "httpMethod": "POST",

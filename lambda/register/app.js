@@ -91,43 +91,36 @@ exports.handler = async event => {
   } catch (err) { return err }
   console.log("AdminData", adminData)
   // If user sends valid JWT token we list them as an admin, otherwise we add them as a user.
+  let items = []
   try {
     decodedToken = jwt.decode(JSON.parse(event.body).token);
-    item = {
-      PartitionKey: `role:ADMIN`,
-      SortKey: `cid:${decodedToken.sub}`,
+    console.log("Admin Registration Detected: ", decodedToken)
+    items = [{
+      PartitionKey: `uuid:admin`,
+      SortKey: `role:admin`,
       cid: event.requestContext.connectionId,
-    }
-    putParams.Item = item
-    await ddb.put(putParams).promise();
+      uuid: `uuid:${decodedToken.sub}`
+    },
+    {
+      PartitionKey: `uuid:${decodedToken.sub}`,
+      SortKey: `role:admin`,
+      cid: event.requestContext.connectionId,
+    }]
   } catch (err) {
+    console.log(err)
     data = JSON.parse(event.body)
     console.log(data)
-    item = {
+    items = [{
       PartitionKey: `uuid:${data.userdata.uuid}`,
       name: data.userdata.name,
       cid: event.requestContext.connectionId,
-      SortKey: `role:USER`,
-    }
+      SortKey: `role:user`,
+    }]
+  }
+  items.map(item => {
     putParams.Item = item
     ddb.put(putParams).promise();
-    let userData = data.userdata
-    userData["connId"] = event.requestContext.connectionId
-    //addUserSession(event, adminData.cid, userData)
-  }
-
-  // try {
-  //   //await addUserSession(event, adminData)
-  //   await addAdminSession(adminData, event.requestContext.connectionId)
-
-  // } catch (err) {
-  //   console.log(err)
-  //   return {
-  //     statusCode: 500,
-  //     body: "Failed to connect: " + JSON.stringify(err)
-  //   };
-  // }
-
+  })
   return { statusCode: 200, body: "Connected." };
 };
 
