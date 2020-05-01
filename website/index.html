@@ -115,7 +115,7 @@
         font-size: large;
       }
 
-      span.arrow {
+      a.arrow {
         width: 1.25rem;
         height: 1.25rem;
         display: inline-block;
@@ -123,7 +123,7 @@
         margin: 0 1rem;
       }
 
-      span.arrow span {
+      a.arrow span {
         top: 0.5rem;
         position: absolute;
         width: 1rem;
@@ -134,21 +134,21 @@
         right: 0.5rem;
       }
 
-      span.arrow span:first-of-type {
+      a.arrow span:first-of-type {
         transform: rotate(45deg);
         transform-origin: bottom right;
       }
-      span.arrow span:last-of-type {
+      a.arrow span:last-of-type {
         transform: rotate(-45deg);
         transform-origin: top right;
       }
 
-      span.arrow.active span:first-of-type {
+      a.arrow.active span:first-of-type {
         transform: rotate(-45deg);
         transform-origin: bottom left;
       }
 
-      span.arrow.active span:last-of-type {
+      a.arrow.active span:last-of-type {
         transform: rotate(45deg);
         transform-origin: top left;
       }
@@ -193,7 +193,7 @@
           b = parseInt(hex.slice(4, 6), 16);
 
         // http://stackoverflow.com/a/3943023/112731
-        return (r*0.299 + g*0.587 + b*0.114) > 186 ? '#000' : '#FFF';
+        return (r*0.299 + g*0.587 + b*0.114) > 186 ? '#525252' : '#eaebed';
       }
 
       const colorFromUuid = (uuid) => "#" + uuid.substr(0, 6);
@@ -215,6 +215,10 @@
         roomUrl.searchParams.append("j", room);
         return roomUrl;
       };
+      const getNewRoomUrl = (oldRoom) => {
+        // in the future keep track of old
+        return window.location.origin;
+      }
       const getQrUrl = (url) => {
         const data = encodeURIComponent(url);
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${data}&size=300x300`;
@@ -223,10 +227,11 @@
     </script>
 
     <script type="text/babel">
-      const ShareRoom = ({ room, showQr, showCopyLink, showJoinRoom }) => {
+      const ShareRoom = ({ room, showQr, showCopyLink, showJoinRoom,
+      showNewRoom }) => {
         const copyInputRef = useRef(null);
         const roomUrl = getRoomUrl(room);
-
+        const newRoomUrl = getNewRoomUrl(room);
         const copyLink = () => {
           if (copyInputRef.current) {
             copyInputRef.current.select();
@@ -255,6 +260,11 @@
             {showJoinRoom && (
               <a className="join-room" href={roomUrl}>
                 Join room
+              </a>
+            )}
+           {showNewRoom && (
+              <a className="join-room" href={newRoomUrl}>
+                Create new room
               </a>
             )}
           </div>
@@ -290,14 +300,14 @@
         );
       };
 
-      const OptionsToggle = ({ active, onClick }) => (
-        <span
+      const OptionsToggle = ({ active, onClick, style }) => (
+        <a href="#"
           className={"arrow" + (active ? " active" : "")}
-          onClick={() => onClick && onClick()}
+          onClick={e => {e.preventDefault(); onClick && onClick()}}
         >
-          <span></span>
-          <span></span>
-        </span>
+          <span style={style}></span>
+          <span style={style}></span>
+        </a>
       );
 
       const TextBox = ({ author, onSend, room }) => {
@@ -323,9 +333,11 @@
         };
         return (
           <div style={style}>
-            {isOptionsOpen && <ShareRoom room={room} showQr showCopyLink />}
+            {isOptionsOpen && <ShareRoom room={room} showQr showCopyLink
+            showNewRoom/>}
             <form className="textbox" onSubmit={onSubmit}>
               <OptionsToggle
+                style={{backgroundColor: darkOrLight(style.backgroundColor)}}
                 active={isOptionsOpen}
                 onClick={() => setIsOptionsOpen(!isOptionsOpen)}
               />
@@ -390,12 +402,12 @@
           connection.onopen = () => setConnectionState(connection.readyState);
           connection.onclose = () => setConnectionState(connection.readyState);
         }, [connection]);
-        const onClick = () => location.reload();
+        const onClick = e => {e.preventDefault();location.reload();}
         return (
-          <div className={"connectionStatus status-" + readyState}
-          onClick={onClick}>
+          <a className={"connectionStatus status-" + readyState}
+             onClick={onClick}>
             {readyState < 2 ? "Connected" : "Disconnected"}
-          </div>
+          </a>
         );
       };
 
