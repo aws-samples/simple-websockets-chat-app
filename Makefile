@@ -52,8 +52,11 @@ sam-deploy: check-vars
 				AppPrefix=$(STACK_NAME) \
 		--s3-bucket $(DEPLOY_BUCKET)
 
+website-invalidate: check-vars
+	$(AWS) cloudfront create-invalidation --distribution-id E2FADU0GBQ8AES --paths "/*"
 website-deploy: check-vars
 	$(AWS) s3 sync --acl "public-read" ./website s3://$(WEBSITE_BUCKET)
+	make website-invalidate
 
 stack-describe: check-vars
 	$(AWS) cloudformation describe-stacks \
