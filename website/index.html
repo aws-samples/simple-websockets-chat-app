@@ -215,6 +215,10 @@
         roomUrl.searchParams.append("j", room);
         return roomUrl;
       };
+      const getNewRoomUrl = (oldRoom) => {
+        // in the future keep track of old
+        return window.location.origin;
+      }
       const getQrUrl = (url) => {
         const data = encodeURIComponent(url);
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${data}&size=300x300`;
@@ -223,10 +227,11 @@
     </script>
 
     <script type="text/babel">
-      const ShareRoom = ({ room, showQr, showCopyLink, showJoinRoom }) => {
+      const ShareRoom = ({ room, showQr, showCopyLink, showJoinRoom,
+      showNewRoom }) => {
         const copyInputRef = useRef(null);
         const roomUrl = getRoomUrl(room);
-
+        const newRoomUrl = getNewRoomUrl(room);
         const copyLink = () => {
           if (copyInputRef.current) {
             copyInputRef.current.select();
@@ -255,6 +260,11 @@
             {showJoinRoom && (
               <a className="join-room" href={roomUrl}>
                 Join room
+              </a>
+            )}
+           {showNewRoom && (
+              <a className="join-room" href={newRoomUrl}>
+                Create new room
               </a>
             )}
           </div>
@@ -323,7 +333,8 @@
         };
         return (
           <div style={style}>
-            {isOptionsOpen && <ShareRoom room={room} showQr showCopyLink />}
+            {isOptionsOpen && <ShareRoom room={room} showQr showCopyLink
+            showNewRoom/>}
             <form className="textbox" onSubmit={onSubmit}>
               <OptionsToggle
                 style={{backgroundColor: darkOrLight(style.backgroundColor)}}
@@ -420,7 +431,6 @@
         useEffect(() => {
           if (room) {
             setConnection(connectToRoom(serverUrl, room));
-            //setConnection({ readyStatus: 2, onsend: ()=>{}});
           }
           return () => {
             if (connection) {
