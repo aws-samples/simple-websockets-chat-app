@@ -1,3 +1,7 @@
+# Notes
+
+## Helpful Commands
+
 ### Validate Cognito User
 
 aws cognito-idp admin-confirm-sign-up \
@@ -9,7 +13,7 @@ aws cognito-idp admin-confirm-sign-up \
 
 aws cognito-idp sign-up --region us-east-1 --client-id 776gr1b1703hcbes2vnb0dq8pm --username admin@example.com --password Elm0andm3\$ --user-attributes [{"Name": "email","Value": "chlmes@amazon.com"}]
 
-# TODO:
+## TODO
 
 - Create api login method that correlates connectionId to username and stores the data in DynamoDB
 - Create session api method
@@ -19,5 +23,6 @@ aws cognito-idp sign-up --region us-east-1 --client-id 776gr1b1703hcbes2vnb0dq8p
 - Session timeout
 - Session timestamp
 
-What are the active sessions?
-Session vs
+### DynamoDB
+
+- What are all the active user sessions
