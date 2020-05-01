@@ -1,5 +1,5 @@
 {
-    "body": "{\"message\": \"sendmessage\",\"src\": {\"connId\": \"xxxx\",\"uuid\": \"xxxxxx-xxxxxx-xxxxxx\",\"userdata\": {}},\"dest\": {\"connId\": \"xxxx\",\"uuid\": \"admin\"},\"text\": {\"text\": \"message to admin\"}}",
+    "body": "{\"message\": \"sendmessage\",\"payload\":{\"src\": {\"connId\": \"xxxx\",\"uuid\": \"user-user-user\",\"userdata\": {}},\"dest\": {\"connId\": \"xxxx\",\"uuid\": \"admin\"},\"text\": {\"text\": \"message to admin\"}}}",
     "resource": "/{proxy+}",
     "path": "/path/to/resource",
     "httpMethod": "POST",
