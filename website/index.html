@@ -115,7 +115,7 @@
         font-size: large;
       }
 
-      span.arrow {
+      a.arrow {
         width: 1.25rem;
         height: 1.25rem;
         display: inline-block;
@@ -123,7 +123,7 @@
         margin: 0 1rem;
       }
 
-      span.arrow span {
+      a.arrow span {
         top: 0.5rem;
         position: absolute;
         width: 1rem;
@@ -134,21 +134,21 @@
         right: 0.5rem;
       }
 
-      span.arrow span:first-of-type {
+      a.arrow span:first-of-type {
         transform: rotate(45deg);
         transform-origin: bottom right;
       }
-      span.arrow span:last-of-type {
+      a.arrow span:last-of-type {
         transform: rotate(-45deg);
         transform-origin: top right;
       }
 
-      span.arrow.active span:first-of-type {
+      a.arrow.active span:first-of-type {
         transform: rotate(-45deg);
         transform-origin: bottom left;
       }
 
-      span.arrow.active span:last-of-type {
+      a.arrow.active span:last-of-type {
         transform: rotate(45deg);
         transform-origin: top left;
       }
@@ -291,13 +291,13 @@
       };
 
       const OptionsToggle = ({ active, onClick, style }) => (
-        <span
+        <a href="#"
           className={"arrow" + (active ? " active" : "")}
-          onClick={() => onClick && onClick()}
+          onClick={e => {e.preventDefault(); onClick && onClick()}}
         >
           <span style={style}></span>
           <span style={style}></span>
-        </span>
+        </a>
       );
 
       const TextBox = ({ author, onSend, room }) => {
@@ -391,12 +391,12 @@
           connection.onopen = () => setConnectionState(connection.readyState);
           connection.onclose = () => setConnectionState(connection.readyState);
         }, [connection]);
-        const onClick = () => location.reload();
+        const onClick = e => {e.preventDefault();location.reload();}
         return (
-          <div className={"connectionStatus status-" + readyState}
-          onClick={onClick}>
+          <a className={"connectionStatus status-" + readyState}
+             onClick={onClick}>
             {readyState < 2 ? "Connected" : "Disconnected"}
-          </div>
+          </a>
         );
       };
 
@@ -420,6 +420,7 @@
         useEffect(() => {
           if (room) {
             setConnection(connectToRoom(serverUrl, room));
+            //setConnection({ readyStatus: 2, onsend: ()=>{}});
           }
           return () => {
             if (connection) {
