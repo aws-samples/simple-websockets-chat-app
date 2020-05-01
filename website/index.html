@@ -193,7 +193,7 @@
           b = parseInt(hex.slice(4, 6), 16);
 
         // http://stackoverflow.com/a/3943023/112731
-        return (r*0.299 + g*0.587 + b*0.114) > 186 ? '#000' : '#FFF';
+        return (r*0.299 + g*0.587 + b*0.114) > 186 ? '#525252' : '#eaebed';
       }
 
       const colorFromUuid = (uuid) => "#" + uuid.substr(0, 6);
@@ -290,13 +290,13 @@
         );
       };
 
-      const OptionsToggle = ({ active, onClick }) => (
+      const OptionsToggle = ({ active, onClick, style }) => (
         <span
           className={"arrow" + (active ? " active" : "")}
           onClick={() => onClick && onClick()}
         >
-          <span></span>
-          <span></span>
+          <span style={style}></span>
+          <span style={style}></span>
         </span>
       );
 
@@ -326,6 +326,7 @@
             {isOptionsOpen && <ShareRoom room={room} showQr showCopyLink />}
             <form className="textbox" onSubmit={onSubmit}>
               <OptionsToggle
+                style={{backgroundColor: darkOrLight(style.backgroundColor)}}
                 active={isOptionsOpen}
                 onClick={() => setIsOptionsOpen(!isOptionsOpen)}
               />
