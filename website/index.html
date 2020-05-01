@@ -186,7 +186,17 @@
           ).toString(16)
         );
 
-      const authorColor = (author) => "#" + author.substr(0, 6);
+      const darkOrLight = (hex) => {
+        hex = hex.replace("#", '');
+        const r = parseInt(hex.slice(0, 2), 16),
+          g = parseInt(hex.slice(2, 4), 16),
+          b = parseInt(hex.slice(4, 6), 16);
+
+        // http://stackoverflow.com/a/3943023/112731
+        return (r*0.299 + g*0.587 + b*0.114) > 186 ? '#000' : '#FFF';
+      }
+
+      const colorFromUuid = (uuid) => "#" + uuid.substr(0, 6);
     </script>
     <script type="text/babel">
       const connectToRoom = (serverUrl, room) => {
@@ -259,8 +269,10 @@
           <div className="messagesContainer">
             <ul className="messages">
               {messages.map((message) => {
+                const backgroundColor = colorFromUuid(message.author);
                 const style = {
-                  backgroundColor: authorColor(message.author),
+                  color: darkOrLight(backgroundColor),
+                  backgroundColor
                 };
                 return (
                   <li
@@ -307,7 +319,7 @@
           setText("");
         };
         const style = {
-          backgroundColor: authorColor(author),
+          backgroundColor: colorFromUuid(author),
         };
         return (
           <div style={style}>
