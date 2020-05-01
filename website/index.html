@@ -390,8 +390,10 @@
           connection.onopen = () => setConnectionState(connection.readyState);
           connection.onclose = () => setConnectionState(connection.readyState);
         }, [connection]);
+        const onClick = () => location.reload();
         return (
-          <div className={"connectionStatus status-" + readyState}>
+          <div className={"connectionStatus status-" + readyState}
+          onClick={onClick}>
             {readyState < 2 ? "Connected" : "Disconnected"}
           </div>
         );
