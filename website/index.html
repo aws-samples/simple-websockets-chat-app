@@ -8,6 +8,10 @@
     />
     <title>Chat</title>
     <style>
+     :root {
+        --light: #eaebed;
+        --dark: #525252;
+      }
       html,
       body {
         height: 100%;
@@ -17,6 +21,11 @@
         font-family: Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         background-color: whitesmoke;
+      }
+
+      a {
+        color: var(--dark);
+        text-decoration: none;
       }
 
       #root {
@@ -295,18 +304,18 @@
                   value={roomUrl}
                   ref={copyInputRef}
                 />
-                <button onClick={copyLink}>Copy link</button>
+                <button onClick={copyLink}><a>Copy link</a></button>
               </div>
             )}
             {showJoinRoom && (
-              <a className="join-room" href={roomUrl}>
+              <button><a className="join-room" href={roomUrl}>
                 Join room
-              </a>
+              </a></button>
             )}
            {showNewRoom && (
-              <a className="create-new-room" href={newRoomUrl}>
+              <button><a className="create-new-room" href={newRoomUrl}>
                 Create new room
-              </a>
+              </a></button>
             )}
           </div>
         );
