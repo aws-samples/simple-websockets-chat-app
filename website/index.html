@@ -23,6 +23,12 @@
         height: 100%;
       }
 
+      .txt,.txt.light{
+        color: #eaebed;
+      }
+      .txt.dark {
+        color: #525252; 
+      }
       .room {
         display: flex;
         height: 100%;
@@ -168,6 +174,12 @@
       }
       .join-room {
       }
+      .create-new-room {
+      }
+      .options {
+        text-decoration: none;
+        font-size: 1.9rem;
+      }
     </style>
   </head>
   <body>
@@ -186,14 +198,14 @@
           ).toString(16)
         );
 
-      const darkOrLight = (hex) => {
+      const shouldUseDark = hex => {
         hex = hex.replace("#", '');
         const r = parseInt(hex.slice(0, 2), 16),
           g = parseInt(hex.slice(2, 4), 16),
           b = parseInt(hex.slice(4, 6), 16);
 
         // http://stackoverflow.com/a/3943023/112731
-        return (r*0.299 + g*0.587 + b*0.114) > 186 ? '#525252' : '#eaebed';
+        return (r*0.299 + g*0.587 + b*0.114) > 186; 
       }
 
       const colorFromUuid = (uuid) => "#" + uuid.substr(0, 6);
@@ -224,6 +236,7 @@
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${data}&size=300x300`;
         return qrUrl;
       };
+      const clsn = (...classes) => classes.filter(c => !!c && c.length).join(' ');
     </script>
 
     <script type="text/babel">
@@ -263,7 +276,7 @@
               </a>
             )}
            {showNewRoom && (
-              <a className="join-room" href={newRoomUrl}>
+              <a className="create-new-room" href={newRoomUrl}>
                 Create new room
               </a>
             )}
@@ -280,16 +293,15 @@
             <ul className="messages">
               {messages.map((message) => {
                 const backgroundColor = colorFromUuid(message.author);
-                const style = {
-                  color: darkOrLight(backgroundColor),
-                  backgroundColor
-                };
+                const useDark = shouldUseDark(backgroundColor);
+                const style = { backgroundColor };
+                const className = clsn("messageText txt", useDark && 'dark');
                 return (
                   <li
                     key={message.id}
                     className={message.author === author ? "mine" : "theirs"}
                   >
-                    <span className="messageText" style={style}>
+                    <span className={className} style={style}>
                       {message.text}
                     </span>
                   </li>
@@ -300,9 +312,17 @@
         );
       };
 
-      const OptionsToggle = ({ active, onClick, style }) => (
-        <a href="#"
-          className={"arrow" + (active ? " active" : "")}
+      const OptionsToggle = ({ active, onClick, inverted }) => (
+        <a href="#" className={clsn("options", active && "active", inverted
+        && 'inverted')}
+          onClick={e => {e.preventDefault(); onClick && onClick()}}
+        >
+          &#10247;
+        </a>
+      );
+
+      const SendButton = ({ onClick, style }) => (
+        <a href="#" className="arrow"
           onClick={e => {e.preventDefault(); onClick && onClick()}}
         >
           <span style={style}></span>
@@ -337,7 +357,7 @@
             showNewRoom/>}
             <form className="textbox" onSubmit={onSubmit}>
               <OptionsToggle
-                style={{backgroundColor: darkOrLight(style.backgroundColor)}}
+                inverted={shouldUseDark(style.backgroundColor)}
                 active={isOptionsOpen}
                 onClick={() => setIsOptionsOpen(!isOptionsOpen)}
               />
