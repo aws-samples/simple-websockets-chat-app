@@ -107,10 +107,14 @@
       }
 
       .textbox {
-        padding: 8px;
+        padding: 8px 4px;
         display: flex;
         align-items: center;
         flex-shrink: 0;
+      }
+
+      .textbox > * {
+        margin: 0 4px;
       }
 
       .textbox input {
@@ -121,6 +125,27 @@
         font-size: large;
       }
 
+      .circle {
+        font-size: 2em;
+       }
+      
+      .circle.active:after {
+        background-color: #eaebed75;
+        color: #525252;
+      }
+      .circle.active.dark:after {
+        background-color: #52525275;
+        color: #eaebed;
+      }
+      .circle:after {
+  content: "\22EE";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  line-height: 1;
+  text-align: center;
+}
       a.arrow {
         width: 1.25rem;
         height: 1.25rem;
@@ -313,11 +338,9 @@
       };
 
       const OptionsToggle = ({ active, onClick, inverted }) => (
-        <a href="#" className={clsn("options", active && "active", inverted
-        && 'inverted')}
+        <a href="#" className={clsn("txt circle", active && "active", inverted && 'dark')}
           onClick={e => {e.preventDefault(); onClick && onClick()}}
         >
-          &#10247;
         </a>
       );
 
