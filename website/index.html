@@ -151,15 +151,18 @@
         height: 1.25rem;
         display: inline-block;
         position: relative;
-        margin: 0 1rem;
+        margin: 0 0.5rem;
       }
 
+      a.arrow.dark span {
+        background-color: #525252;
+      }
       a.arrow span {
         top: 0.5rem;
         position: absolute;
-        width: 1rem;
+        width: 0.8rem;
         height: 0.2rem;
-        background-color: #efefef;
+        background-color: #eaebed;
         display: inline-block;
         transition: all 0.2s ease;
         right: 0.5rem;
@@ -344,12 +347,12 @@
         </a>
       );
 
-      const SendButton = ({ onClick, style }) => (
-        <a href="#" className="arrow"
-          onClick={e => {e.preventDefault(); onClick && onClick()}}
+      const SendButton = ({ onClick, inverted }) => (
+        <a href="#" className={clsn("arrow", inverted && 'dark')}
+          onClick={e => {e.preventDefault(); onClick && onClick(e)}}
         >
-          <span style={style}></span>
-          <span style={style}></span>
+          <span></span>
+          <span></span>
         </a>
       );
 
@@ -371,17 +374,16 @@
           });
           setText("");
         };
-        const style = {
-          backgroundColor: colorFromUuid(author),
-        };
+
+        const backgroundColor = colorFromUuid(author);
+        const style = { backgroundColor };
+        const inverted = shouldUseDark(backgroundColor);
         return (
           <div style={style}>
             {isOptionsOpen && <ShareRoom room={room} showQr showCopyLink
             showNewRoom/>}
             <form className="textbox" onSubmit={onSubmit}>
-              <OptionsToggle
-                inverted={shouldUseDark(style.backgroundColor)}
-                active={isOptionsOpen}
+              <OptionsToggle inverted={inverted} active={isOptionsOpen}
                 onClick={() => setIsOptionsOpen(!isOptionsOpen)}
               />
               <input
@@ -390,6 +392,7 @@
                 placeholder="Type your message"
                 onChange={onChange}
               />
+              <SendButton onClick={onSubmit} inverted={inverted} />
             </form>
           </div>
         );
