@@ -8,6 +8,10 @@
     />
     <title>Chat</title>
     <style>
+     :root {
+        --light: #eaebed;
+        --dark: #525252;
+      }
       html,
       body {
         height: 100%;
@@ -19,10 +23,21 @@
         background-color: whitesmoke;
       }
 
+      a {
+        color: var(--dark);
+        text-decoration: none;
+      }
+
       #root {
         height: 100%;
       }
 
+      .txt,.txt.light{
+        color: #eaebed;
+      }
+      .txt.dark {
+        color: #525252; 
+      }
       .room {
         display: flex;
         height: 100%;
@@ -101,10 +116,14 @@
       }
 
       .textbox {
-        padding: 8px;
+        padding: 8px 4px;
         display: flex;
         align-items: center;
         flex-shrink: 0;
+      }
+
+      .textbox > * {
+        margin: 0 4px;
       }
 
       .textbox input {
@@ -115,20 +134,44 @@
         font-size: large;
       }
 
+      .circle {
+        font-size: 2em;
+       }
+      
+      .circle.active:after {
+        background-color: #eaebed75;
+        color: #525252;
+      }
+      .circle.active.dark:after {
+        background-color: #52525275;
+        color: #eaebed;
+      }
+      .circle:after {
+  content: "\22EE";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  line-height: 1;
+  text-align: center;
+}
       a.arrow {
         width: 1.25rem;
         height: 1.25rem;
         display: inline-block;
         position: relative;
-        margin: 0 1rem;
+        margin: 0 0.5rem;
       }
 
+      a.arrow.dark span {
+        background-color: #525252;
+      }
       a.arrow span {
         top: 0.5rem;
         position: absolute;
-        width: 1rem;
+        width: 0.8rem;
         height: 0.2rem;
-        background-color: #efefef;
+        background-color: #eaebed;
         display: inline-block;
         transition: all 0.2s ease;
         right: 0.5rem;
@@ -168,6 +211,12 @@
       }
       .join-room {
       }
+      .create-new-room {
+      }
+      .options {
+        text-decoration: none;
+        font-size: 1.9rem;
+      }
     </style>
   </head>
   <body>
@@ -186,14 +235,14 @@
           ).toString(16)
         );
 
-      const darkOrLight = (hex) => {
+      const shouldUseDark = hex => {
         hex = hex.replace("#", '');
         const r = parseInt(hex.slice(0, 2), 16),
           g = parseInt(hex.slice(2, 4), 16),
           b = parseInt(hex.slice(4, 6), 16);
 
         // http://stackoverflow.com/a/3943023/112731
-        return (r*0.299 + g*0.587 + b*0.114) > 186 ? '#525252' : '#eaebed';
+        return (r*0.299 + g*0.587 + b*0.114) > 186; 
       }
 
       const colorFromUuid = (uuid) => "#" + uuid.substr(0, 6);
@@ -224,6 +273,7 @@
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${data}&size=300x300`;
         return qrUrl;
       };
+      const clsn = (...classes) => classes.filter(c => !!c && c.length).join(' ');
     </script>
 
     <script type="text/babel">
@@ -254,18 +304,18 @@
                   value={roomUrl}
                   ref={copyInputRef}
                 />
-                <button onClick={copyLink}>Copy link</button>
+                <button onClick={copyLink}><a>Copy link</a></button>
               </div>
             )}
             {showJoinRoom && (
-              <a className="join-room" href={roomUrl}>
+              <button><a className="join-room" href={roomUrl}>
                 Join room
-              </a>
+              </a></button>
             )}
            {showNewRoom && (
-              <a className="join-room" href={newRoomUrl}>
+              <button><a className="create-new-room" href={newRoomUrl}>
                 Create new room
-              </a>
+              </a></button>
             )}
           </div>
         );
@@ -280,16 +330,15 @@
             <ul className="messages">
               {messages.map((message) => {
                 const backgroundColor = colorFromUuid(message.author);
-                const style = {
-                  color: darkOrLight(backgroundColor),
-                  backgroundColor
-                };
+                const useDark = shouldUseDark(backgroundColor);
+                const style = { backgroundColor };
+                const className = clsn("messageText txt", useDark && 'dark');
                 return (
                   <li
                     key={message.id}
                     className={message.author === author ? "mine" : "theirs"}
                   >
-                    <span className="messageText" style={style}>
+                    <span className={className} style={style}>
                       {message.text}
                     </span>
                   </li>
@@ -300,13 +349,19 @@
         );
       };
 
-      const OptionsToggle = ({ active, onClick, style }) => (
-        <a href="#"
-          className={"arrow" + (active ? " active" : "")}
+      const OptionsToggle = ({ active, onClick, inverted }) => (
+        <a href="#" className={clsn("txt circle", active && "active", inverted && 'dark')}
           onClick={e => {e.preventDefault(); onClick && onClick()}}
         >
-          <span style={style}></span>
-          <span style={style}></span>
+        </a>
+      );
+
+      const SendButton = ({ onClick, inverted }) => (
+        <a href="#" className={clsn("arrow", inverted && 'dark')}
+          onClick={e => {e.preventDefault(); onClick && onClick(e)}}
+        >
+          <span></span>
+          <span></span>
         </a>
       );
 
@@ -328,17 +383,16 @@
           });
           setText("");
         };
-        const style = {
-          backgroundColor: colorFromUuid(author),
-        };
+
+        const backgroundColor = colorFromUuid(author);
+        const style = { backgroundColor };
+        const inverted = shouldUseDark(backgroundColor);
         return (
           <div style={style}>
             {isOptionsOpen && <ShareRoom room={room} showQr showCopyLink
             showNewRoom/>}
             <form className="textbox" onSubmit={onSubmit}>
-              <OptionsToggle
-                style={{backgroundColor: darkOrLight(style.backgroundColor)}}
-                active={isOptionsOpen}
+              <OptionsToggle inverted={inverted} active={isOptionsOpen}
                 onClick={() => setIsOptionsOpen(!isOptionsOpen)}
               />
               <input
@@ -347,6 +401,7 @@
                 placeholder="Type your message"
                 onChange={onChange}
               />
+              <SendButton onClick={onSubmit} inverted={inverted} />
             </form>
           </div>
         );
