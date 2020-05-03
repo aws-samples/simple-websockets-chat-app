@@ -42,7 +42,7 @@ const trackEvents = (events) => {
 exports.handler = async (event) => {
   let connectionData;
   const postData = JSON.parse(event.body).data;
-  const { roomId, author } = JSON.parse(postData);
+  const { id: messageId, roomId, author: authorId } = JSON.parse(postData);
   const {
     domainName,
     stage,
@@ -78,6 +78,7 @@ exports.handler = async (event) => {
             .postToConnection({ ConnectionId: connectionId, Data: postData })
             .promise();
           events.push({
+            messageId,
             roomId,
             author,
             senderConnectionId,
