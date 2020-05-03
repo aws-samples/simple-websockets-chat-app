@@ -27,6 +27,12 @@ Parameters:
     MaxLength: 60
     AllowedPattern: ^[A-Za-z-]+$
     ConstraintDescription: "Required. Can be characters and dash only. No numbers or special characters allowed."
+  CertificateArn:
+    Type: String
+    Description: The ARN from the Certificate Manager Certificate
+  DomainName:
+    Type: String
+    Description: (Required) The domain for your chat app
   LocalDynamodbEndpoint:
     Type: String
     Default: ""
@@ -253,9 +259,16 @@ Resources:
     Properties:
       DistributionConfig:
         Comment: Cloudfront distribution for serverless website
+        Aliases:
+          - !Ref DomainName
+          - !Sub '*.${DomainName}'
         DefaultRootObject: index.html
         Enabled: true
         HttpVersion: http2
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          MinimumProtocolVersion: TLSv1.1_2016
+          SslSupportMethod: sni-only
         # List of origins that Cloudfront will connect to
         Origins:
           - Id: s3-website

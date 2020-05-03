@@ -49,6 +49,8 @@ sam-deploy: check-vars
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
 				WebsiteBucketName=$(WEBSITE_BUCKET) \
+				DomainName=$(DOMAIN_NAME) \
+				CertificateArn=$(CERTIFICATE_ARN) \
 				AppPrefix=$(STACK_NAME) \
 		--s3-bucket $(DEPLOY_BUCKET)
 
@@ -82,6 +84,8 @@ check-vars:
 	@make guard-DEPLOY_BUCKET
 	@make guard-TABLE_NAME
 	@make guard-WEBSITE_BUCKET
+	@make guard-DOMAIN_NAME
+	@make guard-CERTIFICATE_ARN
 
 check-local-vars:
 	@make guard-STACK_NAME
