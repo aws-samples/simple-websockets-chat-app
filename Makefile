@@ -65,12 +65,11 @@ stack-describe: check-vars
 		--stack-name=$(STACK_NAME) \
 		--query 'Stacks[].Outputs'
 	
-deploy: 
+stack-deploy: 
 	make sam-package
 	make sam-deploy
 	make stack-describe
-	make website-deploy
-
+	
 # Environment variables check
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
