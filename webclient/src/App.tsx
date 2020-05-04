@@ -1,12 +1,17 @@
 import * as React from 'react'
 import './App.css'
 
-export default class App extends React.Component<{}, {}> {
-  render() {
-    return (
-      <div>
-        <h1>Hello World from TypeScript! 📦 🚀</h1>
-      </div>
-    )
-  }
+interface Props {
+  serverUrl: string;
+  author: string;
+  room: string | null;
 }
+
+const App:React.FC<Props> = ({serverUrl, author, room}) => (
+  <div>
+    <h1>Hello World from TypeScript! 📦 🚀</h1>
+    <div>{serverUrl} {author} {room}</div>
+  </div>
+)
+
+export default App;
