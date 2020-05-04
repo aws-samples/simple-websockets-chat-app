@@ -28417,7 +28417,7 @@ exports.connectToRoom = function (serverUrl, room) {
   try {
     var url = new URL(serverUrl);
     url.searchParams.append("j", room);
-    return new WebSocket(url);
+    return new WebSocket(url.toString());
   } catch (error) {
     alert(error.message);
     throw error;
@@ -28428,7 +28428,7 @@ exports.getRoomUrl = function (room) {
   var roomUrl = new URL(window.location.href);
   roomUrl.searchParams.delete("j");
   roomUrl.searchParams.append("j", room);
-  return roomUrl;
+  return roomUrl.toString();
 };
 
 exports.getNewRoomUrl = function () {

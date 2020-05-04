@@ -10,18 +10,18 @@ export const connectToRoom = (serverUrl: string, room: string) => {
   try {
     const url = new URL(serverUrl);
     url.searchParams.append("j", room);
-    return new WebSocket(url);
+    return new WebSocket(url.toString());
   } catch (error) {
     alert(error.message);
     throw error;
   }
 };
 
-export const getRoomUrl = (room: string) => {
+export const getRoomUrl = (room: string): string => {
   const roomUrl = new URL(window.location.href);
   roomUrl.searchParams.delete("j");
   roomUrl.searchParams.append("j", room);
-  return roomUrl;
+  return roomUrl.toString();
 };
 
 export const getNewRoomUrl = () => {
