@@ -28391,15 +28391,56 @@ exports.default = App;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
-}); // https://stackoverflow.com/a/2117523/1128216
+});
 
-var uuid = function uuid() {
+exports.default = function () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
     return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
   });
 };
+},{}],"helpers/connection.tsx":[function(require,module,exports) {
+"use strict";
 
-exports.default = uuid;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.getRoomToJoin = function (search) {
+  try {
+    return new URLSearchParams(search).get("j");
+  } catch (error) {
+    return null;
+  }
+};
+
+exports.connectToRoom = function (serverUrl, room) {
+  try {
+    var url = new URL(serverUrl);
+    url.searchParams.append("j", room);
+    return new WebSocket(url);
+  } catch (error) {
+    alert(error.message);
+    throw error;
+  }
+};
+
+exports.getRoomUrl = function (room) {
+  var roomUrl = new URL(window.location.href);
+  roomUrl.searchParams.delete("j");
+  roomUrl.searchParams.append("j", room);
+  return roomUrl;
+};
+
+exports.getNewRoomUrl = function () {
+  // in the future keep track of old
+  return window.location.origin;
+};
+
+exports.getQrUrl = function (url) {
+  var data = encodeURIComponent(url);
+  var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + data + "&size=300x300";
+  return qrUrl;
+};
 },{}],"main.tsx":[function(require,module,exports) {
 "use strict";
 
@@ -28431,15 +28472,9 @@ var App_1 = __importDefault(require("./App"));
 
 var uuid_1 = __importDefault(require("./helpers/uuid"));
 
-var getRoomToJoin = function getRoomToJoin(search) {
-  try {
-    return new URLSearchParams(search).get("j");
-  } catch (error) {
-    return null;
-  }
-};
+var connection_1 = require("./helpers/connection");
 
-var room = getRoomToJoin(window.location.search);
+var room = connection_1.getRoomToJoin(window.location.search);
 var rootElement = document.getElementById("root");
 var author = uuid_1.default();
 var serverUrl = "wss://at7ejxghod.execute-api.eu-west-2.amazonaws.com/Prod";
@@ -28454,7 +28489,7 @@ react_dom_1.render(React.createElement(App_1.default, {
   author: author,
   room: room
 }), rootElement);
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./App":"App.tsx","./helpers/uuid":"helpers/uuid.tsx"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./App":"App.tsx","./helpers/uuid":"helpers/uuid.tsx","./helpers/connection":"helpers/connection.tsx"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

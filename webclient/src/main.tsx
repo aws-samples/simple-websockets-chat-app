@@ -2,14 +2,7 @@ import * as React from 'react'
 import { render } from 'react-dom'
 import App from './App'
 import uuid from './helpers/uuid'
-
-const getRoomToJoin = (search: string) => {
-  try {
-    return new URLSearchParams(search).get("j")
-  } catch (error) {
-    return null
-  }
-}
+import { getRoomToJoin } from './helpers/connection'
 
 const room = getRoomToJoin(window.location.search)
 const rootElement = document.getElementById("root")
