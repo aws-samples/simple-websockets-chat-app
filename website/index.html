@@ -36,7 +36,7 @@
         color: #eaebed;
       }
       .txt.dark {
-        color: #525252; 
+        color: #525252;
       }
       .room {
         display: flex;
@@ -137,7 +137,7 @@
       .circle {
         font-size: 2em;
        }
-      
+
       .circle.active:after {
         background-color: #eaebed75;
         color: #525252;
@@ -242,7 +242,7 @@
           b = parseInt(hex.slice(4, 6), 16);
 
         // http://stackoverflow.com/a/3943023/112731
-        return (r*0.299 + g*0.587 + b*0.114) > 186; 
+        return (r*0.299 + g*0.587 + b*0.114) > 186;
       }
 
       const colorFromUuid = (uuid) => "#" + uuid.substr(0, 6);
@@ -329,14 +329,14 @@
           <div className="messagesContainer">
             <ul className="messages">
               {messages.map((message) => {
-                const backgroundColor = colorFromUuid(message.author);
+                const backgroundColor = colorFromUuid(message.authorId);
                 const useDark = shouldUseDark(backgroundColor);
                 const style = { backgroundColor };
                 const className = clsn("messageText txt", useDark && 'dark');
                 return (
                   <li
                     key={message.id}
-                    className={message.author === author ? "mine" : "theirs"}
+                    className={message.authorId === author ? "mine" : "theirs"}
                   >
                     <span className={className} style={style}>
                       {message.text}
@@ -376,7 +376,7 @@
           }
           onSend({
             createdAt: new Date().toISOString(),
-            author,
+            authorId: author,
             roomId: room,
             text,
             id: uuid(),
