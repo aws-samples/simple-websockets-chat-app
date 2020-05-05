@@ -1,12 +1,12 @@
 import * as React from 'react'
-import {getRoomUrl, getNewRoomUrl, getQrUrl } from '../helpers/connection'
+import { getRoomUrl, getNewRoomUrl, getQrUrl } from '../helpers/connection'
 
 interface Props {
   room: string;
-  showQr: boolean;
-  showCopyLink: boolean;
-  showJoinRoom: boolean;
-  showNewRoom : boolean;
+  showQr?: boolean;
+  showCopyLink?: boolean;
+  showJoinRoom?: boolean;
+  showNewRoom?: boolean;
 }
 
 const ShareRoom: React.FC<Props> = ({ room, showQr, showCopyLink, showJoinRoom, showNewRoom }) => {
@@ -14,7 +14,7 @@ const ShareRoom: React.FC<Props> = ({ room, showQr, showCopyLink, showJoinRoom, 
   const roomUrl = getRoomUrl(room);
   const newRoomUrl = getNewRoomUrl();
   const copyLink = () => {
-    if (copyInputRef.current != null) {
+    if (copyInputRef.current) {
       copyInputRef.current.select();
       document.execCommand("copy");
     }
@@ -43,7 +43,7 @@ const ShareRoom: React.FC<Props> = ({ room, showQr, showCopyLink, showJoinRoom, 
           Join room
         </a></button>
       )}
-     {showNewRoom && (
+      {showNewRoom && (
         <button><a className="create-new-room" href={newRoomUrl}>
           Create new room
         </a></button>
