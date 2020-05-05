@@ -3,6 +3,7 @@ import * as React from 'react'
 import './App.css'
 
 import NewRoom from './components/NewRoom'
+import ConnectionStatus from './components/ConnectionStatus'
 
 import { connectToRoom } from './helpers/connection'
 
@@ -35,6 +36,7 @@ const App: React.FC<Props> = ({ serverUrl, author, room }) => {
 
   return (
     <div className="room">
+      <ConnectionStatus connection={connection} />
     </div>
   );
 }
