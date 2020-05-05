@@ -9,6 +9,8 @@ export const shouldUseDark = (hex: string): boolean => {
   return (r*0.299 + g*0.587 + b*0.114) > 186;
 }
 
-export const colorFromUuid = (uuid: string): string => "#" + uuid.substr(0, 6);
+export const colorFromUuid = (uuid = "f00"): string => "#" + uuid.substr(0, 6);
 
-export const clsn = (...classes:[string]) => classes.filter(c => !!c && c.length).join(' ');
+export const clsn = (...classes:any[]) => {
+  return classes.filter(c => !!c && c.length).join(' ');
+}

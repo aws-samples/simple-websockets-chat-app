@@ -4,20 +4,21 @@ import './App.css'
 
 import NewRoom from './components/NewRoom'
 import ConnectionStatus from './components/ConnectionStatus'
+import Chat from './components/Chat'
 
 import { connectToRoom } from './helpers/connection'
 
 interface Props {
   serverUrl: string;
-  author: string;
-  room: string | null;
+  authorId: string;
+  roomId: string | null;
 }
 
-const App: React.FC<Props> = ({ serverUrl, author, room }) => {
+const App: React.FC<Props> = ({ serverUrl, authorId, roomId }) => {
   const [connection, setConnection] = React.useState<WebSocket>();
   React.useEffect(() => {
-    if (room) {
-      setConnection(connectToRoom(serverUrl, room));
+    if (roomId) {
+      setConnection(connectToRoom(serverUrl, roomId));
     }
     return () => {
       if (connection) {
@@ -26,8 +27,8 @@ const App: React.FC<Props> = ({ serverUrl, author, room }) => {
     };
   }, []);
 
-  if (!room) {
-    return <NewRoom room={author} />;
+  if (!roomId) {
+    return <NewRoom roomId={authorId} />;
   }
 
   if (!connection) {
@@ -37,6 +38,7 @@ const App: React.FC<Props> = ({ serverUrl, author, room }) => {
   return (
     <div className="room">
       <ConnectionStatus connection={connection} />
+      <Chat connection={connection} authorId={authorId} roomId={roomId} />
     </div>
   );
 }

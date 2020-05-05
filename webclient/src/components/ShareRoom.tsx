@@ -2,16 +2,16 @@ import * as React from 'react'
 import { getRoomUrl, getNewRoomUrl, getQrUrl } from '../helpers/connection'
 
 interface Props {
-  room: string;
+  roomId: string;
   showQr?: boolean;
   showCopyLink?: boolean;
   showJoinRoom?: boolean;
   showNewRoom?: boolean;
 }
 
-const ShareRoom: React.FC<Props> = ({ room, showQr, showCopyLink, showJoinRoom, showNewRoom }) => {
+const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom, showNewRoom }) => {
   const copyInputRef = React.useRef(null);
-  const roomUrl = getRoomUrl(room);
+  const roomUrl = getRoomUrl(roomId);
   const newRoomUrl = getNewRoomUrl();
   const copyLink = () => {
     if (copyInputRef.current) {

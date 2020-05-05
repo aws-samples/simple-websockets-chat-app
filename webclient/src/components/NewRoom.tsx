@@ -2,10 +2,10 @@ import * as React from 'react'
 import ShareRoom from './ShareRoom'
 
 interface Props {
-  room: string;
+  roomId: string;
 }
 
-const NewRoom: React.FC<Props> = ({ room }) => (
+const NewRoom: React.FC<Props> = ({ roomId }) => (
   <div className="newRoom">
     <h1>New chat room</h1>
     <p>
@@ -13,7 +13,7 @@ const NewRoom: React.FC<Props> = ({ room }) => (
       <br />
       Click on it to join the chat.
     </p>
-    <ShareRoom room={room} showCopyLink showQr showJoinRoom />
+    <ShareRoom roomId={roomId} showCopyLink showQr showJoinRoom />
   </div>
 )
 
