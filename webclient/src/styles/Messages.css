@@ -1,0 +1,38 @@
+ .messagesContainer {
+   overflow-y: auto;
+   flex-grow: 1;
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-end;
+ }
+
+ ul.messages {
+   margin: 0;
+   padding: 4px;
+   list-style: none;
+ }
+
+ ul.messages li {
+   margin: 1px 0;
+   display: flex;
+ }
+
+ ul.messages li span {
+   max-width: 55%;
+   border-radius: 8px;
+   padding: 6px 12px;
+   color: white;
+ }
+
+ ul.messages li.mine {
+   justify-content: flex-end;
+ }
+
+ ul.messages li.mine span.messageAuthor {
+   display: none;
+ }
+
+ ul.messages li.theirs {
+   flex-direction: column;
+   align-items: flex-start;
+ }

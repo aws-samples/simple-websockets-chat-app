@@ -1,4 +1,5 @@
 import * as React from 'react'
+import '../styles/Messages.css'
 
 import { Message } from '../interfaces'
 import { colorFromUuid, shouldUseDark, clsn } from '../helpers/color'

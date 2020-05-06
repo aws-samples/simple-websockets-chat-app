@@ -1,4 +1,5 @@
 import * as React from 'react'
+import '../styles/TextBox.css'
 
 import ShareRoom from './ShareRoom'
 import SendButton from './SendButton'

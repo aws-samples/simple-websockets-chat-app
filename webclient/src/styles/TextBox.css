@@ -1,0 +1,18 @@
+ .textbox {
+   padding: 8px 4px;
+   display: flex;
+   align-items: center;
+   flex-shrink: 0;
+ }
+
+ .textbox > * {
+   margin: 0 4px;
+ }
+
+ .textbox input {
+   border-radius: 4px;
+   border: solid 1px #a1a1a17a;
+   padding: 8px;
+   flex-grow: 1;
+   font-size: large;
+ }
