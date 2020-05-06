@@ -1,0 +1,12 @@
+.newRoom {
+  text-align: center;
+  font-size: large;
+}
+
+.newRoom img {
+  max-width: 80%;
+  padding: 8px;
+  border: 1px solid gainsboro;
+  border-radius: 4px;
+  background-color: white;
+}

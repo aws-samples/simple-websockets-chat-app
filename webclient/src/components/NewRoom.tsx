@@ -1,4 +1,6 @@
 import * as React from 'react'
+import '../styles/NewRoom.css'
+
 import ShareRoom from './ShareRoom'
 
 interface Props {
