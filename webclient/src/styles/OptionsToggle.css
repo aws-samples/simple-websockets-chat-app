@@ -1,0 +1,21 @@
+.circle {
+  font-size: 2em;
+ }
+
+.circle.active:after {
+  background-color: #eaebed75;
+  color: #525252;
+}
+.circle.active.dark:after {
+  background-color: #52525275;
+  color: #eaebed;
+}
+.circle:after {
+ content: "\22EE";
+ display: inline-block;
+ width: 1em;
+ height: 1em;
+ border-radius: 50%;
+ line-height: 1;
+ text-align: center;
+}

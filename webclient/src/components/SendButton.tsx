@@ -1,4 +1,5 @@
 import * as React from 'react'
+import '../styles/SendButton.css'
 
 import { clsn } from '../helpers/color'
 
