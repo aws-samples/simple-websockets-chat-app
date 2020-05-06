@@ -1,11 +1,7 @@
-import connect from './onconnect'
-import disconnect from './ondisconnect'
-import sendmessage from './sendmessage'
-
 const handlers = {
-  "$connect": connect,
-  "$disconnect": disconnect,
-  "sendmessage": sendmessage
+  "$connect": require('./onconnect'),
+  "$disconnect": require('./ondisconnect'),
+  "sendmessage": require('./sendmessage')
 }
 
 exports.handler = async (event) => {
