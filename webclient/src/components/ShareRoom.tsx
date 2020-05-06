@@ -33,7 +33,7 @@ const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom
           <input
             style={{ position: "absolute", left: "-9999px" }}
             type="text"
-            readonly
+            readOnly
             value={roomUrl}
             ref={copyInputRef}
           />
