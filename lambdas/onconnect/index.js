@@ -42,7 +42,7 @@ const track = (payload) => {
     );
 };
 
-exports.handler = async (event) => {
+module.exports = async (event) => {
   let record = {};
   const timestamp = event.requestContext.connectedAt;
   try {

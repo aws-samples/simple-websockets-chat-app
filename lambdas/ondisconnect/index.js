@@ -62,7 +62,7 @@ const trackEvents = (events) => {
     );
 };
 
-exports.handler = async (event) => {
+module.exports = async (event) => {
   try {
     const { connectionId, connectedAt: timestamp } = event.requestContext;
     const itemsToDelete = await findRoomsForConnectionId(connectionId);

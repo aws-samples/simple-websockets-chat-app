@@ -39,7 +39,7 @@ const trackEvents = (events) => {
     );
 };
 
-exports.handler = async (event) => {
+module.exports = async (event) => {
   let connectionData;
   const postData = JSON.parse(event.body).data;
   const { id: messageId, roomId, authorId } = JSON.parse(postData);
