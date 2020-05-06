@@ -1,0 +1,40 @@
+:root {
+   --light: #eaebed;
+   --dark: #525252;
+ }
+ html,
+ body {
+   height: 100%;
+   width: 100%;
+   margin: 0;
+   padding: 0;
+   display: block;
+   font-family: Helvetica, Arial, sans-serif;
+   -webkit-font-smoothing: antialiased;
+   background-color: whitesmoke;
+ }
+
+ a {
+   color: var(--dark);
+   text-decoration: none;
+ }
+
+ #root {
+   height: 100%;
+ }
+
+ .txt,.txt.light{
+   color: #eaebed;
+ }
+ .txt.dark {
+   color: #525252;
+ }
+ .room {
+   display: flex;
+   height: 100%;
+   flex-direction: column;
+   max-width: 600px;
+   margin: 0 auto;
+   padding: 0;
+   background-color: white;
+ }

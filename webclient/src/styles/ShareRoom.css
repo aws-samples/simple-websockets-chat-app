@@ -1,0 +1,17 @@
+.share-room {
+  padding: 4px;
+  text-align: center;
+}
+.qr-image img {
+  background-color: white;
+  border: 4px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.copy-link {
+}
+.join-room {
+}
+.create-new-room {
+}

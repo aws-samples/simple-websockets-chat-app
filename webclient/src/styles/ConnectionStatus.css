@@ -1,0 +1,14 @@
+ .connectionStatus {
+   text-align: center;
+   padding: 4px;
+ }
+
+ .connectionStatus.status-0,
+ .connectionStatus.status-1 {
+   display: none;
+ }
+ .connectionStatus.status-2,
+ .connectionStatus.status-3 {
+   color: white;
+   background-color: red;
+ }

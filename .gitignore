@@ -1,7 +1,9 @@
 *.iml
 .idea/
 .aws-sam/
+.cache/
 packaged.yaml
 node_modules/
 package-lock.json
+dist/
 .env

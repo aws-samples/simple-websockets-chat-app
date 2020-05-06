@@ -1,0 +1,40 @@
+a.arrow {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: inline-block;
+  position: relative;
+  margin: 0 0.5rem;
+}
+
+a.arrow.dark span {
+  background-color: #525252;
+}
+a.arrow span {
+  top: 0.5rem;
+  position: absolute;
+  width: 0.8rem;
+  height: 0.2rem;
+  background-color: #eaebed;
+  display: inline-block;
+  transition: all 0.2s ease;
+  right: 0.5rem;
+}
+
+a.arrow span:first-of-type {
+  transform: rotate(45deg);
+  transform-origin: bottom right;
+}
+a.arrow span:last-of-type {
+  transform: rotate(-45deg);
+  transform-origin: top right;
+}
+
+a.arrow.active span:first-of-type {
+  transform: rotate(-45deg);
+  transform-origin: bottom left;
+}
+
+a.arrow.active span:last-of-type {
+  transform: rotate(45deg);
+  transform-origin: top left;
+}

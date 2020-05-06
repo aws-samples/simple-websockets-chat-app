@@ -54,10 +54,13 @@ sam-deploy: check-vars
 				AppPrefix=$(STACK_NAME) \
 		--s3-bucket $(DEPLOY_BUCKET)
 
+website-build: check-vars
+	rm -rf ./webclient/dist
+	cd webclient && yarn build
 website-invalidate: check-vars
 	$(AWS) cloudfront create-invalidation --distribution-id E2FADU0GBQ8AES --paths "/*"
-website-deploy: check-vars
-	$(AWS) s3 sync --acl "public-read" ./website s3://$(WEBSITE_BUCKET)
+website-deploy: check-vars website-build
+	$(AWS) s3 sync --acl "public-read" ./webclient/dist/ s3://$(WEBSITE_BUCKET)
 	make website-invalidate
 
 stack-describe: check-vars
@@ -97,10 +100,9 @@ install-qrcode-terminal:
 	npm install -g qrcode-terminal
 
 LOCALIP=$(shell ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -1)
-URL=http://${LOCALIP}:8000
+URL=http://${LOCALIP}:1234
 run-local-server:
-	@open ${URL}
 	@echo '${URL}' | qrcode-terminal
-	@python3 -m http.server 8000 --directory website --bind=${LOCALIP}
+	@cd webclient && yarn start
 
 .PHONY: check-vars check-local-vars sam-package sam-deploy stack-describe
