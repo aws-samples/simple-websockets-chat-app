@@ -8,15 +8,46 @@ const {
 
 const kinesis = new AWS.Firehose();
 
-exports.trackEvent = (e, payload) => {
+const buildRecord = event => ({
+  Data: JSON.stringify(event) + "\n"
+});
+
+const buildEvent = (e, payload) => {
   const ts = new Date().getTime();
-  const data = { ...payload, e, ts }
+  return { ...payload, e, ts }
+}
+
+exports.trackEvent = (e, payload) => {
   const record = {
     DeliveryStreamName,
-    Record: { Data: JSON.stringify(data) + "\n" },
+    Record: buildRecord(buildEvent(e, payload)),
   };
 
   return kinesis
     .putRecord(record)
     .promise()
+};
+
+exports.createBatch = () => {
+  const events = [];
+  const batch = {
+    length: events.length,
+    pushEvent: (e, payload) => events.push(buildEvent(e, payload)),
+    getRecords: () => events.map(buildRecord)
+  };
+
+  return batch;
+}
+
+exports.trackBatch = batch => {
+  const Records = batch.getRecords();
+  if (!Records || !Records.length) {
+    return;
+  }
+
+  const payload = { DeliveryStreamName, Records };
+
+  return kinesis
+    .putRecordBatch(payload)
+    .promise();
 };

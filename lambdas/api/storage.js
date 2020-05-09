@@ -16,6 +16,31 @@ exports.put = (TableName, Item) => {
     .promise();
 }
 
-exports.removeConnectionFromAllRooms = async (connectionId) => {
+exports.queryIndex = (TableName, IndexName, key, value) => {
+  const query = {
+    TableName,
+    IndexName,
+    KeyConditionExpression: `${key} = :key`,
+    ExpressionAttributeValues: { ":key": value },
+  };
+  return ddb
+    .query(query)
+    .promise();
+}
 
+const toDeleteRequest = Key => ({ DeleteRequest: { Key } });
+
+exports.removeKeys = (TableName, keys) => {
+  if (!keys || !keys.length) {
+    return;
+  }
+
+  const deleteRequests = keys.map(toDeleteRequest);
+  const params = {
+    RequestItems: {
+      [TableName]: deleteRequests,
+    },
+  };
+
+  return ddb.batchWrite(params).promise();
 }
