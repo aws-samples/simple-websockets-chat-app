@@ -16,6 +16,16 @@ exports.put = (TableName, Item) => {
     .promise();
 }
 
+exports.queryTable = (TableName, key, value) => {
+  const query = {
+    TableName,
+    KeyConditionExpression: `${key} = :key`,
+    ExpressionAttributeValues: { ":key": value },
+  };
+
+  return ddb.query(query).promise();
+}
+
 exports.queryIndex = (TableName, IndexName, key, value) => {
   const query = {
     TableName,
