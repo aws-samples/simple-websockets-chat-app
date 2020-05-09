@@ -1,0 +1,11 @@
+{
+  "name": "simple-websockets-chat-lambdas",
+  "version": "1.0.0",
+  "description": "One code base for the api gateway endpoints",
+  "main": "src/index.js",
+  "author": "jonathanmv",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.655.0"
+  }
+}

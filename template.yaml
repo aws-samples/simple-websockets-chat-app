@@ -142,12 +142,12 @@ Resources:
         SSEEnabled: True
       TableName: !Ref TableName
   OnConnectFunction:
-    DependsOn: 
+    DependsOn:
       - EventsStream
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: onconnect/
-      Handler: app.handler
+      CodeUri: lambdas/
+      Handler: index.handler
       MemorySize: 256
       Runtime: nodejs12.x
       Environment:
@@ -175,12 +175,12 @@ Resources:
       FunctionName: !Ref OnConnectFunction
       Principal: apigateway.amazonaws.com
   OnDisconnectFunction:
-    DependsOn: 
+    DependsOn:
       - EventsStream
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ondisconnect/
-      Handler: app.handler
+      CodeUri: lambdas/
+      Handler: index.handler
       MemorySize: 256
       Runtime: nodejs12.x
       Environment:
@@ -208,12 +208,12 @@ Resources:
       FunctionName: !Ref OnDisconnectFunction
       Principal: apigateway.amazonaws.com
   SendMessageFunction:
-    DependsOn: 
+    DependsOn:
       - EventsStream
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: sendmessage/
-      Handler: app.handler
+      CodeUri: lambdas/
+      Handler: index.handler
       MemorySize: 256
       Runtime: nodejs12.x
       Environment:
@@ -313,7 +313,7 @@ Resources:
               AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
 
   EventsStream:
-    DependsOn: 
+    DependsOn:
       - EventsStreamPolicy
     Type: AWS::KinesisFirehose::DeliveryStream
     Properties:
@@ -342,13 +342,13 @@ Resources:
         Statement:
           - Sid: ''
             Effect: Allow
-            Principal: 
+            Principal:
               Service: firehose.amazonaws.com
             Action: 'sts:AssumeRole'
             Condition:
               StringEquals:
                 'sts:ExternalId': !Ref 'AWS::AccountId'
-                
+
   EventsStreamPolicy:
     Type: AWS::IAM::Policy
     Properties:
