@@ -2,26 +2,13 @@
 // SPDX-License-Identifier: MIT-0
 
 const AWS = require("aws-sdk");
+const { saveConnectionInRoom } = require("../api/room");
 
 const {
   AWS_REGION,
   LOCAL_DYNAMODB_ENDPOINT: endpoint,
-  TABLE_NAME: TableName,
   EVENTS_STREAM: DeliveryStreamName,
 } = process.env;
-const ddb = new AWS.DynamoDB.DocumentClient({
-  apiVersion: "2012-08-10",
-  region: process.env.AWS_REGION,
-  endpoint: endpoint && endpoint.length ? endpoint : undefined,
-});
-const saveConnection = (Item) => {
-  return ddb
-    .put({
-      TableName,
-      Item,
-    })
-    .promise();
-};
 
 const kinesis = new AWS.Firehose();
 const track = (payload) => {
@@ -46,9 +33,9 @@ module.exports = async (event) => {
   let record = {};
   const timestamp = event.requestContext.connectedAt;
   try {
-    record.roomId = event.queryStringParameters.j;
-    record.connectionId = event.requestContext.connectionId;
-    await saveConnection(record);
+    const roomId = event.queryStringParameters.j;
+    const connectionId = event.requestContext.connectionId;
+    await saveConnectionInRoom(connectionId, roomId);
   } catch (err) {
     await track({
       ...record,
