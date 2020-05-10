@@ -26,9 +26,9 @@ exports.broadcastConnectionsCountChangedInRoom = async (requestContext, roomId) 
   const eventType = EventTypes.CONNECTIONS_COUNT_CHANGED;
   const data = { roomId, connectionsCount };
   const systemEvent = buildEvent(eventType, data);
-  const result = await emitEvent(requestContext, systemEvent, connectionIds);
-  return handleEmitEventResult(result);
+  await emitEvent(requestContext, systemEvent, connectionIds);
 }
+
 const handleEmitEventResult = async ({ successful, staled }) => {
   const batch = createBatch()
   successful.map(message => batch.pushEvent(EventTypes.MESSAGE_SENT, message))
