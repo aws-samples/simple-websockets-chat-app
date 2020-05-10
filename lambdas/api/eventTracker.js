@@ -12,15 +12,16 @@ const buildRecord = event => ({
   Data: JSON.stringify(event) + "\n"
 });
 
-const buildEvent = (e, payload) => {
+const buildEvent = (e, data) => {
+  console.log(e, data);
   const ts = new Date().getTime();
-  return { ...payload, e, ts }
+  return { ...data, e, ts }
 }
 
-exports.trackEvent = (e, payload) => {
+exports.trackEvent = (e, data) => {
   const record = {
     DeliveryStreamName,
-    Record: buildRecord(buildEvent(e, payload)),
+    Record: buildRecord(buildEvent(e, data)),
   };
 
   return kinesis
@@ -32,7 +33,7 @@ exports.createBatch = () => {
   const events = [];
   const batch = {
     length: events.length,
-    pushEvent: (e, payload) => events.push(buildEvent(e, payload)),
+    pushEvent: (e, data) => events.push(buildEvent(e, data)),
     getRecords: () => events.map(buildRecord)
   };
 
@@ -45,9 +46,9 @@ exports.trackBatch = batch => {
     return;
   }
 
-  const payload = { DeliveryStreamName, Records };
+  const data = { DeliveryStreamName, Records };
 
   return kinesis
-    .putRecordBatch(payload)
+    .putRecordBatch(data)
     .promise();
 };

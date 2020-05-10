@@ -4,7 +4,7 @@ const handlers = {
   "sendmessage": require('./sendmessage')
 }
 
-exports.handler = async (event) => {
+exports.handler = (event) => {
   const route = event.requestContext.routeKey;
   const handler = handlers[route]
   try {

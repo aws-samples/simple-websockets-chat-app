@@ -1,12 +1,23 @@
 const { broadcastMessageInRoom, buildMessage } = require('../api/message')
+const { EventTypes } = require('../api/event')
 
-module.exports = async (event) => {
+const handleMessageSent = async (lambdaEvent, systemEvent) => {
+  const { messageId, roomId, authorId, text, createdAt } = systemEvent.data;
+
+  const message = buildMessage({ messageId, roomId, authorId, text, createdAt });
+  await broadcastMessageInRoom(lambdaEvent.requestContext, message, roomId);
+}
+
+const handlers = {
+  [EventTypes.MESSAGE_SENT]: handleMessageSent
+};
+
+module.exports = async event => {
   const { body, requestContext } = event;
-  const postData = JSON.parse(body).data;
-  const { id, roomId, authorId, text, createdAt } = JSON.parse(postData);
+  const receivedEvent = JSON.parse(JSON.parse(body).data);
+  const eventType = receivedEvent.meta.e;
+  const handler = handlers[eventType]
+  await handler(event, receivedEvent);
 
-  const message = buildMessage({ id, roomId, authorId, text, createdAt });
-  await broadcastMessageInRoom(event.requestContext, message, roomId);
-
-  return { statusCode: 200, body: "Data sent." };
+  return { statusCode: 200, body: `Event ${eventType} handled.` };
 };
