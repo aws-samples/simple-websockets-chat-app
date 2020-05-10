@@ -1,17 +1,12 @@
 const { saveConnectionInRoom, getConnectionIdsByRoomId } = require("../api/room");
-const { buildEvent, emitEvent, EventTypes } = require("../api/event");
+const { broadcastConnectionsCountChangedInRoom } = require("../api/message");
 
 module.exports = async event => {
   const roomId = event.queryStringParameters.j;
   const connectionId = event.requestContext.connectionId;
-  await saveConnectionInRoom(connectionId, roomId);
 
-  const connectionIds = await getConnectionIdsByRoomId(roomId);
-  const connectionsCount = connectionIds.length;
-  const eventType = EventTypes.CONNECTIONS_COUNT_CHANGED;
-  const data = { roomId, connectionsCount };
-  const systemEvent = buildEvent(eventType, data);
-  await emitEvent(event.requestContext, systemEvent, connectionIds);
+  await saveConnectionInRoom(connectionId, roomId);
+  await broadcastConnectionsCountChangedInRoom(event.requestContext, roomId);
 
   return { statusCode: 200, body: "Connected." };
 };
