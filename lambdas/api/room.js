@@ -23,20 +23,6 @@ const getRoomsByConnectionId = async connectionId => {
   return Items;
 };
 
-exports.removeConnectionIdFromAllRooms = async connectionId => {
-  try {
-    const rooms = await getRoomsByConnectionId(connectionId);
-    const keys = rooms.map(({ roomId, connectionId }) => ({ roomId, connectionId }));
-    await removeKeys(TABLE_NAME, keys);
-    const batch = createBatch();
-    keys.map(key => batch.pushEvent('left', key))
-    await trackBatch(batch);
-  } catch (error) {
-    await trackEvent('error-leaving', { connectionId, errorMessage: error.message })
-    throw error;
-  }
-}
-
 exports.removeConnectionIdsFromAllRooms = async connectionIds => {
   const roomsResults = await Promise.all(connectionIds.map(getRoomsByConnectionId));
   const keys = []
@@ -45,8 +31,8 @@ exports.removeConnectionIdsFromAllRooms = async connectionIds => {
   const batch = createBatch();
   keys.map(key => batch.pushEvent('left', key))
   await trackBatch(batch);
+  return keys;
 }
-
 
 exports.getConnectionIdsByRoomId = async roomId => {
   const { Items } = await queryTable(TABLE_NAME, 'roomId', roomId);
