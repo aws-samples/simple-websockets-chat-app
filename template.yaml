@@ -166,6 +166,12 @@ Resources:
               - "firehose:PutRecordBatch"
             Resource:
               - !GetAtt EventsStream.Arn
+        - Statement:
+          - Effect: Allow
+            Action:
+              - "execute-api:ManageConnections"
+            Resource:
+              - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*"
   OnConnectPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -199,6 +205,12 @@ Resources:
               - "firehose:PutRecordBatch"
             Resource:
               - !GetAtt EventsStream.Arn
+        - Statement:
+          - Effect: Allow
+            Action:
+              - "execute-api:ManageConnections"
+            Resource:
+              - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*"
   OnDisconnectPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
