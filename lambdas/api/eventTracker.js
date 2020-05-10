@@ -13,6 +13,7 @@ const buildRecord = event => ({
 });
 
 const buildEvent = (e, data) => {
+  console.log(e, data);
   const ts = new Date().getTime();
   return { ...data, e, ts }
 }
