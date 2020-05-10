@@ -1,10 +1,11 @@
 const { broadcastMessageInRoom, buildMessage } = require('../api/message')
+const { EventTypes } = require('../api/event')
 
 const handleMessageSent = async (lambdaEvent, systemEvent) => {
   const { messageId, roomId, authorId, text, createdAt } = systemEvent.data;
 
   const message = buildMessage({ messageId, roomId, authorId, text, createdAt });
-  await broadcastMessageInRoom(lambdaEventEvent.requestContext, message, roomId);
+  await broadcastMessageInRoom(lambdaEvent.requestContext, message, roomId);
 }
 
 const handlers = {
