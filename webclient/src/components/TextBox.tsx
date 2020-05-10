@@ -32,7 +32,7 @@ const TextBox: React.FC<Props> = ({ authorId, onSend, roomId }) => {
       authorId,
       roomId,
       text,
-      id: uuid(),
+      messageId: uuid(),
     });
     setText("");
   };
