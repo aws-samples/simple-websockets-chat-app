@@ -31,6 +31,7 @@ call-%: check-local-vars
 	$(SAM) local invoke $(*)Function \
 		--parameter-overrides \
 				ConnectionsTableName=$(CONNECTIONS_TABLE_NAME) \
+				ConnectionsTableTtlHours=$(CONNECTIONS_TABLE_TTL_HOURS) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 				AppPrefix=$(STACK_NAME) \
 		--event test/$(*)Event.json
@@ -48,6 +49,7 @@ sam-deploy: check-vars
 		--capabilities CAPABILITY_IAM \
 		--parameter-overrides \
 				ConnectionsTableName=$(CONNECTIONS_TABLE_NAME) \
+				ConnectionsTableTtlHours=$(CONNECTIONS_TABLE_TTL_HOURS) \
 				WebsiteBucketName=$(WEBSITE_BUCKET) \
 				DomainName=$(DOMAIN_NAME) \
 				CertificateArn=$(CERTIFICATE_ARN) \
@@ -85,6 +87,7 @@ check-vars:
 	@make guard-STACK_NAME
 	@make guard-DEPLOY_BUCKET
 	@make guard-CONNECTIONS_TABLE_NAME
+	@make guard-CONNECTIONS_TABLE_TTL_HOURS
 	@make guard-WEBSITE_BUCKET
 	@make guard-DOMAIN_NAME
 	@make guard-CERTIFICATE_ARN
@@ -92,6 +95,7 @@ check-vars:
 check-local-vars:
 	@make guard-STACK_NAME
 	@make guard-CONNECTIONS_TABLE_NAME
+	@make guard-CONNECTIONS_TABLE_TTL_HOURS
 	@make guard-LOCAL_DYNAMODB_ENDPOINT
 	@make guard-LOCAL_DYNAMODB_PORT
 

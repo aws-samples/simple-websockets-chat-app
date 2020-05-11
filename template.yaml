@@ -19,6 +19,10 @@ Parameters:
     MaxLength: 50
     AllowedPattern: ^[A-Za-z_-]+$
     ConstraintDescription: "Required. Can be characters, dash, and underscore only. No numbers or special characters allowed."
+  ConnectionsTableTtlHours:
+    Type: Number
+    Default: 6
+    Description: DynamoDB Table TTL. Hours in which the connections will automatically expire
   WebsiteBucketName:
     Type: String
     Default: "simplechat-connections-bucket"
@@ -156,7 +160,8 @@ Resources:
       Environment:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
-          TABLE_NAME: !Ref ConnectionsTableName
+          CONNECTIONS_TABLE_NAME: !Ref ConnectionsTableName
+          CONNECTIONS_TABLE_TTL_HOURS: !Ref ConnectionsTableTtlHours
           ROOM_ID_INDEX: RoomIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
@@ -195,7 +200,8 @@ Resources:
       Environment:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
-          TABLE_NAME: !Ref ConnectionsTableName
+          CONNECTIONS_TABLE_NAME: !Ref ConnectionsTableName
+          CONNECTIONS_TABLE_TTL_HOURS: !Ref ConnectionsTableTtlHours
           ROOM_ID_INDEX: RoomIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
@@ -234,7 +240,8 @@ Resources:
       Environment:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
-          TABLE_NAME: !Ref ConnectionsTableName
+          CONNECTIONS_TABLE_NAME: !Ref ConnectionsTableName
+          CONNECTIONS_TABLE_TTL_HOURS: !Ref ConnectionsTableTtlHours
           ROOM_ID_INDEX: RoomIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
