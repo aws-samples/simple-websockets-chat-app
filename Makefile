@@ -7,7 +7,7 @@ SAM = AWS_ACCESS_KEY_ID= AWS_PROFILE=$(AWS_PROFILE) sam
 
 create-deploy-bucket: check-vars
 	@$(AWS) s3 mb s3://$(DEPLOY_BUCKET)
-	
+
 start: check-local-vars
 	docker-compose up -d
 
@@ -15,13 +15,13 @@ stop:
 	docker-compose down
 
 create-table: check-local-vars
-	@echo deleting $(TABLE_NAME)
+	@echo deleting $(CONNECTIONS_TABLE_NAME)
 	-$(AWS) dynamodb delete-table \
 		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
-    --table-name $(TABLE_NAME)
+    --table-name $(CONNECTIONS_TABLE_NAME)
 	$(AWS) dynamodb create-table \
 		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
-    --table-name $(TABLE_NAME) \
+    --table-name $(CONNECTIONS_TABLE_NAME) \
     --attribute-definitions AttributeName=roomId,AttributeType=S AttributeName=connectionId,AttributeType=S \
     --key-schema AttributeName=roomId,KeyType=HASH AttributeName=connectionId,KeyType=RANGE \
     --global-secondary-indexes IndexName=ConnectionIdIndex,KeySchema=["{AttributeName=connectionId,KeyType=HASH}"],Projection={ProjectionType=KEYS_ONLY},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}" \
@@ -30,7 +30,7 @@ create-table: check-local-vars
 call-%: check-local-vars
 	$(SAM) local invoke $(*)Function \
 		--parameter-overrides \
-				TableName=$(TABLE_NAME) \
+				ConnectionsTableName=$(CONNECTIONS_TABLE_NAME) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 				AppPrefix=$(STACK_NAME) \
 		--event test/$(*)Event.json
@@ -47,7 +47,7 @@ sam-deploy: check-vars
 		--template-file packaged.yaml \
 		--capabilities CAPABILITY_IAM \
 		--parameter-overrides \
-				TableName=$(TABLE_NAME) \
+				ConnectionsTableName=$(CONNECTIONS_TABLE_NAME) \
 				WebsiteBucketName=$(WEBSITE_BUCKET) \
 				DomainName=$(DOMAIN_NAME) \
 				CertificateArn=$(CERTIFICATE_ARN) \
@@ -67,12 +67,12 @@ stack-describe: check-vars
 	$(AWS) cloudformation describe-stacks \
 		--stack-name=$(STACK_NAME) \
 		--query 'Stacks[].Outputs'
-	
-stack-deploy: 
+
+stack-deploy:
 	make sam-package
 	make sam-deploy
 	make stack-describe
-	
+
 # Environment variables check
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
@@ -84,14 +84,14 @@ check-vars:
 	@make guard-AWS_PROFILE
 	@make guard-STACK_NAME
 	@make guard-DEPLOY_BUCKET
-	@make guard-TABLE_NAME
+	@make guard-CONNECTIONS_TABLE_NAME
 	@make guard-WEBSITE_BUCKET
 	@make guard-DOMAIN_NAME
 	@make guard-CERTIFICATE_ARN
 
 check-local-vars:
 	@make guard-STACK_NAME
-	@make guard-TABLE_NAME
+	@make guard-CONNECTIONS_TABLE_NAME
 	@make guard-LOCAL_DYNAMODB_ENDPOINT
 	@make guard-LOCAL_DYNAMODB_PORT
 

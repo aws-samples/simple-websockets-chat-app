@@ -11,7 +11,7 @@ Parameters:
     Type: String
     Default: "simplechat-connections"
     Description: Prefix to name the resources in the system
-  TableName:
+  ConnectionsTableName:
     Type: String
     Default: "simplechat-connections-table"
     Description: (Required) The name of the new DynamoDB to store connection identifiers for each connected clients. Minimum 3 characters
@@ -121,26 +121,29 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: roomId
-          AttributeType: S
         - AttributeName: connectionId
+          AttributeType: S
+        - AttributeName: roomId
           AttributeType: S
       KeySchema:
-        - AttributeName: roomId
-          KeyType: HASH
         - AttributeName: connectionId
+          KeyType: HASH
+        - AttributeName: roomId
           KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
       BillingMode: PAY_PER_REQUEST
       GlobalSecondaryIndexes:
-        - IndexName: ConnectionIdIndex
+        - IndexName: RoomIdIndex
           KeySchema:
-            - AttributeName: connectionId
+            - AttributeName: roomId
               KeyType: HASH
           Projection:
             ProjectionType: KEYS_ONLY
       SSESpecification:
         SSEEnabled: True
-      TableName: !Ref TableName
+      TableName: !Ref ConnectionsTableName
   OnConnectFunction:
     DependsOn:
       - EventsStream
@@ -153,12 +156,12 @@ Resources:
       Environment:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
-          TABLE_NAME: !Ref TableName
-          CONNECTION_ID_INDEX: ConnectionIdIndex
+          TABLE_NAME: !Ref ConnectionsTableName
+          ROOM_ID_INDEX: RoomIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref TableName
+            TableName: !Ref ConnectionsTableName
         - Statement:
           - Effect: Allow
             Action:
@@ -192,12 +195,12 @@ Resources:
       Environment:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
-          TABLE_NAME: !Ref TableName
-          CONNECTION_ID_INDEX: ConnectionIdIndex
+          TABLE_NAME: !Ref ConnectionsTableName
+          ROOM_ID_INDEX: RoomIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref TableName
+            TableName: !Ref ConnectionsTableName
         - Statement:
           - Effect: Allow
             Action:
@@ -231,12 +234,12 @@ Resources:
       Environment:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
-          TABLE_NAME: !Ref TableName
-          CONNECTION_ID_INDEX: ConnectionIdIndex
+          TABLE_NAME: !Ref ConnectionsTableName
+          ROOM_ID_INDEX: RoomIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref TableName
+            TableName: !Ref ConnectionsTableName
         - Statement:
             - Effect: Allow
               Action:
