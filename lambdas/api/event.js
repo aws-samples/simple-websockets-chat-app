@@ -1,17 +1,23 @@
 const AWS = require("aws-sdk");
 
 const EventTypes = {
-  CONNECTIONS_COUNT_CHANGED: 'CONNECTIONS_COUNT_CHANGED',
+  CONNECTION_CONNECTED: 'CONNECTION_CONNECTED',
+  CONNECTION_DISCONNECTED: 'CONNECTION_DISCONNECTED',
   MESSAGE_SENT: 'MESSAGE_SENT',
-  CONNETION_JOINED: 'CONNETION_JOINED',
-  CONNETION_LEFT: 'CONNETION_LEFT'
+  ROOM_JOINED: 'ROOM_JOINED',
+  ROOM_LEFT: 'ROOM_LEFT'
 };
 exports.EventTypes = EventTypes;
 
-exports.buildEvent = (e, data) => {
-  if (!EventTypes.hasOwnProperty(e)) {
+const throwErrorIfInvalidEventType = eventType => {
+  if (!EventTypes.hasOwnProperty(eventType)) {
     throw new Error('Unsupported event type: ' + e);
   }
+}
+exports.throwErrorIfInvalidEventType = throwErrorIfInvalidEventType
+
+exports.buildEvent = (e, data) => {
+  throwErrorIfInvalidEventType(e);
   const ts = new Date().getTime();
   const meta = { e, ts };
   return { meta, data };

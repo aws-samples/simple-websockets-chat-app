@@ -11,7 +11,7 @@ Parameters:
     Type: String
     Default: "simplechat-connections"
     Description: Prefix to name the resources in the system
-  ConnectionsTableName:
+  TableName:
     Type: String
     Default: "simplechat-connections-table"
     Description: (Required) The name of the new DynamoDB to store connection identifiers for each connected clients. Minimum 3 characters
@@ -19,7 +19,7 @@ Parameters:
     MaxLength: 50
     AllowedPattern: ^[A-Za-z_-]+$
     ConstraintDescription: "Required. Can be characters, dash, and underscore only. No numbers or special characters allowed."
-  ConnectionsTableTtlHours:
+  TableTtlHours:
     Type: Number
     Default: 6
     Description: DynamoDB Table TTL. Hours in which the connections will automatically expire
@@ -41,6 +41,10 @@ Parameters:
     Type: String
     Default: ""
     Description: Used for local testing
+  DebugMode:
+    Type: Number
+    Default: 0
+    Description: Functionality changes in debug mode.
 
 Resources:
   SimpleChatWebSocket:
@@ -125,29 +129,29 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: connectionId
-          AttributeType: S
         - AttributeName: roomId
+          AttributeType: S
+        - AttributeName: connectionId
           AttributeType: S
       KeySchema:
-        - AttributeName: connectionId
-          KeyType: HASH
         - AttributeName: roomId
+          KeyType: HASH
+        - AttributeName: connectionId
           KeyType: RANGE
       TimeToLiveSpecification:
         AttributeName: ttl
         Enabled: true
       BillingMode: PAY_PER_REQUEST
       GlobalSecondaryIndexes:
-        - IndexName: RoomIdIndex
+        - IndexName: ConnectionIdIndex
           KeySchema:
-            - AttributeName: roomId
+            - AttributeName: connectionId
               KeyType: HASH
           Projection:
             ProjectionType: KEYS_ONLY
       SSESpecification:
         SSEEnabled: True
-      TableName: !Ref ConnectionsTableName
+      TableName: !Ref TableName
   OnConnectFunction:
     DependsOn:
       - EventsStream
@@ -160,13 +164,14 @@ Resources:
       Environment:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
-          CONNECTIONS_TABLE_NAME: !Ref ConnectionsTableName
-          CONNECTIONS_TABLE_TTL_HOURS: !Ref ConnectionsTableTtlHours
-          ROOM_ID_INDEX: RoomIdIndex
+          TABLE_NAME: !Ref TableName
+          TABLE_TTL_HOURS: !Ref TableTtlHours
+          DEBUG_MODE: !Ref DebugMode
+          CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref ConnectionsTableName
+            TableName: !Ref TableName
         - Statement:
           - Effect: Allow
             Action:
@@ -200,13 +205,14 @@ Resources:
       Environment:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
-          CONNECTIONS_TABLE_NAME: !Ref ConnectionsTableName
-          CONNECTIONS_TABLE_TTL_HOURS: !Ref ConnectionsTableTtlHours
-          ROOM_ID_INDEX: RoomIdIndex
+          TABLE_NAME: !Ref TableName
+          TABLE_TTL_HOURS: !Ref TableTtlHours
+          DEBUG_MODE: !Ref DebugMode
+          CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref ConnectionsTableName
+            TableName: !Ref TableName
         - Statement:
           - Effect: Allow
             Action:
@@ -240,13 +246,14 @@ Resources:
       Environment:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
-          CONNECTIONS_TABLE_NAME: !Ref ConnectionsTableName
-          CONNECTIONS_TABLE_TTL_HOURS: !Ref ConnectionsTableTtlHours
-          ROOM_ID_INDEX: RoomIdIndex
+          TABLE_NAME: !Ref TableName
+          TABLE_TTL_HOURS: !Ref TableTtlHours
+          DEBUG_MODE: !Ref DebugMode
+          CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref ConnectionsTableName
+            TableName: !Ref TableName
         - Statement:
             - Effect: Allow
               Action:
