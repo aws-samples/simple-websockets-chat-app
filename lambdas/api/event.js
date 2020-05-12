@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 
 const EventTypes = {
+  CONNECTIONS_COUNT_CHANGED: 'CONNECTIONS_COUNT_CHANGED',
   CONNECTION_CONNECTED: 'CONNECTION_CONNECTED',
   CONNECTION_DISCONNECTED: 'CONNECTION_DISCONNECTED',
   MESSAGE_SENT: 'MESSAGE_SENT',
@@ -11,7 +12,7 @@ exports.EventTypes = EventTypes;
 
 const throwErrorIfInvalidEventType = eventType => {
   if (!EventTypes.hasOwnProperty(eventType)) {
-    throw new Error('Unsupported event type: ' + e);
+    throw new Error('Unsupported event type: ' + eventType);
   }
 }
 exports.throwErrorIfInvalidEventType = throwErrorIfInvalidEventType

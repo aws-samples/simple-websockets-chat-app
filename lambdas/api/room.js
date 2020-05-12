@@ -8,7 +8,7 @@ exports.joinRoom = async (requestContext, roomId) => {
   const key = { connectionId, roomId };
   await put(key);
   await trackEvent(EventTypes.ROOM_JOINED, key);
-  await emitConnectionsCountChangedInRooms(requestContext, [roomId]);
+  await broadcastConnectionsCountChangedInRooms(requestContext, [roomId]);
 
   return key;
 }
@@ -18,7 +18,7 @@ exports.leaveRoom = async (requestContext, roomId) => {
   const key = { connectionId, roomId };
   await removeConnection(key);
   await trackEvent(EventTypes.ROOM_LEFT, key);
-  await emitConnectionsCountChangedInRooms(requestContext, [roomId]);
+  await broadcastConnectionsCountChangedInRooms(requestContext, [roomId]);
 
   return key;
 }
