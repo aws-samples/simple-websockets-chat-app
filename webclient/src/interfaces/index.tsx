@@ -6,10 +6,12 @@ export interface Message {
   createdAt: string;
 }
 
-type EventType = 'CONNECTIONS_COUNT_CHANGED'
+export type EventType = 'CONNECTIONS_COUNT_CHANGED'
+  | 'CONNECTION_CONNECTED'
+  | 'CONNECTION_DISCONNECTED'
   | 'MESSAGE_SENT'
-  | 'CONNETION_JOINED'
-  | 'CONNETION_LEFT';
+  | 'ROOM_JOINED'
+  | 'ROOM_LEFT';
 
 export interface Event {
   meta: {

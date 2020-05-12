@@ -20,7 +20,7 @@ const Messages: React.FC<Props> = ({ authorId, messages }) => {
           const className = clsn("messageText txt", useDark && 'dark');
           return (
             <li
-              key={message.id}
+              key={message.messageId}
               className={message.authorId === authorId ? "mine" : "theirs"}
             >
               <span className={className} style={style}>

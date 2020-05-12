@@ -7,6 +7,7 @@ import ConnectionStatus from './components/ConnectionStatus'
 import Chat from './components/Chat'
 
 import useConnection from './hooks/useConnection';
+import { joinRoom } from './api/room';
 
 interface Props {
   serverUrl: string;
@@ -16,6 +17,11 @@ interface Props {
 
 const App: React.FC<Props> = ({ serverUrl, authorId, roomId }) => {
   const connection = useConnection(serverUrl);
+  React.useEffect(() => {
+    if (connection && roomId) {
+      joinRoom(connection, roomId);
+    }
+  }, [roomId, connection])
 
   if (!connection) {
     return null;
