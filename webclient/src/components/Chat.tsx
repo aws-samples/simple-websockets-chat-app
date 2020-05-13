@@ -2,6 +2,8 @@ import * as React from 'react'
 
 import { Message, Event } from '../interfaces'
 
+import { broadcastMessage } from '../api/message'
+
 import Messages from './Messages'
 import TextBox from './TextBox'
 
@@ -14,21 +16,11 @@ interface Props {
 const sortByCreatedAt = (messages: Message[]) =>
   messages.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 0));
 
-
 const Chat: React.FC<Props> = ({ connection, authorId, roomId }) => {
   const [messages, setMessages] = React.useState<Message[]>([]);
 
   const onSend = (message: Message) => {
-    const event: Event = {
-      meta: { e: 'MESSAGE_SENT', ts: new Date().getTime() },
-      data: message
-    };
-    connection.send(
-      JSON.stringify({
-        message: "sendmessage",
-        data: JSON.stringify(event),
-      })
-    );
+    broadcastMessage(connection, message);
     setMessages(sortByCreatedAt([...messages, message]));
   };
 
