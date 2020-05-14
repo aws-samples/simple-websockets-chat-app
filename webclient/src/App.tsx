@@ -23,12 +23,12 @@ const App: React.FC<Props> = ({ serverUrl, authorId, roomId }) => {
     }
   }, [roomId, connection])
 
-  if (!connection) {
-    return null;
-  }
-
   if (!roomId) {
     return <NewRoom roomId={authorId} />;
+  }
+
+  if (!connection) {
+    return null;
   }
 
   return (
