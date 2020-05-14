@@ -20,3 +20,14 @@ export interface Event {
   };
   data: any;
 }
+
+export interface ConnectionState {
+  serverUrl?: string;
+  connection?: WebSocket;
+}
+
+export interface RoomState {
+  roomId?: string;
+  authorId: string;
+  peopleInRoom: number;
+}

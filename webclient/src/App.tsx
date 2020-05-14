@@ -6,17 +6,16 @@ import NewRoom from './components/NewRoom'
 import ConnectionStatus from './components/ConnectionStatus'
 import Chat from './components/Chat'
 
-import useConnection from './hooks/useConnection';
+import { ConnectionContext } from './context/connectionContext';
 import { joinRoom } from './api/room';
 
 interface Props {
-  serverUrl: string;
   authorId: string;
   roomId: string | null;
 }
 
-const App: React.FC<Props> = ({ serverUrl, authorId, roomId }) => {
-  const connection = useConnection(serverUrl);
+const App: React.FC<Props> = ({ authorId, roomId }) => {
+  const { connection } = React.useContext(ConnectionContext);
   React.useEffect(() => {
     if (connection && roomId) {
       joinRoom(connection, roomId);
