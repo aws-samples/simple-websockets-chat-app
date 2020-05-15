@@ -21,6 +21,22 @@ export interface Event {
   data: any;
 }
 
+export interface MessageEvent extends Event {
+  data: Message;
+}
+
+export interface PeopleInRoomChangedEvent extends Event {
+  data: {
+    roomId: string;
+    connectionsCount: number;
+  }
+}
+
+export interface EventListener {
+  eventType: EventType;
+  callback: (event: Event) => void;
+}
+
 export interface ConnectionState {
   isConnected: boolean;
   isDisconnected: boolean;

@@ -1,16 +1,25 @@
 import { Event, EventType } from '../interfaces';
+import log from '../helpers/log';
 
-export const emitEvent = (connection: WebSocket, e: EventType, data: any) => {
+export const buildEvent = (e: EventType, data: any): Event => {
   const ts = new Date().getTime();
   const event: Event = { meta: { e, ts }, data };
+  return event;
+}
+
+export const encodeEvent = (event: Event): string => {
   const payload = JSON.stringify({
     message: "sendmessage",
     data: JSON.stringify(event),
   });
 
-  if (process.env.NODE_ENV == 'development') {
-    console.log('sending event', event);
-  }
+  log('encoding payload', event);
 
-  connection.send(payload);
+  return payload;
+}
+
+export const decodePayload = (payload: string): Event => {
+  const event = JSON.parse(payload);
+  log('decoded payload', event);
+  return event;
 }

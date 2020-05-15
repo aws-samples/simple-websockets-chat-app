@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import { ConnectionState } from '../interfaces'
+import useConnection from '../hooks/useConnection'
+import { EventContext, EventProvider } from '../context/eventContext'
 
 const ConnectionContext = React.createContext<ConnectionState>({
   isConnected: false,
@@ -13,16 +15,12 @@ interface Props {
 }
 
 const ConnectionProvider: React.FC<Props> = ({ serverUrl, children }) => {
-  const [connection] = React.useState<WebSocket>(new WebSocket(serverUrl));
+  const connection = useConnection(serverUrl);
   const [connectionStatus, setConnectionStatus] = React.useState(connection.readyState);
-
-  React.useEffect(() => {
-    return () => connection.close();
-  }, []);
 
   connection.onopen = () => setConnectionStatus(connection.readyState);
   connection.onclose = () => setConnectionStatus(connection.readyState);
-
+  
   const state = {
     isConnected: connectionStatus == WebSocket.OPEN,
     isDisconnected: connectionStatus == WebSocket.CLOSED,
@@ -31,7 +29,9 @@ const ConnectionProvider: React.FC<Props> = ({ serverUrl, children }) => {
 
   return (
     <ConnectionContext.Provider value={state}>
-      {children}
+      <EventProvider connection={connection}>
+        {children}
+      </EventProvider>
     </ConnectionContext.Provider>
   )
 }

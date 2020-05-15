@@ -1,30 +1,15 @@
 import * as React from 'react'
+import log from '../helpers/log'
 
-const openConnection = (url: string): Promise<WebSocket> => {
-  const socket = new WebSocket(url);
-  return new Promise((resolve, reject) => {
-    socket.onerror = reject;
-    socket.onopen = () => resolve(socket);
-  });
-};
-
-export default (serverUrl: string): WebSocket | undefined => {
-  const [connection, setConnection] = React.useState<WebSocket>();
+export default (url: string): WebSocket => {
+  const [connection] = React.useState(new WebSocket(url));
 
   React.useEffect(() => {
-    let conn: WebSocket;
-    const connect = async () => {
-      conn = await openConnection(serverUrl);
-      conn.onclose = () => {
-        console.log('closing')
-        setConnection(undefined);
-      };
-      setTimeout(() => conn.close(), 2000)
-      setConnection(conn);
+    log('opening connection');
+    return () => {
+      log('closing connection');
+      connection.close();
     }
-    connect();
-
-    return () => conn && conn.close();
   }, []);
 
   return connection;
