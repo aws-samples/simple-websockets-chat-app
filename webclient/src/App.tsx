@@ -3,11 +3,9 @@ import * as React from 'react'
 import './App.css'
 
 import NewRoom from './components/NewRoom'
-import ConnectionStatus from './components/ConnectionStatus'
 import Chat from './components/Chat'
 
-import { ConnectionContext } from './context/connectionContext';
-import { joinRoom } from './api/room';
+import { RoomProvider } from './context/roomContext'
 
 interface Props {
   authorId: string;
@@ -15,26 +13,23 @@ interface Props {
 }
 
 const App: React.FC<Props> = ({ authorId, roomId }) => {
-  const { connection } = React.useContext(ConnectionContext);
-  React.useEffect(() => {
-    if (connection && roomId) {
-      joinRoom(connection, roomId);
-    }
-  }, [roomId, connection])
+  // const { connection } = React.useContext(ConnectionContext);
+  // React.useEffect(() => {
+  //   if (connection && roomId) {
+  //     joinRoom(connection, roomId);
+  //   }
+  // }, [roomId, connection])
 
   if (!roomId) {
     return <NewRoom roomId={authorId} />;
   }
 
-  if (!connection) {
-    return null;
-  }
-
   return (
-    <div className="room">
-      <ConnectionStatus connection={connection} />
-      <Chat connection={connection} authorId={authorId} roomId={roomId} />
-    </div>
+    <RoomProvider authorId={authorId} roomId={roomId} messages={[]} peopleInRoom={0}>
+      <div className="room">
+        <Chat />
+      </div>
+    </RoomProvider>
   );
 }
 

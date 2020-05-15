@@ -15,6 +15,11 @@ export default (serverUrl: string): WebSocket | undefined => {
     let conn: WebSocket;
     const connect = async () => {
       conn = await openConnection(serverUrl);
+      conn.onclose = () => {
+        console.log('closing')
+        setConnection(undefined);
+      };
+      setTimeout(() => conn.close(), 2000)
       setConnection(conn);
     }
     connect();

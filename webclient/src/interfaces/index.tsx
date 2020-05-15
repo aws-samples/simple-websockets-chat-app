@@ -22,12 +22,14 @@ export interface Event {
 }
 
 export interface ConnectionState {
-  serverUrl?: string;
-  connection?: WebSocket;
+  isConnected: boolean;
+  isDisconnected: boolean;
+  isConnecting: boolean;
 }
 
 export interface RoomState {
-  roomId?: string;
+  roomId: string;
   authorId: string;
   peopleInRoom: number;
+  messages: Message[]
 }
