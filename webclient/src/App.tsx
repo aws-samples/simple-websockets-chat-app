@@ -13,14 +13,7 @@ interface Props {
 }
 
 const App: React.FC<Props> = ({ authorId, roomId }) => {
-  // const { connection } = React.useContext(ConnectionContext);
-  // React.useEffect(() => {
-  //   if (connection && roomId) {
-  //     joinRoom(connection, roomId);
-  //   }
-  // }, [roomId, connection])
-
-  if (!roomId) {
+    if (!roomId) {
     return <NewRoom roomId={authorId} />;
   }
 

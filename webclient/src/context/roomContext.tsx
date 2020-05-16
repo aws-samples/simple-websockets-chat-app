@@ -36,32 +36,36 @@ const RoomProvider: React.FC<RoomState> = ({
 
   const events = React.useContext(EventContext);
 
-  React.useEffect(() => {
-    const messageSentListener: EventListener = {
-      eventType: 'MESSAGE_SENT',
-      callback: ({ data: message }: MessageEvent) => {
-        const isNewMessage = !messages.find(
-          ({ messageId }) => messageId === message.messageId
-        );
-        if (isNewMessage) {
-          setMessages(sortByCreatedAt([...messages, message]));
-        }
-      },
-    }
-    const peopleInRoomChangedListener: EventListener = {
-      eventType: 'CONNECTIONS_COUNT_CHANGED',
-      callback: ({ data }: PeopleInRoomChangedEvent) => {
-        setPeopleInRoom(data.connectionsCount);
-      },
-    }
+  const messageSentListener: EventListener = {
+    eventType: 'MESSAGE_SENT',
+    callback: ({ data: message }: MessageEvent) => {
+      const isNewMessage = !messages.find(
+        ({ messageId }) => messageId === message.messageId
+      );
+      if (isNewMessage) {
+        setMessages(sortByCreatedAt([...messages, message]));
+      }
+    },
+  }
+  const peopleInRoomChangedListener: EventListener = {
+    eventType: 'CONNECTIONS_COUNT_CHANGED',
+    callback: ({ data }: PeopleInRoomChangedEvent) => {
+      setPeopleInRoom(data.connectionsCount);
+    },
+  }
 
+  React.useEffect(() => {
+    const joinRoomEvent = buildEvent('ROOM_JOINED', { roomId, authorId });
+    events.send(joinRoomEvent);
     events.addEventListener(messageSentListener);
     events.addEventListener(peopleInRoomChangedListener);
     return () => {
+      const leaveRoomEvent = buildEvent('ROOM_LEFT', { roomId, authorId });
+      events.send(leaveRoomEvent);
       events.removeEventListener(messageSentListener);
       events.removeEventListener(peopleInRoomChangedListener);
     }
-  }, [])
+  }, [roomId])
 
   const sendMessage = (message: Message) => {
     const event = buildEvent('MESSAGE_SENT', message);
