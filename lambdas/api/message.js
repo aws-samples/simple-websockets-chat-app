@@ -2,8 +2,8 @@ const { connectionIdsByRoomId } = require('./storage')
 const { createBatch, trackBatch } = require('./eventTracker')
 const { buildEvent, emitEvent, EventTypes } = require('./event')
 
-const buildMessageSentEvent = ({ id, roomId, authorId, text, createdAt }) => {
-  const data = { id, roomId, authorId, text, createdAt };
+const buildMessageSentEvent = ({ messageId, roomId, authorId, text, createdAt }) => {
+  const data = { messageId, roomId, authorId, text, createdAt };
   return buildEvent(EventTypes.MESSAGE_SENT, data);
 }
 
