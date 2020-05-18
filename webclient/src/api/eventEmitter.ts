@@ -1,7 +1,5 @@
 import { Event, EventType } from '../interfaces';
-import { logger } from '../helpers/log';
 
-const log = logger('emitter')
 export const buildEvent = (e: EventType, data: any): Event => {
   const ts = new Date().getTime();
   const event: Event = { meta: { e, ts }, data };
@@ -14,13 +12,7 @@ export const encodeEvent = (event: Event): string => {
     data: JSON.stringify(event),
   });
 
-  log('encoding payload', event);
-
   return payload;
 }
 
-export const decodePayload = (payload: string): Event => {
-  const event = JSON.parse(payload);
-  log('decoded payload', event);
-  return event;
-}
+export const decodePayload = (payload: string): Event => JSON.parse(payload);
