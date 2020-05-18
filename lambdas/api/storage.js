@@ -1,7 +1,11 @@
+const log = require('../helpers/log');
 const AWS = require("aws-sdk");
 const {
   AWS_REGION,
   LOCAL_DYNAMODB_ENDPOINT: endpoint,
+  TABLE_NAME: TableName,
+  TABLE_TTL_HOURS: ttlHours,
+  CONNECTION_ID_INDEX: IndexName
 } = process.env;
 
 const ddb = new AWS.DynamoDB.DocumentClient({
@@ -10,47 +14,75 @@ const ddb = new AWS.DynamoDB.DocumentClient({
   endpoint: endpoint && endpoint.length ? endpoint : undefined,
 });
 
-exports.put = (TableName, Item) => {
+exports.put = Item => {
+  Item.ttl = new Date().getTime() + 1000 * 60 * 60 * ttlHours;
+  log('put', Item);
   return ddb
     .put({ TableName, Item })
     .promise();
 }
 
-exports.queryTable = (TableName, key, value) => {
-  const query = {
-    TableName,
-    KeyConditionExpression: `${key} = :key`,
-    ExpressionAttributeValues: { ":key": value },
-  };
-
-  return ddb.query(query).promise();
+const queryItems = async query => {
+  log('queryItems', query);
+  const { Items } = await ddb.query(query).promise();
+  log('queryItems', Items);
+  return Items;
 }
 
-exports.queryIndex = (TableName, IndexName, key, value) => {
+const findAllByRoomId = roomId => {
+  const query = {
+    TableName,
+    KeyConditionExpression: `roomId = :key`,
+    ExpressionAttributeValues: { ":key": roomId },
+  };
+
+  return queryItems(query);
+}
+exports.findAllByRoomId = findAllByRoomId;
+exports.connectionIdsByRoomId = async roomId => {
+  return (await findAllByRoomId(roomId)).map(({ connectionId }) => connectionId);
+}
+
+const findAllByConnectionId = connectionId => {
   const query = {
     TableName,
     IndexName,
-    KeyConditionExpression: `${key} = :key`,
-    ExpressionAttributeValues: { ":key": value },
+    KeyConditionExpression: `connectionId = :key`,
+    ExpressionAttributeValues: { ":key": connectionId },
   };
-  return ddb
-    .query(query)
-    .promise();
+
+  return queryItems(query);
+}
+exports.findAllByConnectionId = findAllByConnectionId;
+exports.roomIdsByConnectionId = async connectionId => {
+  return (await findAllByConnectionId(connectionId)).map(({ roomId }) => roomId)
 }
 
-const toDeleteRequest = Key => ({ DeleteRequest: { Key } });
-
-exports.removeKeys = (TableName, keys) => {
-  if (!keys || !keys.length) {
-    return;
+const deleteItems = async items => {
+  log('deleteItems', items);
+  if (!items || !items.length) {
+    return [];
   }
 
-  const deleteRequests = keys.map(toDeleteRequest);
+  const keys = items.map(({ roomId, connectionId }) => ({ roomId, connectionId }));
+  const deleteRequests = keys.map(Key => ({ DeleteRequest: { Key } }));
+
   const params = {
     RequestItems: {
       [TableName]: deleteRequests,
     },
   };
 
-  return ddb.batchWrite(params).promise();
+  await ddb.batchWrite(params).promise();
+  return keys;
+}
+
+exports.deleteAllByRoomId = async roomId => {
+  const items = await findAllByRoomId(roomId);
+  return deleteItems(items);
+}
+
+exports.deleteAllByConnectionId = async connectionId => {
+  const items = await findAllByConnectionId(connectionId);
+  return deleteItems(items);
 }

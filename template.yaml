@@ -19,6 +19,10 @@ Parameters:
     MaxLength: 50
     AllowedPattern: ^[A-Za-z_-]+$
     ConstraintDescription: "Required. Can be characters, dash, and underscore only. No numbers or special characters allowed."
+  TableTtlHours:
+    Type: Number
+    Default: 6
+    Description: DynamoDB Table TTL. Hours in which the connections will automatically expire
   WebsiteBucketName:
     Type: String
     Default: "simplechat-connections-bucket"
@@ -37,6 +41,10 @@ Parameters:
     Type: String
     Default: ""
     Description: Used for local testing
+  DebugMode:
+    Type: Number
+    Default: 0
+    Description: Functionality changes in debug mode.
 
 Resources:
   SimpleChatWebSocket:
@@ -130,6 +138,9 @@ Resources:
           KeyType: HASH
         - AttributeName: connectionId
           KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
       BillingMode: PAY_PER_REQUEST
       GlobalSecondaryIndexes:
         - IndexName: ConnectionIdIndex
@@ -154,6 +165,8 @@ Resources:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
           TABLE_NAME: !Ref TableName
+          TABLE_TTL_HOURS: !Ref TableTtlHours
+          DEBUG_MODE: !Ref DebugMode
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
@@ -193,6 +206,8 @@ Resources:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
           TABLE_NAME: !Ref TableName
+          TABLE_TTL_HOURS: !Ref TableTtlHours
+          DEBUG_MODE: !Ref DebugMode
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
@@ -232,6 +247,8 @@ Resources:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
           TABLE_NAME: !Ref TableName
+          TABLE_TTL_HOURS: !Ref TableTtlHours
+          DEBUG_MODE: !Ref DebugMode
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:

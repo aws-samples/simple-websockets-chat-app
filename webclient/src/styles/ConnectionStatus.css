@@ -1,14 +1,14 @@
  .connectionStatus {
+   position: absolute;
+   left: 0;
+   right: 0;
+   top: 0;
    text-align: center;
    padding: 4px;
+   cursor: pointer;
  }
 
- .connectionStatus.status-0,
- .connectionStatus.status-1 {
-   display: none;
- }
- .connectionStatus.status-2,
- .connectionStatus.status-3 {
+ .connectionStatus.status-disconnected {
    color: white;
    background-color: red;
  }

@@ -1,40 +1,38 @@
-const { put, queryTable, queryIndex, removeKeys } = require('./storage')
-const { trackEvent, createBatch, trackBatch } = require('./eventTracker')
-const { TABLE_NAME, CONNECTION_ID_INDEX } = process.env;
+const { put, findAllByConnectionId, deleteAllByConnectionId } = require('./storage');
+const { broadcastConnectionsCountChangedInRooms } = require('./message');
+const { EventTypes } = require('./event');
+const { trackEvent, createBatch, trackBatch } = require('./eventTracker');
 
-exports.saveConnectionInRoom = async (connectionId, roomId) => {
-  const record = { connectionId, roomId };
-  try {
-    await put(TABLE_NAME, record);
-    await trackEvent('joined', record);
-  } catch(error) {
-    await trackEvent('error-joining', { ...record, errorMessage: error.message })
-    throw error
-  }
+exports.joinRoom = async (requestContext, roomId) => {
+  const { connectionId } = requestContext;
+  const key = { connectionId, roomId };
+  await put(key);
+  await trackEvent(EventTypes.ROOM_JOINED, key);
+  await broadcastConnectionsCountChangedInRooms(requestContext, [roomId]);
+
+  return key;
 }
 
-const getRoomsByConnectionId = async connectionId => {
-  const { Items } = await queryIndex(
-    TABLE_NAME,
-    CONNECTION_ID_INDEX,
-    'connectionId',
-    connectionId
-  );
-  return Items;
-};
+exports.leaveRoom = async (requestContext, roomId) => {
+  const { connectionId } = requestContext;
+  const key = { connectionId, roomId };
+  await removeConnection(key);
+  await trackEvent(EventTypes.ROOM_LEFT, key);
+  await broadcastConnectionsCountChangedInRooms(requestContext, [roomId]);
 
-exports.removeConnectionIdsFromAllRooms = async connectionIds => {
-  const roomsResults = await Promise.all(connectionIds.map(getRoomsByConnectionId));
-  const keys = []
-  roomsResults.forEach(result => result.forEach(({roomId, connectionId}) => keys.push({ roomId, connectionId })));
-  await removeKeys(TABLE_NAME, keys);
+  return key;
+}
+
+exports.leaveAllRooms = async requestContext => {
+  const { connectionId } = requestContext;
+  const keys = await deleteAllByConnectionId(connectionId);
+
   const batch = createBatch();
-  keys.map(key => batch.pushEvent('left', key))
+  keys.forEach(key => batch.pushEvent(EventTypes.ROOM_LEFT, key));
   await trackBatch(batch);
-  return keys;
-}
 
-exports.getConnectionIdsByRoomId = async roomId => {
-  const { Items } = await queryTable(TABLE_NAME, 'roomId', roomId);
-  return Items.map(({ connectionId }) => connectionId);
+  const roomIds = keys.map(({ roomId }) => roomId);
+  await broadcastConnectionsCountChangedInRooms(requestContext, roomIds);
+
+  return keys;
 }

@@ -7,7 +7,7 @@ SAM = AWS_ACCESS_KEY_ID= AWS_PROFILE=$(AWS_PROFILE) sam
 
 create-deploy-bucket: check-vars
 	@$(AWS) s3 mb s3://$(DEPLOY_BUCKET)
-	
+
 start: check-local-vars
 	docker-compose up -d
 
@@ -31,8 +31,10 @@ call-%: check-local-vars
 	$(SAM) local invoke $(*)Function \
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
+				TableTtlHours=$(TABLE_TTL_HOURS) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 				AppPrefix=$(STACK_NAME) \
+				DebugMode=1 \
 		--event test/$(*)Event.json
 
 sam-package: check-vars
@@ -48,10 +50,12 @@ sam-deploy: check-vars
 		--capabilities CAPABILITY_IAM \
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
+				TableTtlHours=$(TABLE_TTL_HOURS) \
 				WebsiteBucketName=$(WEBSITE_BUCKET) \
 				DomainName=$(DOMAIN_NAME) \
 				CertificateArn=$(CERTIFICATE_ARN) \
 				AppPrefix=$(STACK_NAME) \
+				DebugMode=1 \
 		--s3-bucket $(DEPLOY_BUCKET)
 
 website-build: check-vars
@@ -67,12 +71,12 @@ stack-describe: check-vars
 	$(AWS) cloudformation describe-stacks \
 		--stack-name=$(STACK_NAME) \
 		--query 'Stacks[].Outputs'
-	
-stack-deploy: 
+
+stack-deploy:
 	make sam-package
 	make sam-deploy
 	make stack-describe
-	
+
 # Environment variables check
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
@@ -85,6 +89,7 @@ check-vars:
 	@make guard-STACK_NAME
 	@make guard-DEPLOY_BUCKET
 	@make guard-TABLE_NAME
+	@make guard-TABLE_TTL_HOURS
 	@make guard-WEBSITE_BUCKET
 	@make guard-DOMAIN_NAME
 	@make guard-CERTIFICATE_ARN
@@ -92,6 +97,7 @@ check-vars:
 check-local-vars:
 	@make guard-STACK_NAME
 	@make guard-TABLE_NAME
+	@make guard-TABLE_TTL_HOURS
 	@make guard-LOCAL_DYNAMODB_ENDPOINT
 	@make guard-LOCAL_DYNAMODB_PORT
 

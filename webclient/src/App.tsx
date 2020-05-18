@@ -3,43 +3,26 @@ import * as React from 'react'
 import './App.css'
 
 import NewRoom from './components/NewRoom'
-import ConnectionStatus from './components/ConnectionStatus'
 import Chat from './components/Chat'
 
-import { connectToRoom } from './helpers/connection'
+import { RoomProvider } from './context/roomContext'
 
 interface Props {
-  serverUrl: string;
   authorId: string;
   roomId: string | null;
 }
 
-const App: React.FC<Props> = ({ serverUrl, authorId, roomId }) => {
-  const [connection, setConnection] = React.useState<WebSocket>();
-  React.useEffect(() => {
-    if (roomId) {
-      setConnection(connectToRoom(serverUrl, roomId));
-    }
-    return () => {
-      if (connection) {
-        connection.close();
-      }
-    };
-  }, []);
-
+const App: React.FC<Props> = ({ authorId, roomId }) => {
   if (!roomId) {
     return <NewRoom roomId={authorId} />;
   }
 
-  if (!connection) {
-    return null;
-  }
-
   return (
-    <div className="room">
-      <ConnectionStatus connection={connection} />
-      <Chat connection={connection} authorId={authorId} roomId={roomId} />
-    </div>
+    <RoomProvider authorId={authorId} roomId={roomId} messages={[]} peopleInRoom={0}>
+      <div className="room">
+        <Chat />
+      </div>
+    </RoomProvider>
   );
 }
 

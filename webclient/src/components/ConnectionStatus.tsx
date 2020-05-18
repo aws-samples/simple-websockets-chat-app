@@ -1,30 +1,22 @@
 import * as React from 'react'
 import '../styles/ConnectionStatus.css'
 
-interface Props {
-  connection: WebSocket;
-}
+import { ConnectionContext } from '../context/connectionContext';
 
-const ConnectionStatus: React.FC<Props> = ({ connection }) => {
-  const { readyState } = connection;
-  const [connectionState, setConnectionState] = React.useState(readyState);
-
-  React.useEffect(() => {
-    connection.onopen = () => setConnectionState(connection.readyState);
-    connection.onclose = () => setConnectionState(connection.readyState);
-  }, [connection]);
+const ConnectionStatus: React.FC = () => {
+  const { isDisconnected } = React.useContext(ConnectionContext);
 
   const onClick = (e: React.MouseEvent) => {
     e.preventDefault();
     location.reload();
   }
 
-  if (connectionState < 2) {
+  if (!isDisconnected) {
     return null;
   }
 
   return (
-    <a className={"connectionStatus status-" + connectionState} onClick={onClick}>
+    <a className={"connectionStatus status-disconnected"} onClick={onClick}>
       Disconnected
     </a>
   );

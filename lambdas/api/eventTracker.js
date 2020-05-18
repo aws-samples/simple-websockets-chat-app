@@ -1,4 +1,5 @@
-
+const log = require('../helpers/log')
+const { throwErrorIfInvalidEventType } = require('./event');
 const AWS = require("aws-sdk");
 
 const {
@@ -13,7 +14,8 @@ const buildRecord = event => ({
 });
 
 const buildEvent = (e, data) => {
-  console.log(e, data);
+  log(e, data);
+  throwErrorIfInvalidEventType(e);
   const ts = new Date().getTime();
   return { ...data, e, ts }
 }

@@ -1,39 +1,47 @@
-const { getConnectionIdsByRoomId, removeConnectionIdsFromAllRooms } = require('./room')
+const { connectionIdsByRoomId } = require('./storage')
 const { createBatch, trackBatch } = require('./eventTracker')
 const { buildEvent, emitEvent, EventTypes } = require('./event')
 
-exports.buildMessage = ({ id, roomId, authorId, text, createdAt }) => {
-  const data = { id, roomId, authorId, text, createdAt };
+const buildMessageSentEvent = ({ messageId, roomId, authorId, text, createdAt }) => {
+  const data = { messageId, roomId, authorId, text, createdAt };
   return buildEvent(EventTypes.MESSAGE_SENT, data);
 }
 
-exports.broadcastMessageInRoom = async (requestContext, systemEvent, roomId) => {
+exports.broadcastMessageInRoom = async (requestContext, message) => {
   const { connectionId } = requestContext;
-  const connectionIds = (await getConnectionIdsByRoomId(roomId))
+  const { roomId } = message;
+  const connectionIds = (await connectionIdsByRoomId(roomId))
     .filter(id => id != connectionId);
 
   if (!connectionIds.length) {
     return;
   }
 
-  const result = await emitEvent(requestContext, systemEvent, connectionIds);
-  return handleEmitEventResult(result);
+  const systemEvent = buildMessageSentEvent(message);
+  const { successful } = await emitEvent(requestContext, systemEvent, connectionIds);
+
+  const batch = createBatch()
+  successful.map(message => batch.pushEvent(EventTypes.MESSAGE_SENT, message))
+  await trackBatch(batch);
 }
 
-exports.broadcastConnectionsCountChangedInRoom = async (requestContext, roomId) => {
-  const connectionIds = await getConnectionIdsByRoomId(roomId);
+const broadcastConnectionsCountChangedInRooms = (requestContext, roomIds) => {
+  return Promise.all(roomIds.map(roomId => {
+    return broadcastConnectionsCountChangedInRoom(requestContext, roomId)
+  }));
+}
+exports.broadcastConnectionsCountChangedInRooms = broadcastConnectionsCountChangedInRooms;
+
+const broadcastConnectionsCountChangedInRoom = async (requestContext, roomId) => {
+  const connectionIds = await connectionIdsByRoomId(roomId);
   const connectionsCount = connectionIds.length;
+  if (!connectionsCount) {
+    return;
+  }
+
   const eventType = EventTypes.CONNECTIONS_COUNT_CHANGED;
   const data = { roomId, connectionsCount };
   const systemEvent = buildEvent(eventType, data);
   await emitEvent(requestContext, systemEvent, connectionIds);
 }
-
-const handleEmitEventResult = async ({ successful, staled }) => {
-  const batch = createBatch()
-  successful.map(message => batch.pushEvent(EventTypes.MESSAGE_SENT, message))
-  await trackBatch(batch);
-
-  const connectionIds = staled.map(({ ConnectionId}) => ConnectionId);
-  await removeConnectionIdsFromAllRooms(connectionIds);
-}
+exports.broadcastConnectionsCountChangedInRoom = broadcastConnectionsCountChangedInRoom;
