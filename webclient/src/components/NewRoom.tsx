@@ -31,7 +31,7 @@ const NewRoom: React.FC<Props> = ({}) => {
         <br />
         Or if you are ready, just click to join the chat.
       </p>
-      <ShareRoom roomId={roomId} showCopyLink showQr showJoinRoom />
+      <ShareRoom roomId={roomId} showCopyLink showQr showJoinRoom showPeopleInRoom />
     </div>
   )
 }

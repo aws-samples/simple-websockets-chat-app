@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Event, EventType, EventListener } from '../interfaces'
+import { EventType, EventListener } from '../interfaces'
 import { buildEvent, encodeEvent, decodePayload } from '../api/eventEmitter'
 
 interface EventContextState {

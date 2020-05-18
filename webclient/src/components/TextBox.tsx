@@ -47,7 +47,7 @@ const TextBox: React.FC<Props> = ({ authorId, onSend, roomId }) => {
     <div style={style}>
       {
         isOptionsOpen &&
-        <ShareRoom roomId={roomId} showQr showCopyLink showNewRoom />
+        <ShareRoom roomId={roomId} showQr showCopyLink showNewRoom showPeopleInRoom/>
       }
       <form className="textbox" onSubmit={onSubmit}>
         <div className="textbox-ppl slide-out-top" key={peopleInRoom}>
