@@ -1,6 +1,7 @@
 import { Event, EventType } from '../interfaces';
-import log from '../helpers/log';
+import { logger } from '../helpers/log';
 
+const log = logger('emitter')
 export const buildEvent = (e: EventType, data: any): Event => {
   const ts = new Date().getTime();
   const event: Event = { meta: { e, ts }, data };

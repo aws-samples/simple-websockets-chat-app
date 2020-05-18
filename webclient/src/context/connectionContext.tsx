@@ -1,8 +1,9 @@
 import * as React from 'react';
 
+import { logger } from '../helpers/log'
+
 import { ConnectionState } from '../interfaces'
-import useConnection from '../hooks/useConnection'
-import { EventContext, EventProvider } from '../context/eventContext'
+import { EventProvider } from '../context/eventContext'
 
 const ConnectionContext = React.createContext<ConnectionState>({
   isConnected: false,
@@ -11,16 +12,31 @@ const ConnectionContext = React.createContext<ConnectionState>({
 });
 
 interface Props {
-  serverUrl: string;
+  connection: WebSocket;
 }
 
-const ConnectionProvider: React.FC<Props> = ({ serverUrl, children }) => {
-  const connection = useConnection(serverUrl);
+const log = logger('ConnectionProvider')
+const ConnectionProvider: React.FC<Props> = ({ connection, children }) => {
+  log('rendering')
   const [connectionStatus, setConnectionStatus] = React.useState(connection.readyState);
 
-  connection.onopen = () => setConnectionStatus(connection.readyState);
-  connection.onclose = () => setConnectionStatus(connection.readyState);
-  
+  React.useEffect(() => {
+    log('adding listeners')
+    const listener = () => {
+      log('setting connectionStatus to ' + connection.readyState);
+      setConnectionStatus(connection.readyState);
+    }
+    connection.addEventListener('open', listener);
+    connection.addEventListener('close', listener);
+    connection.addEventListener('error', listener);
+    return () => {
+      log('removing listeners')
+      connection.removeEventListener('open', listener);
+      connection.removeEventListener('close', listener);
+      connection.removeEventListener('error', listener);
+    }
+  }, [connection])
+
   const state = {
     isConnected: connectionStatus == WebSocket.OPEN,
     isDisconnected: connectionStatus == WebSocket.CLOSED,

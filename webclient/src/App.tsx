@@ -13,7 +13,7 @@ interface Props {
 }
 
 const App: React.FC<Props> = ({ authorId, roomId }) => {
-    if (!roomId) {
+  if (!roomId) {
     return <NewRoom roomId={authorId} />;
   }
 

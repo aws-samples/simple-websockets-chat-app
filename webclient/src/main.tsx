@@ -19,8 +19,10 @@ if (!serverUrl) {
   throw new Error("No serverUrl");
 }
 
+const connection = new WebSocket(serverUrl);
+
 render(
-  <ConnectionProvider serverUrl={ serverUrl }>
+  <ConnectionProvider connection={connection}>
     <ConnectionStatus />
     <App authorId={authorId} roomId={roomId} />
   </ConnectionProvider>,

@@ -1,5 +1,6 @@
 import * as React from 'react'
 import uuid from '../helpers/uuid'
+import { logger } from '../helpers/log'
 import { RoomState, Message, MessageEvent, EventListener, PeopleInRoomChangedEvent } from '../interfaces'
 
 import { buildEvent } from '../api/eventEmitter'
@@ -23,7 +24,7 @@ const RoomContext = React.createContext<RoomStateContext>(DEFAULT_ROOM_STATE_CON
 const sortByCreatedAt = (messages: Message[]) =>
   messages.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 0));
 
-
+const log = logger('RoomProvider');
 const RoomProvider: React.FC<RoomState> = ({
   roomId,
   authorId,
@@ -31,6 +32,7 @@ const RoomProvider: React.FC<RoomState> = ({
   peopleInRoom: initialPeopleInRoom,
   children
 }) => {
+  log('rendering')
   const [messages, setMessages] = React.useState(initialMessages);
   const [peopleInRoom, setPeopleInRoom] = React.useState(initialPeopleInRoom);
 
@@ -55,11 +57,13 @@ const RoomProvider: React.FC<RoomState> = ({
   }
 
   React.useEffect(() => {
+    log('joining room');
     const joinRoomEvent = buildEvent('ROOM_JOINED', { roomId, authorId });
     events.send(joinRoomEvent);
     events.addEventListener(messageSentListener);
     events.addEventListener(peopleInRoomChangedListener);
     return () => {
+      log('leaving room');
       const leaveRoomEvent = buildEvent('ROOM_LEFT', { roomId, authorId });
       events.send(leaveRoomEvent);
       events.removeEventListener(messageSentListener);
