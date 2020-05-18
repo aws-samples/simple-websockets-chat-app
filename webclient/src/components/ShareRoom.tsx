@@ -2,6 +2,7 @@ import * as React from 'react'
 import '../styles/ShareRoom.css'
 
 import { getRoomUrl, getNewRoomUrl, getQrUrl } from '../helpers/connection'
+import { RoomContext } from '../context/roomContext';
 
 interface Props {
   roomId: string;
@@ -9,12 +10,14 @@ interface Props {
   showCopyLink?: boolean;
   showJoinRoom?: boolean;
   showNewRoom?: boolean;
+  showPeopleInRoom?: boolean;
 }
 
-const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom, showNewRoom }) => {
+const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom, showNewRoom, showPeopleInRoom }) => {
   const copyInputRef = React.useRef(null);
   const roomUrl = getRoomUrl(roomId);
   const newRoomUrl = getNewRoomUrl();
+  const { peopleInRoom } = React.useContext(RoomContext);
   const copyLink = () => {
     if (copyInputRef.current) {
       copyInputRef.current.select();
@@ -23,11 +26,7 @@ const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom
   };
   return (
     <div className="share-room">
-      {showQr && (
-        <div className="qr-image">
-          <img src={getQrUrl(roomUrl)} alt={roomUrl} />
-        </div>
-      )}
+
       {showCopyLink && (
         <div className="copy-link">
           <input
@@ -49,6 +48,16 @@ const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom
         <button><a className="create-new-room" href={newRoomUrl}>
           Create new room
         </a></button>
+      )}
+      {showQr && (
+        <div className="qr-image">
+          <img src={getQrUrl(roomUrl)} alt={roomUrl} />
+        </div>
+      )}
+      {showPeopleInRoom && (
+        <div className="people-in-room">
+          You and {peopleInRoom < 2 ? "no one else" : (peopleInRoom - 1) + " more"} in the room
+        </div>
       )}
     </div>
   );

@@ -1,9 +1,9 @@
 import * as React from 'react'
-import { Event, EventType, EventListener } from '../interfaces'
-import { encodeEvent, decodePayload } from '../api/eventEmitter'
+import { EventType, EventListener } from '../interfaces'
+import { buildEvent, encodeEvent, decodePayload } from '../api/eventEmitter'
 
 interface EventContextState {
-  send: (event: Event) => void;
+  send: (eventType: EventType, payload: any) => void;
   addEventListener: (eventListener: EventListener) => void;
   removeEventListener: (eventListener: EventListener) => void;
 }
@@ -49,12 +49,13 @@ const EventProvider: React.FC<Props> = ({ connection, children }) => {
   }
   React.useEffect(listenForConnectionMessages, [listeners])
 
-  const send = (event: Event) => {
-    const payload = encodeEvent(event);
+  const send = (eventType: EventType, payload: any) => {
+    const event = buildEvent(eventType, payload);
+    const data = encodeEvent(event);
     if (isOpen) {
-      connection.send(payload);
+      connection.send(data);
     } else {
-      setBuffer(oldBuffer => [...oldBuffer, payload]);
+      setBuffer(oldBuffer => [...oldBuffer, data]);
     }
   }
 

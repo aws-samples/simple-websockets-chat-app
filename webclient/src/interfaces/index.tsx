@@ -44,7 +44,7 @@ export interface ConnectionState {
 }
 
 export interface RoomState {
-  roomId: string;
+  roomId?: string;
   authorId: string;
   peopleInRoom: number;
   messages: Message[]

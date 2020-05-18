@@ -9,6 +9,7 @@ import uuid from '../helpers/uuid'
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
 import { Message } from '../interfaces'
+import { RoomContext } from '../context/roomContext'
 
 interface Props {
   authorId: string;
@@ -19,6 +20,8 @@ interface Props {
 const TextBox: React.FC<Props> = ({ authorId, onSend, roomId }) => {
   const [text, setText] = React.useState("");
   const [isOptionsOpen, setIsOptionsOpen] = React.useState(false);
+  const { peopleInRoom } = React.useContext(RoomContext);
+
   const onChange = ({ currentTarget }: React.FormEvent<HTMLInputElement>) => {
     setText(currentTarget.value);
   }
@@ -44,9 +47,12 @@ const TextBox: React.FC<Props> = ({ authorId, onSend, roomId }) => {
     <div style={style}>
       {
         isOptionsOpen &&
-        <ShareRoom roomId={roomId} showQr showCopyLink showNewRoom />
+        <ShareRoom roomId={roomId} showQr showCopyLink showNewRoom showPeopleInRoom/>
       }
       <form className="textbox" onSubmit={onSubmit}>
+        <div className="textbox-ppl slide-out-top" key={peopleInRoom}>
+        {peopleInRoom}
+        </div>
         <OptionsToggle inverted={inverted} active={isOptionsOpen}
           onClick={() => setIsOptionsOpen(!isOptionsOpen)}
         />
