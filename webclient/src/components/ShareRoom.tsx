@@ -23,11 +23,7 @@ const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom
   };
   return (
     <div className="share-room">
-      {showQr && (
-        <div className="qr-image">
-          <img src={getQrUrl(roomUrl)} alt={roomUrl} />
-        </div>
-      )}
+
       {showCopyLink && (
         <div className="copy-link">
           <input
@@ -49,6 +45,11 @@ const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom
         <button><a className="create-new-room" href={newRoomUrl}>
           Create new room
         </a></button>
+      )}
+      {showQr && (
+        <div className="qr-image">
+          <img src={getQrUrl(roomUrl)} alt={roomUrl} />
+        </div>
       )}
     </div>
   );

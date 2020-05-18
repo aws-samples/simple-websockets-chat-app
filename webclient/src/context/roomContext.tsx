@@ -2,19 +2,23 @@ import * as React from 'react'
 import uuid from '../helpers/uuid'
 import { RoomState, Message, MessageEvent, EventListener, PeopleInRoomChangedEvent } from '../interfaces'
 
-import { buildEvent } from '../api/eventEmitter'
-
 import { EventContext } from './eventContext'
 
 interface RoomStateContext extends RoomState {
-  sendMessage: (message: Message) => void
+  newRoomId: () => string;
+  joinRoom: (roomId: string) => void;
+  leaveRoom: (roomId: string) => void;
+  sendMessage: (message: Message) => void;
 }
 const DEFAULT_ROOM_STATE_CONTEXT: RoomStateContext = {
-  roomId: "lobby",
+  roomId: undefined,
   authorId: uuid(),
   peopleInRoom: 0,
   messages: [],
-  sendMessage: () => {}
+  newRoomId: uuid,
+  joinRoom: () => {},
+  leaveRoom: () => {},
+  sendMessage: () => {},
 };
 
 
@@ -53,32 +57,45 @@ const RoomProvider: React.FC<RoomState> = ({
     },
   }
 
-  React.useEffect(() => {
-    const joinRoomEvent = buildEvent('ROOM_JOINED', { roomId, authorId });
-    events.send(joinRoomEvent);
+  const sendMessage = (message: Message) => {
+    if (roomId) {
+      events.send('MESSAGE_SENT', message);
+      setMessages(sortByCreatedAt([...messages, message]));
+    }
+  }
+
+  const joinRoom = (roomId: string) => {
+    events.send('ROOM_JOINED', { roomId, authorId });
     events.addEventListener(messageSentListener);
     events.addEventListener(peopleInRoomChangedListener);
-    return () => {
-      const leaveRoomEvent = buildEvent('ROOM_LEFT', { roomId, authorId });
-      events.send(leaveRoomEvent);
-      events.removeEventListener(messageSentListener);
-      events.removeEventListener(peopleInRoomChangedListener);
-    }
-  }, [roomId])
-
-  const sendMessage = (message: Message) => {
-    const event = buildEvent('MESSAGE_SENT', message);
-    events.send(event);
-    setMessages(sortByCreatedAt([...messages, message]));
   }
+
+  const leaveRoom = (roomId: string) => {
+    events.send('ROOM_LEFT', { roomId, authorId });
+    events.removeEventListener(messageSentListener);
+    events.removeEventListener(peopleInRoomChangedListener);
+  }
+
+  React.useEffect(() => {
+    if (!roomId) {
+      return;
+    }
+
+    joinRoom(roomId)
+    return () => leaveRoom(roomId)
+  }, [roomId])
 
   const state: RoomStateContext = {
     roomId,
     authorId,
     messages,
     peopleInRoom,
+    newRoomId: uuid,
+    joinRoom,
+    leaveRoom,
     sendMessage,
   }
+
   return (
     <RoomContext.Provider value={state}>
       {children}
