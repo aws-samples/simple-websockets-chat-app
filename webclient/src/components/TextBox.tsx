@@ -44,9 +44,11 @@ const TextBox: React.FC = () => {
         <ShareRoom roomId={roomId} showQr showCopyLink showNewRoom showPeopleInRoom/>
       }
       <form className="textbox" onSubmit={onSubmit}>
-        <div className="textbox-ppl slide-out-top" key={peopleInRoom}>
-        {peopleInRoom}
-        </div>
+        {peopleInRoom > 0 && (
+          <div className="textbox-ppl slide-out-top" key={peopleInRoom}>
+            {peopleInRoom}
+          </div>
+        )}
         <OptionsToggle inverted={inverted} active={isOptionsOpen}
           onClick={() => setIsOptionsOpen(!isOptionsOpen)}
         />
