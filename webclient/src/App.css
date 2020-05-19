@@ -1,7 +1,11 @@
 :root {
-   --light: #eaebed;
-   --dark: #2a2a2a;
-   --border: solid 3px #1f1235;
+  --black: #0d0d0d;
+  --white: #fffffe;
+  --light: #eff0f3;
+  --dark: #2a2a2a;
+  --highlight: #ff8e3c;
+  --hot: #d9376e;
+  --border: solid 3px #2a2a2a;
  }
  html,
  body {
@@ -25,10 +29,10 @@
  }
 
  .txt,.txt.light{
-   color: #eaebed;
+   color: var(--light);
  }
  .txt.dark {
-   color: #525252;
+   color: var(--dark);
  }
  .room {
    display: flex;
