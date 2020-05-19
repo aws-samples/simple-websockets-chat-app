@@ -1,6 +1,7 @@
 :root {
    --light: #eaebed;
-   --dark: #525252;
+   --dark: #2a2a2a;
+   --border: solid 3px #1f1235;
  }
  html,
  body {
@@ -36,5 +37,8 @@
    max-width: 600px;
    margin: 0 auto;
    padding: 0;
-   background-color: white;
+   background-color: #eff0f3;
+   border: var(--border);
+   border-radius: 5px 5px 0 0;
+   border-bottom: 0;
  }

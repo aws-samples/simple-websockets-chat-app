@@ -19,9 +19,11 @@
 
  ul.messages li span {
    max-width: 55%;
-   border-radius: 8px;
-   padding: 6px 12px;
-   color: white;
+   border-radius: 5px;
+   padding: 0.5rem;
+   font-size: 1rem;
+   font-weight: bold;
+   border: var(--border);
  }
 
  ul.messages li.mine {
