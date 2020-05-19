@@ -27,16 +27,16 @@
 .textbox-ppl {
   position: absolute;
   font-size: 2em;
-  border: 4px solid #525252;
-  background: #eaebed;
-  border-radius: 4px;
-  padding: 6px;
-  color: #525252;
+  border: var(--border);
+  background: var(--highlight);
+  border-radius: 5px;
+  padding: 1rem;
+  color: var(--dark);
 }
 
 .slide-out-top {
-  -webkit-animation: slide-out-top 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
-  animation: slide-out-top 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+  -webkit-animation: slide-out-top 1s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: slide-out-top 1s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
 
 /* ----------------------------------------------
