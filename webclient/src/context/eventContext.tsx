@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { EventType, EventListener } from '../interfaces'
 import { buildEvent, encodeEvent, decodePayload } from '../api/eventEmitter'
+import { logger } from '../helpers/log'
 
 interface EventContextState {
   send: (eventType: EventType, payload: any) => void;
@@ -18,6 +19,7 @@ interface Props {
   connection: WebSocket;
 }
 
+const log = logger('EventProvider')
 const EventProvider: React.FC<Props> = ({ connection, children }) => {
   const [listeners, setListeners] = React.useState<EventListener[]>([]);
   const [buffer, setBuffer] = React.useState<string[]>([]);
@@ -38,10 +40,14 @@ const EventProvider: React.FC<Props> = ({ connection, children }) => {
   React.useEffect(listenForConnectionOpen, [isOpen, buffer]);
 
   const notifyEvent = (event: MessageEvent) => {
-    const serverEvent = decodePayload(event.data);
-    const receivedEventType = serverEvent.meta.e;
-    listeners.filter(({ eventType }) => eventType == receivedEventType)
-      .forEach(listener => listener.callback(serverEvent))
+    try {
+      const serverEvent = decodePayload(event.data);
+      const receivedEventType = serverEvent.meta.e;
+      listeners.filter(({ eventType }) => eventType == receivedEventType)
+        .forEach(listener => listener.callback(serverEvent))
+    } catch (error) {
+      log(error);
+    }
   };
   const listenForConnectionMessages = () => {
     connection.addEventListener('message', notifyEvent);
