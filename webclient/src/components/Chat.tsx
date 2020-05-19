@@ -4,14 +4,16 @@ import { RoomContext } from '../context/roomContext'
 
 import Messages from './Messages'
 import TextBox from './TextBox'
+import { PlaySoundOnNewMessage } from './PlaySoundOnNewMessage';
 
 const Chat: React.FC = () => {
-  const { authorId, roomId, messages, sendMessage } = React.useContext(RoomContext);
+  const { authorId, messages } = React.useContext(RoomContext);
 
   return (
     <>
+      <PlaySoundOnNewMessage />
       <Messages messages={messages} authorId={authorId} />
-      <TextBox onSend={sendMessage} authorId={authorId} roomId={roomId} />
+      <TextBox />
     </>
   );
 };
