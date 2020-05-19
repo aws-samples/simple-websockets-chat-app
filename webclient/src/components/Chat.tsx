@@ -6,12 +6,12 @@ import Messages from './Messages'
 import TextBox from './TextBox'
 
 const Chat: React.FC = () => {
-  const { authorId, roomId, messages, sendMessage } = React.useContext(RoomContext);
+  const { authorId, messages } = React.useContext(RoomContext);
 
   return (
     <>
       <Messages messages={messages} authorId={authorId} />
-      <TextBox onSend={sendMessage} authorId={authorId} roomId={roomId} />
+      <TextBox />
     </>
   );
 };

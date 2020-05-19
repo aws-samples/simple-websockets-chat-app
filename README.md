@@ -53,7 +53,7 @@ $ npm install -g wscat
 ``` bash
 $ wscat -c wss://{YOUR-API-ID}.execute-api.{YOUR-REGION}.amazonaws.com/{STAGE}
 ```
-4. To test the sendMessage function, send a JSON message like the following example. The Lambda function sends it back using the callback URL: 
+4. To test the sendMessage function, send a JSON message like the following example. The Lambda function sends it back using the callback URL:
 ``` bash
 $ wscat -c wss://{YOUR-API-ID}.execute-api.{YOUR-REGION}.amazonaws.com/prod
 connected (press CTRL+C to quit)
@@ -64,3 +64,7 @@ connected (press CTRL+C to quit)
 ## License Summary
 
 This sample code is made available under a modified MIT license. See the LICENSE file.
+
+## Attributions
+This code uses sounds from freesound:
+(water drop-05 by kijjaz)[https://freesound.org/people/kijjaz/sounds/16750/]

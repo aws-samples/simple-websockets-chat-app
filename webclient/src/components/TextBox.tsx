@@ -8,29 +8,23 @@ import OptionsToggle from './OptionsToggle'
 import uuid from '../helpers/uuid'
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
-import { Message } from '../interfaces'
 import { RoomContext } from '../context/roomContext'
 
-interface Props {
-  authorId: string;
-  roomId: string;
-  onSend: (message: Message) => void;
-}
 
-const TextBox: React.FC<Props> = ({ authorId, onSend, roomId }) => {
+const TextBox: React.FC = () => {
   const [text, setText] = React.useState("");
   const [isOptionsOpen, setIsOptionsOpen] = React.useState(false);
-  const { peopleInRoom } = React.useContext(RoomContext);
+  const { authorId, roomId, peopleInRoom, sendMessage } = React.useContext(RoomContext);
 
   const onChange = ({ currentTarget }: React.FormEvent<HTMLInputElement>) => {
     setText(currentTarget.value);
   }
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!text || !text.length) {
+    if (!text || !text.length || !roomId) {
       return;
     }
-    onSend({
+    sendMessage({
       createdAt: new Date().toISOString(),
       authorId,
       roomId,
@@ -46,7 +40,7 @@ const TextBox: React.FC<Props> = ({ authorId, onSend, roomId }) => {
   return (
     <div style={style}>
       {
-        isOptionsOpen &&
+        isOptionsOpen && roomId &&
         <ShareRoom roomId={roomId} showQr showCopyLink showNewRoom showPeopleInRoom/>
       }
       <form className="textbox" onSubmit={onSubmit}>
