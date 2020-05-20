@@ -1,11 +1,10 @@
 import * as React from 'react'
 import '../styles/Home.css'
-import ShareRoom from '../components/ShareRoom';
 const Navbar: React.FC = () => {
   return (
     <section className="navbar">
       <span>dilo</span>
-      <span>new conversation</span>
+      <span>new chat</span>
     </section>
   );
 }
@@ -14,9 +13,14 @@ const Hero: React.FC = () => {
     <section className="hero">
       <div className="header">
         <h1>No-accounts Chat</h1>
+        <p>
+          Start conversations without revealing any personal details.
+          No email, no phone #, no login, no surprises.
+        </p>
+        <CTA>Let's start</CTA>
       </div>
       <div className="subheader">
-        Annonymous Conversations
+
       </div>
     </section>
   );
@@ -26,9 +30,9 @@ const SocialProof: React.FC = () => {
     <section className="socialproof">socialproof</section>
   );
 }
-const CTA: React.FC = () => {
+const CTA: React.FC = ({ children }) => {
   return (
-    <section className="cta">cta</section>
+    <section className="cta">{children}</section>
   );
 }
 const Features: React.FC = () => {

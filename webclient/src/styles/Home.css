@@ -11,6 +11,19 @@
   justify-content: space-between;
 }
 
+.cta {
+  background-color: var(--highlight);
+  border-radius: 5px;
+  border: var(--border);
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  font-weight: bold;
+  text-align: center;
+  padding: 0.5rem;
+  margin: 0 auto;
+  max-width: 120px;
+}
+
 @media screen and (max-width: 991px) {
   .home {
     padding-top: 3.5rem;
