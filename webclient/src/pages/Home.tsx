@@ -1,5 +1,7 @@
 import * as React from 'react'
 import '../styles/Home.css'
+import { Message } from '../interfaces';
+import Messages from '../components/Messages';
 const Navbar: React.FC = () => {
   return (
     <section className="navbar">
@@ -7,6 +9,22 @@ const Navbar: React.FC = () => {
       <span>new chat</span>
     </section>
   );
+}
+
+const MiniChat: React.FC = () => {
+  return (
+    <div className="minichat">
+      <div className="messages">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div className="bar">
+        <div className="input">
+        </div>
+      </div>
+    </div>
+  )
 }
 const Hero: React.FC = () => {
   return (
@@ -17,6 +35,7 @@ const Hero: React.FC = () => {
           Start conversations without revealing any personal details.
           No email, no phone #, no login, no surprises.
         </p>
+        <MiniChat />
         <CTA>Let's start</CTA>
       </div>
       <div className="subheader">

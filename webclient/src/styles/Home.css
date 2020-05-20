@@ -24,6 +24,62 @@
   max-width: 120px;
 }
 
+.minichat {
+  background-color: var(--white);
+  border: var(--border);
+  border-width: 1.5px;
+  border-radius: 3px;
+  width: 45%;
+  max-width: 180px;
+  margin: 2rem 3rem;
+}
+.minichat .messages {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  animation: slide-in-top 3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.minichat .messages span {
+  padding: 0.5rem;
+  margin: 0.1rem;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  background-color: #078080;
+  max-width: 45%;
+}
+.minichat .messages span:first-child {
+  max-width: 25%;
+}
+.minichat .messages span:last-child {
+  background-color: var(--hot);
+  min-width: 35%;
+  align-self: flex-end;
+}
+.minichat .bar {
+  background-color: var(--hot);
+
+  padding: 0.5rem;
+}
+.minichat .input {
+  border-radius: 3px;
+  margin: 0 auto;
+  max-width: 90%;
+  min-height: 1rem;
+  background-color: var(--white);
+}
+
+@keyframes slide-in-top {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 @media screen and (max-width: 991px) {
   .home {
     padding-top: 3.5rem;
