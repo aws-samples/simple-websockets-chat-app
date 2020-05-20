@@ -1,4 +1,5 @@
 :root {
+  /* Palette */
   --black: #0d0d0d;
   --white: #fffffe;
   --light: #eff0f3;
@@ -6,6 +7,20 @@
   --highlight: #ff8e3c;
   --hot: #d9376e;
   --border: solid 3px #2a2a2a;
+
+  /* Fonts */
+  --font-size-1: 3.5rem;
+  --line-height-1: 1.15;
+
+  --font-size-2: 3rem;
+  --line-height-2: 1.3;
+
+  --font-size-3: 2rem;
+  --line-height-3: 30px;
+
+  --font-size-4: 1.1rem;
+  --line-height-4: 1.7;
+
  }
  html,
  body {
@@ -16,13 +31,50 @@
    display: block;
    font-family: Helvetica, Arial, sans-serif;
    -webkit-font-smoothing: antialiased;
-   background-color: whitesmoke;
+   background-color: var(--light);
+   color: var(--dark);
  }
 
  a {
    color: var(--dark);
    text-decoration: none;
  }
+
+ h1 {
+   font-size: var(--font-size-1);
+   line-height: var(--line-height-1);
+ }
+
+ h2 {
+   font-size: var(--font-size-2);
+   line-height: var(--line-height-2);
+ }
+
+ h3 {
+   font-size: var(--font-size-3);
+   line-height: var(--line-height-3);
+ }
+
+ h4, p {
+   font-size: var(--font-size-4);
+   line-height: var(--line-height-4);
+ }
+ @media screen and (max-width: 991px) {
+   h1 {
+     font-size: 3rem;
+   }
+ }
+ @media screen and (max-width: 767px) {
+   h1 {
+     font-size: 2.7rem;
+   }
+ }
+ @media screen and (max-width: 479px) {
+   h1 {
+     font-size: 2.5rem;
+   }
+ }
+
 
  #root {
    height: 100%;

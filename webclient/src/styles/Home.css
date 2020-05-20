@@ -1,0 +1,36 @@
+.home {
+  padding: 7rem 0;
+  width: 90%;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.navbar {
+  display: flex;
+  margin-top: 3rem;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 991px) {
+  .home {
+    padding-top: 3.5rem;
+    padding-bottom: 5rem;
+  }
+  .navbar {
+    margin-top: 1rem;
+  }
+}
+@media screen and (max-width: 767px) {
+  .navbar {
+    align-items: center;
+    flex-direction: column;
+  }
+}
+@media screen and (max-width: 479px) {
+  .home {
+      width: 85%;
+  }
+  .navbar {
+    margin-top: -2rem;
+  }
+}
