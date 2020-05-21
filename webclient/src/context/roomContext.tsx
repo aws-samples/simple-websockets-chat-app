@@ -28,7 +28,7 @@ const sortByCreatedAt = (messages: Message[]) =>
   messages.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 0));
 
 const RoomProvider: React.FC<RoomState> = ({
-  roomId,
+  roomId: initialRoomId,
   authorId,
   messages: initialMessages,
   peopleInRoom: initialPeopleInRoom,
@@ -36,6 +36,7 @@ const RoomProvider: React.FC<RoomState> = ({
 }) => {
   const [messages, setMessages] = React.useState(initialMessages);
   const [peopleInRoom, setPeopleInRoom] = React.useState(initialPeopleInRoom);
+  const [roomId, setRoomId] = React.useState(initialRoomId);
 
   const events = React.useContext(EventContext);
 
@@ -68,22 +69,24 @@ const RoomProvider: React.FC<RoomState> = ({
     events.send('ROOM_JOINED', { roomId, authorId });
     events.addEventListener(messageSentListener);
     events.addEventListener(peopleInRoomChangedListener);
+    setRoomId(roomId);
   }
 
-  const leaveRoom = (roomId: string) => {
-    events.send('ROOM_LEFT', { roomId, authorId });
+  const leaveRoom = (newRoomId: string) => {
+    events.send('ROOM_LEFT', { roomId: newRoomId, authorId });
     events.removeEventListener(messageSentListener);
     events.removeEventListener(peopleInRoomChangedListener);
+    setRoomId(undefined);
   }
 
   React.useEffect(() => {
-    if (!roomId) {
+    if (!initialRoomId) {
       return;
     }
 
-    joinRoom(roomId)
-    return () => leaveRoom(roomId)
-  }, [roomId])
+    joinRoom(initialRoomId)
+    return () => leaveRoom(initialRoomId)
+  }, [])
 
   const state: RoomStateContext = {
     roomId,

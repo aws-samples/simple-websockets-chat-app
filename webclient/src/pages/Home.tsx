@@ -1,5 +1,8 @@
 import * as React from 'react'
 import '../styles/Home.css'
+import Chat from '../components/Chat'
+import { RoomContext } from '../context/roomContext';
+
 const Navbar: React.FC = () => {
   return (
     <section className="navbar">
@@ -10,16 +13,15 @@ const Navbar: React.FC = () => {
 }
 
 const MiniChat: React.FC = () => {
+  const { joinRoom, leaveRoom } = React.useContext(RoomContext);
+  React.useEffect(() => {
+    joinRoom('home');
+    return () => leaveRoom('home');
+  }, []);
   return (
     <div className="minichat">
-      <div className="messages">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <div className="bar">
-        <div className="input">
-        </div>
+      <div className="room">
+        <Chat />
       </div>
     </div>
   )

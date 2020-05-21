@@ -1,8 +1,16 @@
+
 .home {
   padding: 7rem 0;
   width: 90%;
   max-width: 1040px;
   margin: 0 auto;
+
+  /* https://www.happyhues.co/palettes/13 */
+  --background: #0f0e17;
+  --main: #fffffe;
+  --highlight: #ff8906;
+  --secondary: #f25f4c;
+  --tertiary: #e53170;
 }
 
 .home section {
@@ -48,14 +56,12 @@
 }
 
 .minichat {
-  background-color: #f9f8fc;
-  border: solid 3px #94a1b2;
+
+}
+.minichat .room {
+  border-bottom: var(--border);
   border-radius: 5px;
-  width: 100%;
-  max-width: 200px;
-  display: flex;
-  flex-direction: column;
-  margin: 2rem auto;
+  min-height: 300px;
 }
 .minichat .messages {
   padding: 0.5rem;
@@ -147,9 +153,7 @@
     padding: 0;
   }
   .minichat {
-    margin-bottom: 0;
-    border: solid 1px #94a1b2;
-    border-radius: 3px;
+    
   }
   .cta {
     border-width: 0;
