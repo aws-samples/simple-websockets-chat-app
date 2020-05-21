@@ -5,10 +5,10 @@ import { RoomContext } from '../context/roomContext';
 
 const Navbar: React.FC = () => {
   return (
-    <section className="navbar">
-      <span>dilo</span>
-      <span>new chat</span>
-    </section>
+    <div className="navbar">
+      <span className="link">dilo</span>
+      <span className="link">new chat</span>
+    </div>
   );
 }
 
@@ -28,19 +28,19 @@ const MiniChat: React.FC = () => {
 }
 const Hero: React.FC = () => {
   return (
-    <section className="hero">
-      <div className="subheader">
-      <MiniChat />
-      </div>
+    <div className="hero">
       <div className="header">
-      <h1>No-accounts Chat</h1>
-      <p>
-      Start conversations without revealing any personal details.
-      No email, no phone #, no login, no surprises.
-      </p>
-      <CTA>Get Started</CTA>
+        <h1>No-accounts Chat</h1>
+        <p>
+          Start conversations without revealing any personal details.
+          No email, no phone #, no login, no surprises.
+        </p>
+        <CTA>Get Started</CTA>
       </div>
-    </section>
+      <div className="subheader">
+        <MiniChat />
+      </div>
+    </div>
   );
 }
 const CTA: React.FC<{hot?: boolean}> = ({ children, hot }) => {

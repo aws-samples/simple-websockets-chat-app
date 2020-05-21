@@ -31,7 +31,6 @@
    display: block;
    font-family: Helvetica, Arial, sans-serif;
    -webkit-font-smoothing: antialiased;
-   background-color: var(--light);
    color: var(--dark);
  }
 
@@ -41,6 +40,8 @@
  }
 
  h1 {
+   margin-top: 0px;
+   margin-bottom: 1rem;
    font-size: var(--font-size-1);
    line-height: var(--line-height-1);
  }
