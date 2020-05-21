@@ -63,40 +63,6 @@
   border-radius: 5px;
   min-height: 300px;
 }
-.minichat .messages {
-  padding: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  animation: slide-in-top 3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
-.minichat .messages span {
-  padding: 0.5rem;
-  margin: 0.1rem;
-  border-radius: 5px;
-  font-size: 0.7rem;
-  background-color: #bae8e8;
-  max-width: 45%;
-}
-.minichat .messages span:first-child {
-  max-width: 25%;
-}
-.minichat .messages span:last-child {
-  background-color: #fec7d7;
-  min-width: 35%;
-  align-self: flex-end;
-}
-.minichat .bar {
-  background-color: #fec7d7;
-
-  padding: 0.5rem;
-}
-.minichat .input {
-  border-radius: 3px;
-  margin: 0 auto;
-  max-width: 90%;
-  min-height: 1rem;
-  background-color: #f9f8fc;
-}
 
 .features {
   background-color: var(--white);
@@ -153,7 +119,7 @@
     padding: 0;
   }
   .minichat {
-    
+
   }
   .cta {
     border-width: 0;
