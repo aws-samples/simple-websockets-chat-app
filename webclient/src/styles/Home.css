@@ -1,10 +1,4 @@
-
 .home {
-  padding: 7rem 0;
-  width: 90%;
-  max-width: 1040px;
-  margin: 0 auto;
-
   /* https://www.happyhues.co/palettes/13 */
   /* --background: #0f0e17;
   --main: #fffffe;
@@ -13,9 +7,17 @@
   --tertiary: #e53170; */
 }
 
-.home section {
-  padding-top: 3.5rem;
-  padding-bottom: 5rem;
+.section {
+  background-color: var(--light);
+  padding: 5rem 0;
+}
+.section.white {
+  background-color: var(--white);
+}
+.container {
+  width: 90%;
+  max-width: 1040px;
+  margin: 0 auto;
 }
 
 .navbar {
@@ -76,9 +78,50 @@
 }
 
 .features {
+  background-color: var(--light);
+}
+
+.features .sticky-section {
+  position: relative;
+  display: block;
+  align-items: flex-start;
+}
+
+.clearfix:before, .clearfix:after {
+  content: " ";
+  display: block;
+}
+.clearfix::after {
+  clear: both;
+}
+
+.features .sticky-column {
+  position: sticky;
+  top: 6rem;
+  width: 40%;
+  margin-right: 7%;
+  float: left;
+}
+
+.features .sticky-cards-wrap {
+  width: 50%;
+  float: right;
+  flex: 1;
+}
+
+.features .sticky-card {
+  margin-bottom: 2rem;
+  padding: 2.5rem;
+  border-radius: 3px;
   background-color: var(--white);
-  margin: 0 -10%;
-  padding: 0 10%;
+}
+
+.features .sticky-card-header {
+  margin-bottom: 2rem;
+}
+
+.features .sticky-card-copy {
+  margin-bottom: 2rem;
 }
 
 .features ul {
@@ -105,7 +148,7 @@
 
 
 @media screen and (max-width: 991px) {
-  .home {
+  .section {
     padding-top: 3.5rem;
     padding-bottom: 5rem;
   }
@@ -124,10 +167,15 @@
   .hero .subheader {
     width: 100%;
   }
-  .features ul {
-    grid-column-gap: 1rem;
-    grid-row-gap: 1rem;
-    grid-template-columns: 1fr;
+  .features .sticky-column {
+    position: relative;
+    top: 0rem;
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 4rem;
+  }
+  .features .sticky-cards-wrap {
+    width: 100%;
   }
 }
 @media screen and (max-width: 767px) {
@@ -150,7 +198,7 @@
   }
 }
 @media screen and (max-width: 479px) {
-  .home {
+  .container {
       width: 85%;
   }
   .navbar {
