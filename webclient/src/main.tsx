@@ -9,7 +9,7 @@ import { ConnectionProvider } from './context/connectionContext'
 
 import ConnectionStatus from './components/ConnectionStatus'
 
-const roomId = getRoomToJoin(window.location.search)
+const roomId = getRoomToJoin(window.location.search) || undefined;
 const rootElement = document.getElementById("root")
 const authorId = uuid()
 const serverUrl = process.env.SERVER_URL

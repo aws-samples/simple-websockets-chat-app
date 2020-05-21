@@ -1,7 +1,6 @@
 .circle {
   font-size: 2em;
  }
-
 .circle.active:after {
   background-color: #eaebed75;
   color: #525252;

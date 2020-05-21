@@ -1,0 +1,221 @@
+.home {
+  /* https://www.happyhues.co/palettes/13 */
+  /* --background: #0f0e17;
+  --main: #fffffe;
+  --highlight: #ff8906;
+  --secondary: #f25f4c;
+  --tertiary: #e53170; */
+}
+
+.section {
+  background-color: var(--light);
+  padding: 5rem 0;
+}
+.section.white {
+  background-color: var(--white);
+}
+.container {
+  width: 90%;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.navbar {
+  display: flex;
+  margin-top: -3rem;
+  justify-content: space-between;
+  padding: 0 3rem;
+}
+
+.navbar .link {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.hero {
+  display: flex;
+  margin-top: 5rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero .header {
+  width: 40%;
+}
+
+.hero .subheader {
+  height: auto;
+  width: 80%;
+  max-width: 480px;
+}
+
+.cta {
+  background-color: var(--highlight);
+  border-radius: 3px;
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  font-weight: bold;
+  text-align: center;
+  padding: 0.5rem;
+  margin: 0 auto;
+  margin-top: 2.5rem;
+  max-width: 120px;
+  display: block;
+}
+.cta.hot {
+  background-color: var(--hot);
+  color: var(--light);
+}
+
+.minichat {
+
+}
+.minichat .room {
+  border-bottom: var(--border);
+  border-radius: 5px;
+  height: 320px;
+}
+
+.features {
+  background-color: var(--light);
+}
+
+.features .sticky-section {
+  position: relative;
+  display: block;
+  align-items: flex-start;
+}
+
+.clearfix:before, .clearfix:after {
+  content: " ";
+  display: block;
+}
+.clearfix::after {
+  clear: both;
+}
+
+.features .sticky-column {
+  position: sticky;
+  top: 6rem;
+  width: 40%;
+  margin-right: 7%;
+  float: left;
+}
+
+.features .sticky-cards-wrap {
+  width: 50%;
+  float: right;
+  flex: 1;
+}
+
+.features .sticky-card {
+  margin-bottom: 2rem;
+  padding: 2.5rem;
+  border-radius: 3px;
+  background-color: var(--white);
+}
+
+.features .sticky-card-header {
+  margin-bottom: 2rem;
+}
+
+.features .sticky-card-copy {
+  margin-bottom: 2rem;
+}
+
+.features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-column-gap: 2rem;
+  grid-row-gap: 2rem;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+}
+.features ul li {
+  background-color: var(--light);
+  padding: 2.5rem;
+  border-radius: 3px;
+}
+
+.features ul li h3 {
+  font-size: 1.7rem;
+  margin: 0;
+}
+
+
+@media screen and (max-width: 991px) {
+  .section {
+    padding-top: 3.5rem;
+    padding-bottom: 5rem;
+  }
+  .navbar {
+    margin-top: -1rem;
+  }
+  .hero {
+    margin-top: 4rem;
+    flex-direction: column;
+  }
+  .hero .header {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 2.5rem;
+  }
+  .hero .subheader {
+    width: 100%;
+  }
+  .features .sticky-column {
+    position: relative;
+    top: 0rem;
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 4rem;
+  }
+  .features .sticky-cards-wrap {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 767px) {
+  .hero {
+    flex-direction: column;
+    margin-top: 3rem;
+  }
+  .hero .subheader {
+    padding: 0;
+  }
+  .minichat {
+
+  }
+  .cta {
+    margin-top: 1.5rem;
+    padding: 1.2rem;
+  }
+  .features ul li {
+    padding: 1.5rem;
+  }
+}
+@media screen and (max-width: 479px) {
+  .container {
+      width: 85%;
+  }
+  .navbar {
+    margin-top: -2rem;
+  }
+  .hero .subheader {
+    width: 100%;
+  }
+}
+
+@keyframes slide-in-top {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
