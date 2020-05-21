@@ -24,10 +24,10 @@
   display: flex;
   margin-top: -3rem;
   justify-content: space-between;
+  padding: 0 3rem;
 }
 
 .navbar .link {
-  margin-left: 1rem;
   font-size: 1.2rem;
   font-weight: 700;
   text-decoration: none;
@@ -51,7 +51,6 @@
 }
 
 .cta {
-  cursor: pointer;
   background-color: var(--highlight);
   border-radius: 3px;
   font-size: var(--font-size-4);
@@ -62,6 +61,7 @@
   margin: 0 auto;
   margin-top: 2.5rem;
   max-width: 120px;
+  display: block;
 }
 .cta.hot {
   background-color: var(--hot);

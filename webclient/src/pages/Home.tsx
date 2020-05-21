@@ -3,11 +3,15 @@ import '../styles/Home.css'
 import Chat from '../components/Chat'
 import { RoomContext } from '../context/roomContext';
 import { clsn } from '../helpers/color'
+import { getRoomUrl } from '../helpers/connection'
+
+
 const Navbar: React.FC = () => {
+  const { getNewRoomUrl } = React.useContext(RoomContext);
   return (
     <div className="navbar">
-      <span className="link">dilo</span>
-      <span className="link">new chat</span>
+      <a className="link" href="/">dilo</a>
+      <a className="link" href={getNewRoomUrl()}>new chat</span>
     </div>
   );
 }
@@ -35,7 +39,7 @@ const Hero: React.FC = () => {
           Start conversations without revealing any personal details.
           No email, no phone #, no login, no surprises.
         </p>
-        <CTA>Get Started</CTA>
+        <CTA text="Get Started" />
       </div>
       <div className="subheader">
         <MiniChat />
@@ -43,11 +47,12 @@ const Hero: React.FC = () => {
     </div>
   );
 }
-const CTA: React.FC<{hot?: boolean}> = ({ children, hot }) => {
+const CTA: React.FC<{hot?: boolean, text: string}> = ({ hot, text }) => {
+  const { getNewRoomUrl } = React.useContext(RoomContext);
   return (
-    <div className={"cta" + (hot ? ' hot' : '')}>
-      {children}
-    </div>
+    <a className={"cta" + (hot ? ' hot' : '')} href={getNewRoomUrl()}>
+      {text}
+    </a>
   );
 }
 
@@ -80,6 +85,7 @@ const Features: React.FC = () => {
             </p>
           </div>
         ))}
+        <CTA text="Start for free" hot/>
       </div>
     </div>
   );
@@ -87,7 +93,7 @@ const Features: React.FC = () => {
 const Footer: React.FC = () => {
   return (
     <div className="footer">
-      <div className="rights">      
+      <div className="rights">
       </div>
     </div>
   );

@@ -6,16 +6,27 @@ import { EventContext } from './eventContext'
 
 interface RoomStateContext extends RoomState {
   newRoomId: () => string;
+  getNewRoomUrl: () => string;
   joinRoom: (roomId: string) => void;
   leaveRoom: (roomId: string) => void;
   sendMessage: (message: Message) => void;
 }
+
+const getRoomUrl = (roomId: string): string => {
+  const roomUrl = new URL(window.location.href);
+  roomUrl.searchParams.delete("j");
+  roomUrl.searchParams.append("j", roomId);
+  return roomUrl.toString();
+};
+const getNewRoomUrl = () => getRoomUrl(uuid());
+
 const DEFAULT_ROOM_STATE_CONTEXT: RoomStateContext = {
   roomId: undefined,
   authorId: uuid(),
   peopleInRoom: 0,
   messages: [],
   newRoomId: uuid,
+  getNewRoomUrl,
   joinRoom: () => {},
   leaveRoom: () => {},
   sendMessage: () => {},
@@ -94,6 +105,7 @@ const RoomProvider: React.FC<RoomState> = ({
     messages,
     peopleInRoom,
     newRoomId: uuid,
+    getNewRoomUrl,
     joinRoom,
     leaveRoom,
     sendMessage,
