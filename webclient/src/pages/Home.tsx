@@ -69,7 +69,7 @@ const Features: React.FC = () => {
         <h2>Talking without commitment</h2>
         <p>
           People should be able to chat without revealing personal
-          information. Imagine you just arrived to a hostel and want
+          information. Imagine you just arrived at a hostel and want
           to know what's up for tonight. Just scan the code and
           interact with other guests, that simple.
         </p>
