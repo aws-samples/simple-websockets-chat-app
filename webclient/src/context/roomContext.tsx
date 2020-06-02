@@ -12,12 +12,7 @@ interface RoomStateContext extends RoomState {
   sendMessage: (message: Message) => void;
 }
 
-const getRoomUrl = (roomId: string): string => {
-  const roomUrl = new URL(window.location.href);
-  roomUrl.searchParams.delete("j");
-  roomUrl.searchParams.append("j", roomId);
-  return roomUrl.toString();
-};
+const getRoomUrl = (roomId: string): string => '/' + roomId;
 const getNewRoomUrl = () => getRoomUrl(uuid());
 
 const DEFAULT_ROOM_STATE_CONTEXT: RoomStateContext = {
