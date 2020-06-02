@@ -1,7 +1,7 @@
 import * as React from 'react'
 import '../styles/ShareRoom.css'
 
-import { getRoomUrl, getNewRoomUrl, getQrUrl } from '../helpers/connection'
+import { getRoomUrl, getNewRoomUrl, getQrUrl } from '../helpers/url'
 import { RoomContext } from '../context/roomContext';
 
 interface Props {
