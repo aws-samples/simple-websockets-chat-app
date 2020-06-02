@@ -7,6 +7,7 @@ import { RoomContext, RoomProvider } from '../context/roomContext';
 import { clsn } from '../helpers/color'
 import { ChatFeaturesProvider } from '../context/chatFeaturesContext';
 import uuid from '../helpers/uuid';
+import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const { getNewRoomUrl } = React.useContext(RoomContext);
@@ -54,9 +55,9 @@ const Hero: React.FC = () => {
 const CTA: React.FC<{hot?: boolean, text: string}> = ({ hot, text }) => {
   const { getNewRoomUrl } = React.useContext(RoomContext);
   return (
-    <a className={"cta" + (hot ? ' hot' : '')} href={getNewRoomUrl()}>
+    <Link className={"cta" + (hot ? ' hot' : '')} to={getNewRoomUrl()}>
       {text}
-    </a>
+    </Link>
   );
 }
 
