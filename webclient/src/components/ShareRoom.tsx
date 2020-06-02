@@ -11,9 +11,10 @@ interface Props {
   showJoinRoom?: boolean;
   showNewRoom?: boolean;
   showPeopleInRoom?: boolean;
+  showInviteTitle?: boolean;
 }
 
-const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom, showNewRoom, showPeopleInRoom }) => {
+const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom, showNewRoom, showPeopleInRoom, showInviteTitle }) => {
   const copyInputRef = React.useRef(null);
   const roomUrl = getRoomUrl(roomId);
   const newRoomUrl = getNewRoomUrl();
@@ -26,6 +27,12 @@ const ShareRoom: React.FC<Props> = ({ roomId, showQr, showCopyLink, showJoinRoom
   };
   return (
     <div className="share-room">
+
+      {showInviteTitle && (
+        <div className="invite-title">
+          <h2>Invite others</h2>
+        </div>
+      )}
 
       {showCopyLink && (
         <div className="copy-link">
