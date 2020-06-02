@@ -1,9 +1,12 @@
-import * as React from 'react'
+import '../App.css'
 import '../styles/Home.css'
+
+import * as React from 'react'
 import Chat from '../components/Chat'
-import { RoomContext } from '../context/roomContext';
+import { RoomContext, RoomProvider } from '../context/roomContext';
 import { clsn } from '../helpers/color'
 import { ChatFeaturesProvider } from '../context/chatFeaturesContext';
+import uuid from '../helpers/uuid';
 
 const Navbar: React.FC = () => {
   const { getNewRoomUrl } = React.useContext(RoomContext);
@@ -111,20 +114,23 @@ const Section: React.FC<{white?: boolean}> = ({ white, children }) => {
 }
 
 export const Home: React.FC = () => {
+  const [authorId] = React.useState(uuid());
   return (
-    <div className="home">
-      <Section white>
-        <Navbar />
-        <Hero />
-      </Section>
+    <RoomProvider authorId={authorId} roomId="home" messages={[]} peopleInRoom={0}>
+      <div className="home">
+        <Section white>
+          <Navbar />
+          <Hero />
+        </Section>
 
-      <Section>
-        <Features />
-      </Section>
+        <Section>
+          <Features />
+        </Section>
 
-      <Section white>
-        <Footer />
-      </Section>
-    </div>
+        <Section white>
+          <Footer />
+        </Section>
+      </div>
+    </RoomProvider>
   )
 }

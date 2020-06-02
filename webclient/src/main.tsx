@@ -1,17 +1,16 @@
 import * as React from 'react'
 import { render } from 'react-dom'
+import { BrowserRouter, Route } from 'react-router-dom';
+
 import App from './App'
 
-import uuid from './helpers/uuid'
-import { getRoomToJoin } from './helpers/connection'
+import { Home } from './pages/Home'
 
 import { ConnectionProvider } from './context/connectionContext'
 
 import ConnectionStatus from './components/ConnectionStatus'
 
-const roomId = getRoomToJoin(window.location.search) || undefined;
 const rootElement = document.getElementById("root")
-const authorId = uuid()
 const serverUrl = process.env.SERVER_URL
 
 if (!serverUrl) {
@@ -22,9 +21,16 @@ if (!serverUrl) {
 const connection = new WebSocket(serverUrl);
 
 render(
-  <ConnectionProvider connection={connection}>
-    <ConnectionStatus />
-    <App authorId={authorId} roomId={roomId} />
-  </ConnectionProvider>,
+  <BrowserRouter>
+    <ConnectionProvider connection={connection}>
+      <ConnectionStatus />
+      <Route exact={true} path="/" component={Home} />
+      <Route
+        exact={true}
+        path="/:roomId"
+        render={(props) => <App roomId={props.match.params.roomId} />}
+      />
+    </ConnectionProvider>
+  </BrowserRouter>,
   rootElement
 )
