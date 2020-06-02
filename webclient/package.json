@@ -12,12 +12,14 @@
   },
   "dependencies": {
     "react": "^16.6.0",
-    "react-dom": "^16.6.0"
+    "react-dom": "^16.6.0",
+    "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
     "@types/node": "^13.13.4",
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
+    "@types/react-router-dom": "^5.1.5",
     "parcel-bundler": "^1.10.3",
     "typescript": "^3.1.4"
   }
