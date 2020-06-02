@@ -3,6 +3,7 @@ import '../styles/Home.css'
 import Chat from '../components/Chat'
 import { RoomContext } from '../context/roomContext';
 import { clsn } from '../helpers/color'
+import { ChatFeaturesProvider } from '../context/chatFeaturesContext';
 
 const Navbar: React.FC = () => {
   const { getNewRoomUrl } = React.useContext(RoomContext);
@@ -23,7 +24,9 @@ const MiniChat: React.FC = () => {
   return (
     <div className="minichat">
       <div className="room">
-        <Chat />
+        <ChatFeaturesProvider features={{ canToggleOptions: false }}>
+          <Chat />
+        </ChatFeaturesProvider>
       </div>
     </div>
   )

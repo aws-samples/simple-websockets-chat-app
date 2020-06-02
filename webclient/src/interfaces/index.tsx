@@ -49,3 +49,7 @@ export interface RoomState {
   peopleInRoom: number;
   messages: Message[]
 }
+
+export interface ChatFeaturesState {
+  canToggleOptions?: boolean;
+}

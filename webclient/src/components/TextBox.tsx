@@ -37,11 +37,18 @@ const TextBox: React.FC = () => {
   const backgroundColor = colorFromUuid(authorId);
   const style = { backgroundColor };
   const inverted = shouldUseDark(backgroundColor);
+  const showShareRoom = isOptionsOpen || peopleInRoom < 2;
   return (
     <div className="textbox-wrapper" style={style}>
       {
-        isOptionsOpen && roomId &&
-        <ShareRoom roomId={roomId} showQr showCopyLink showNewRoom showPeopleInRoom/>
+        showShareRoom && roomId &&
+        <ShareRoom roomId={roomId}
+          showQr
+          showCopyLink
+          showNewRoom
+          showPeopleInRoom
+          showInviteTitle
+          />
       }
       <form className="textbox" onSubmit={onSubmit}>
         {peopleInRoom > 0 && (
@@ -49,7 +56,7 @@ const TextBox: React.FC = () => {
             {peopleInRoom}
           </div>
         )}
-        <OptionsToggle inverted={inverted} active={isOptionsOpen}
+        <OptionsToggle inverted={inverted} active={showShareRoom}
           onClick={() => setIsOptionsOpen(!isOptionsOpen)}
         />
         <input
