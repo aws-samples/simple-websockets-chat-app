@@ -61,6 +61,11 @@ connected (press CTRL+C to quit)
 < hello world
 ```
 
+## Additional Notes
+
+### Dynamodb TTL
+It can be configured by setting `TABLE_TTL_HOURS` in the `.env` file. It will mark the document as expired after the given hours. This is done due to the `ondisconnect` event not always being called, so we need to get rid of stale connections.
+
 ## License Summary
 
 This sample code is made available under a modified MIT license. See the LICENSE file.
