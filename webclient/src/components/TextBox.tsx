@@ -9,12 +9,14 @@ import uuid from '../helpers/uuid'
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
 import { RoomContext } from '../context/roomContext'
+import { ChatFeaturesContext } from '../context/chatFeaturesContext'
 
 
 const TextBox: React.FC = () => {
   const [text, setText] = React.useState("");
   const [isOptionsOpen, setIsOptionsOpen] = React.useState(false);
   const { authorId, roomId, peopleInRoom, sendMessage } = React.useContext(RoomContext);
+  const { canToggleOptions } = React.useContext(ChatFeaturesContext);
 
   const onChange = ({ currentTarget }: React.FormEvent<HTMLInputElement>) => {
     setText(currentTarget.value);
@@ -37,7 +39,7 @@ const TextBox: React.FC = () => {
   const backgroundColor = colorFromUuid(authorId);
   const style = { backgroundColor };
   const inverted = shouldUseDark(backgroundColor);
-  const showShareRoom = isOptionsOpen || peopleInRoom == 1;
+  const showShareRoom = canToggleOptions && (isOptionsOpen || peopleInRoom == 1);
   return (
     <div className="textbox-wrapper" style={style}>
       {
