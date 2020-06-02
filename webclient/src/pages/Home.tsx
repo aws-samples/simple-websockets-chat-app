@@ -3,15 +3,13 @@ import '../styles/Home.css'
 import Chat from '../components/Chat'
 import { RoomContext } from '../context/roomContext';
 import { clsn } from '../helpers/color'
-import { getRoomUrl } from '../helpers/connection'
-
 
 const Navbar: React.FC = () => {
   const { getNewRoomUrl } = React.useContext(RoomContext);
   return (
     <div className="navbar">
       <a className="link" href="/">dilo</a>
-      <a className="link" href={getNewRoomUrl()}>new chat</span>
+      <a className="link" href={getNewRoomUrl()}>new chat</a>
     </div>
   );
 }
