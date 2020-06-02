@@ -14,8 +14,15 @@ const ddb = new AWS.DynamoDB.DocumentClient({
   endpoint: endpoint && endpoint.length ? endpoint : undefined,
 });
 
+const calculateTtl = () => {
+  const msToAdd = 1000 * 60 * 60 * ttlHours;
+  const ttl = Date.now() + msToAdd;
+  // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/time-to-live-ttl-how-to.html
+  return Math.floor(ttl / 1000);
+}
+
 exports.put = Item => {
-  Item.ttl = new Date().getTime() + 1000 * 60 * 60 * ttlHours;
+  Item.ttl = calculateTtl();
   log('put', Item);
   return ddb
     .put({ TableName, Item })
