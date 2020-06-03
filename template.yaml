@@ -318,6 +318,11 @@ Resources:
             QueryString: false
           TargetOriginId: s3-website
           ViewerProtocolPolicy: redirect-to-https
+        CustomErrorResponses:
+        - ErrorCode: '403'
+          ResponsePagePath: "/index.html"
+          ResponseCode: '200'
+          ErrorCachingMinTTL: '300'
 
   S3Bucket:
     Type: AWS::S3::Bucket
