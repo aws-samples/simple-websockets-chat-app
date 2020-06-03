@@ -4,5 +4,12 @@ describe('Home', () => {
     cy.contains('new chat')
     cy.contains('Get Started')
     cy.contains('Start for free')
+
+    cy.contains('new chat')
+      .should('have.attr', 'href')
+      .then(href => {
+        cy.contains('new chat').click()
+        cy.url().should('include', href)
+      })
   })
 })
