@@ -10,6 +10,14 @@ describe('Home', () => {
       .then(href => {
         cy.contains('new chat').click()
         cy.url().should('include', href)
+
+        cy.get('input[type=text]')
+          .type('Hola')
+          .should('have.value', 'Hola')
+          .type('{enter}')
+          .should('have.value', '')
+
+        cy.contains('Hola')
       })
   })
 })
