@@ -4,6 +4,8 @@ import '../styles/Messages.css'
 import { Message } from '../interfaces'
 import { colorFromUuid, shouldUseDark, clsn } from '../helpers/color'
 
+import { MessageInteractions } from './MessageInteractions';
+
 interface Props {
   authorId: string;
   messages: Message[];
@@ -26,6 +28,7 @@ const Messages: React.FC<Props> = ({ authorId, messages }) => {
               <span className={className} style={style}>
                 {message.text}
               </span>
+              <MessageInteractions message={message} />
             </li>
           );
         })}
