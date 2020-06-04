@@ -17,7 +17,11 @@ describe('Home', () => {
       cy.contains('Invite others')
       cy.contains('Copy link') // Paste functionality can't be tested atm
       cy.url()
-        .then(url => cy.get('img').should('have.attr', 'alt', url))
+        .then(url => {
+          cy.get('img').should('have.attr', 'alt', url)
+          cy.contains('Create new room').click()
+          cy.url().should('not.be', url);
+        })
     })
   })
 })
