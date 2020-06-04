@@ -7,8 +7,8 @@ import { colorFromUuid, shouldUseDark, clsn } from '../helpers/color'
 import { MessageInteractions } from './MessageInteractions';
 
 const Messages: React.FC = () => {
-  const { authorId, messages, selectedMessage } = React.useContext(RoomContext);
-  
+  const { authorId, messages, selectedMessage, selectMessage } = React.useContext(RoomContext);
+
   return (
     <div className="messagesContainer">
       <ul className="messages">
@@ -23,6 +23,7 @@ const Messages: React.FC = () => {
             <li
               key={message.messageId}
               className={isMine ? "mine" : "theirs"}
+              onClick={() => selectMessage(isSelected ? undefined : message)}
             >
               <span className={className} style={style}>
                 {message.text}

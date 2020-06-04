@@ -10,7 +10,7 @@ interface RoomStateContext extends RoomState {
   joinRoom: (roomId: string) => void;
   leaveRoom: (roomId: string) => void;
   sendMessage: (message: Message) => void;
-  selectMessage: (message: Message) => void;
+  selectMessage: (message?: Message) => void;
 }
 
 const getRoomUrl = (roomId: string): string => '/' + roomId;
@@ -46,7 +46,7 @@ const RoomProvider: React.FC<RoomState> = ({
   const [messages, setMessages] = React.useState(initialMessages);
   const [peopleInRoom, setPeopleInRoom] = React.useState(initialPeopleInRoom);
   const [roomId, setRoomId] = React.useState(initialRoomId);
-  const [selectedMessage, setSelectedMessage] = React.useState<Message>();
+  const [selectedMessage, selectMessage] = React.useState<Message>();
 
   const events = React.useContext(EventContext);
 
@@ -87,10 +87,6 @@ const RoomProvider: React.FC<RoomState> = ({
     events.removeEventListener(messageSentListener);
     events.removeEventListener(peopleInRoomChangedListener);
     setRoomId(undefined);
-  }
-
-  const selectMessage = (message: Message | null) => {
-    setSelectedMessage(message || undefined);
   }
 
   React.useEffect(() => {
