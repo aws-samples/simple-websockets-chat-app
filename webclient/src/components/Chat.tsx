@@ -1,21 +1,15 @@
 import * as React from 'react'
 
-import { RoomContext } from '../context/roomContext'
-
 import Messages from './Messages'
 import TextBox from './TextBox'
-import { WhenDocumentIsHidden } from './WhenDocumentIsHidden';
+import WhenDocumentIsHidden from './WhenDocumentIsHidden';
 
-const Chat: React.FC = () => {
-  const { authorId, messages } = React.useContext(RoomContext);
-
-  return (
-    <>
-      <WhenDocumentIsHidden />
-      <Messages messages={messages} authorId={authorId} />
-      <TextBox />
-    </>
-  );
-};
+const Chat: React.FC = () => (
+  <>
+    <WhenDocumentIsHidden />
+    <Messages />
+    <TextBox />
+  </>
+);
 
 export default Chat;

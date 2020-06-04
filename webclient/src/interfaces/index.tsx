@@ -48,6 +48,7 @@ export interface RoomState {
   authorId: string;
   peopleInRoom: number;
   messages: Message[]
+  readonly selectedMessage?: Message;
 }
 
 export interface ChatFeaturesState {

@@ -10,7 +10,7 @@ const buildTitle = (newMessages: number, originalTitle: string): string => {
   return title;
 }
 
-export const WhenDocumentIsHidden = () => {
+const WhenDocumentIsHidden = () => {
   const { messages, authorId } = React.useContext(RoomContext);
   const otherMessagesCount = messages.filter(message => message.authorId != authorId).length;
 
@@ -46,3 +46,5 @@ export const WhenDocumentIsHidden = () => {
 
   return <audio ref={audioEl} src={newMessageSound} />
 }
+
+export default WhenDocumentIsHidden;

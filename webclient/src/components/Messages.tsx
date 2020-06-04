@@ -1,18 +1,14 @@
 import * as React from 'react'
 import '../styles/Messages.styl'
 
-import { Message } from '../interfaces'
+import { RoomContext } from '../context/roomContext'
 import { colorFromUuid, shouldUseDark, clsn } from '../helpers/color'
 
 import { MessageInteractions } from './MessageInteractions';
 
-interface Props {
-  authorId: string;
-  messages: Message[];
-  selectedMessage?: Message;
-}
-
-const Messages: React.FC<Props> = ({ authorId, messages, selectedMessage }) => {
+const Messages: React.FC = () => {
+  const { authorId, messages, selectedMessage } = React.useContext(RoomContext);
+  
   return (
     <div className="messagesContainer">
       <ul className="messages">
