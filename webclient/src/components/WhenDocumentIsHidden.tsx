@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { RoomContext } from '../context/roomContext';
+import { MessagesContext } from '../context/messagesContext';
 
 const newMessageSound:string = require('../../public/sounds/new_message.mp3');
 
@@ -11,7 +12,8 @@ const buildTitle = (newMessages: number, originalTitle: string): string => {
 }
 
 const WhenDocumentIsHidden = () => {
-  const { messages, authorId } = React.useContext(RoomContext);
+  const { authorId } = React.useContext(RoomContext);
+  const { messages } = React.useContext(MessagesContext);
   const otherMessagesCount = messages.filter(message => message.authorId != authorId).length;
 
   const [lastMessageCount, setLastMessageCount] = React.useState(otherMessagesCount);

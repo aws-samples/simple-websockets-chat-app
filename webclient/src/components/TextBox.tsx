@@ -10,12 +10,14 @@ import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
 import { RoomContext } from '../context/roomContext'
 import { ChatFeaturesContext } from '../context/chatFeaturesContext'
+import { MessagesContext } from '../context/messagesContext'
 
 
 const TextBox: React.FC = () => {
   const [text, setText] = React.useState("");
   const [isOptionsOpen, setIsOptionsOpen] = React.useState(false);
-  const { authorId, roomId, peopleInRoom, sendMessage } = React.useContext(RoomContext);
+  const { authorId, roomId, peopleInRoom } = React.useContext(RoomContext);
+  const { sendMessage } = React.useContext(MessagesContext);
   const { canToggleOptions } = React.useContext(ChatFeaturesContext);
 
   const onChange = ({ currentTarget }: React.FormEvent<HTMLInputElement>) => {

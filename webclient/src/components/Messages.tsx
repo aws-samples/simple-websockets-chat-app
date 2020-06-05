@@ -2,12 +2,14 @@ import * as React from 'react'
 import '../styles/Messages.styl'
 
 import { RoomContext } from '../context/roomContext'
+import { MessagesContext } from '../context/messagesContext'
 import { colorFromUuid, shouldUseDark, clsn } from '../helpers/color'
 
 import { MessageInteractions } from './MessageInteractions';
 
 const Messages: React.FC = () => {
-  const { authorId, messages, selectedMessage, selectMessage } = React.useContext(RoomContext);
+  const { authorId } = React.useContext(RoomContext);
+  const { messages, selectedMessage, selectMessage } = React.useContext(MessagesContext);
 
   return (
     <div className="messagesContainer">
