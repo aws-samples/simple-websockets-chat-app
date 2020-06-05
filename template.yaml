@@ -22,7 +22,7 @@ Resources:
     Properties:
       Name: SimpleChatWebSocket
       ProtocolType: WEBSOCKET
-      RouteSelectionExpression: "$request.body.message"
+      RouteSelectionExpression: "$request.body.action"
   ConnectRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
