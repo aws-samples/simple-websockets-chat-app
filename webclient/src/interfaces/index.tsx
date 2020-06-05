@@ -54,3 +54,8 @@ export interface RoomState {
 export interface ChatFeaturesState {
   canToggleOptions?: boolean;
 }
+
+export interface MessagesState {
+  readonly messages: Message[];
+  readonly selectedMessage?: Message;
+}

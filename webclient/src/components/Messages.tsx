@@ -23,7 +23,7 @@ const Messages: React.FC = () => {
             <li
               key={message.messageId}
               className={isMine ? "mine" : "theirs"}
-              onClick={() => selectMessage(isSelected ? undefined : message)}
+              onClick={() => selectMessage(message)}
             >
               <span className={className} style={style}>
                 {message.text}
