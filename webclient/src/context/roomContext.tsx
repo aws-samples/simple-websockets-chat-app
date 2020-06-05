@@ -3,6 +3,7 @@ import uuid from '../helpers/uuid'
 import { RoomState, Message, MessageEvent, EventListener, PeopleInRoomChangedEvent } from '../interfaces'
 
 import { EventContext } from './eventContext'
+import { MessagesProvider } from './messageContext'
 
 interface RoomStateContext extends RoomState {
   newRoomId: () => string;
@@ -114,7 +115,9 @@ const RoomProvider: React.FC<RoomState> = ({
 
   return (
     <RoomContext.Provider value={state}>
-      {children}
+      <MessagesProvider messages={messages}>
+        {children}
+      </MessagesProvider>
     </RoomContext.Provider>
   )
 }
