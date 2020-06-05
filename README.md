@@ -58,7 +58,7 @@ $ wscat -c wss://{YOUR-API-ID}.execute-api.{YOUR-REGION}.amazonaws.com/{STAGE}
 ``` bash
 $ wscat -c wss://{YOUR-API-ID}.execute-api.{YOUR-REGION}.amazonaws.com/prod
 connected (press CTRL+C to quit)
-> {"message":"sendmessage", "data":"hello world"}
+> {"action":"sendmessage", "data":"hello world"}
 < hello world
 ```
 
