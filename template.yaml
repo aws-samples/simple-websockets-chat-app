@@ -41,10 +41,23 @@ Parameters:
     Type: String
     Default: ""
     Description: Used for local testing
-  DebugMode:
-    Type: Number
-    Default: 0
-    Description: Functionality changes in debug mode.
+  LogLevel:
+    Type: String
+    Default: WARN
+    AllowedValues:
+      - WARN
+      - INFO
+      - DEBUG
+    Description: WARN > INFO > DEBUG. Logs messages from LogLevel and up. For example, if LogLevel is INFO, DEBUG messages won't be logged while WARN messages will.
+  Environment:
+    Type: String
+    Default: development
+    AllowedValues:
+      - production
+      - development
+      - staging
+    Description: Environment on which the application is running.
+
 
 Resources:
   SimpleChatWebSocket:
@@ -166,7 +179,8 @@ Resources:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
           TABLE_NAME: !Ref TableName
           TABLE_TTL_HOURS: !Ref TableTtlHours
-          DEBUG_MODE: !Ref DebugMode
+          LOG_LEVEL: !Ref LogLevel
+          ENVIRONMENT: !Ref Environment
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
@@ -207,7 +221,8 @@ Resources:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
           TABLE_NAME: !Ref TableName
           TABLE_TTL_HOURS: !Ref TableTtlHours
-          DEBUG_MODE: !Ref DebugMode
+          LOG_LEVEL: !Ref LogLevel
+          ENVIRONMENT: !Ref Environment
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
@@ -248,7 +263,8 @@ Resources:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
           TABLE_NAME: !Ref TableName
           TABLE_TTL_HOURS: !Ref TableTtlHours
-          DEBUG_MODE: !Ref DebugMode
+          LOG_LEVEL: !Ref LogLevel
+          ENVIRONMENT: !Ref Environment
           CONNECTION_ID_INDEX: ConnectionIdIndex
           LOCAL_DYNAMODB_ENDPOINT: !Ref LocalDynamodbEndpoint
       Policies:
