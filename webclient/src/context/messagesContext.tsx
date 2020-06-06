@@ -37,17 +37,15 @@ const MessagesProvider: React.FC = ({ children }) => {
   const events = React.useContext(EventContext);
   const { roomId } = React.useContext(RoomContext);
 
-  const setLocalMessages = (messages: Message[]) => {
-    setMessages(currentMessages => {
-      return sortByCreatedAt(findUnique([...currentMessages, ...messages]))
-    });
+  const setLocalMessages = (updateMessagesFn: (messages: Message[]) => Message[]) => {
+    setMessages(messages => updateMessagesFn(sortByCreatedAt(findUnique(messages))))
   }
 
-  const addMessage = (message: Message) => {
+  const addMessage = (message: Message) => (messages: Message[]) => {
     if (message.roomId !== roomId) return messages;
     return [...messages, message]
   };
-  const removeMessage = (message: Message) => {
+  const removeMessage = (message: Message) => (messages: Message[]) => {
     if (message.roomId !== roomId) return messages;
     return messages.filter(({messageId}) => message.messageId !== messageId)
   }
@@ -78,7 +76,7 @@ const MessagesProvider: React.FC = ({ children }) => {
   const sendMessage = (message: Message) => {
     if (roomId) {
       events.send('MESSAGE_SENT', message);
-      setMessages(sortByCreatedAt([...messages, message]));
+      setLocalMessages(addMessage(message));
     }
   }
 

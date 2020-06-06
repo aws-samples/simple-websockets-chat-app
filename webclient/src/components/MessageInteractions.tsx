@@ -2,18 +2,18 @@ import * as React from 'react'
 import '../styles/MessageInteractions.styl'
 import { Message } from '../interfaces'
 import { clsn } from '../helpers/color';
+import { MessagesContext } from '../context/messagesContext';
 
 interface Props {
   message: Message;
   reverse?: boolean;
 }
 
-export const MessageInteractions: React.FC<Props> = ({ reverse }) => {
+export const MessageInteractions: React.FC<Props> = ({ reverse, message }) => {
+  const { deleteMessage } = React.useContext(MessagesContext);
   return (
     <div className={clsn("message-interactions", reverse && 'reverse')}>
-      <button>emoji</button>
-      <button>reply</button>
-      <button>delete</button>
+      <button onClick={() => deleteMessage(message)}>delete</button>
     </div>
   );
 }
