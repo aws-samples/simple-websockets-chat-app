@@ -37,6 +37,24 @@ call-%: check-local-vars
 				DebugMode=1 \
 		--event test/$(*)Event.json
 
+test-init:
+	make start
+	make create-table
+
+test-OnConnect:
+	make call-OnConnect
+
+test-OnDisconnect:
+	make call-OnDisconnect
+
+test-SendMessage:
+	make call-SendMessage
+
+test-all: test-init
+	make test-OnConnect
+	make test-SendMessage
+	make test-OnDisconnect
+
 sam-package: check-vars
 	$(SAM) package \
 	--template-file template.yaml \
