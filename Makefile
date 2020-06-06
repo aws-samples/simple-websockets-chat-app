@@ -54,11 +54,15 @@ test-SendMessage:
 test-RoomJoined:
 	make call-SendMessage eventPrefix=RoomJoined
 
+test-RoomLeft:
+	make call-SendMessage eventPrefix=RoomLeft
+
 test-all: test-init
 	make test-OnConnect
 	make test-SendMessage
 	make test-OnDisconnect
 	make test-RoomJoined
+	make test-RoomLeft
 
 sam-package: check-vars
 	$(SAM) package \
