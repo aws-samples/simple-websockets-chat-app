@@ -35,20 +35,20 @@ call-%: check-local-vars
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 				AppPrefix=$(STACK_NAME) \
 				DebugMode=1 \
-		--event test/$(*)Event.json
+		--event test/$(eventPrefix)Event.json
 
 test-init:
 	make start
 	make create-table
 
 test-OnConnect:
-	make call-OnConnect
+	make call-OnConnect eventPrefix=OnConnect
 
 test-OnDisconnect:
-	make call-OnDisconnect
+	make call-OnDisconnect eventPrefix=OnDisconnect
 
 test-SendMessage:
-	make call-SendMessage
+	make call-SendMessage eventPrefix=SendMessage
 
 test-all: test-init
 	make test-OnConnect
