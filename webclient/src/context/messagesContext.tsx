@@ -9,6 +9,7 @@ import { RoomContext } from './roomContext'
 interface MessagesStateContext extends MessagesState {
   sendMessage: (message: Message) => void;
   selectMessage: (message?: Message) => void;
+  deleteMessage: (message: Message) => void;
 }
 
 const DEFAULT_MESSAGES_STATE_CONTEXT: MessagesStateContext = {
@@ -16,6 +17,7 @@ const DEFAULT_MESSAGES_STATE_CONTEXT: MessagesStateContext = {
   selectedMessage: undefined,
   sendMessage: noop,
   selectMessage: noop,
+  deleteMessage: noop,
 }
 
 const MessagesContext = React.createContext<MessagesStateContext>(DEFAULT_MESSAGES_STATE_CONTEXT);
@@ -23,29 +25,54 @@ const MessagesContext = React.createContext<MessagesStateContext>(DEFAULT_MESSAG
 const sortByCreatedAt = (messages: Message[]) =>
   messages.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 0));
 
+const findUnique = (messages: Message[]): Message[] => {
+  const uniqueMessages = new Map<string, Message>();
+  messages.forEach(m => uniqueMessages.set(m.messageId, m))
+  return Array.from(uniqueMessages.values())
+}
+
 const MessagesProvider: React.FC = ({ children }) => {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [selectedMessage, selectMessage] = React.useState<Message>();
   const events = React.useContext(EventContext);
   const { roomId } = React.useContext(RoomContext);
 
+  const setLocalMessages = (messages: Message[]) => {
+    setMessages(currentMessages => {
+      return sortByCreatedAt(findUnique([...currentMessages, ...messages]))
+    });
+  }
+
+  const addMessage = (message: Message) => {
+    if (message.roomId !== roomId) return messages;
+    return [...messages, message]
+  };
+  const removeMessage = (message: Message) => {
+    if (message.roomId !== roomId) return messages;
+    return messages.filter(({messageId}) => message.messageId !== messageId)
+  }
+
   const messageSentListener: EventListener = {
     eventType: 'MESSAGE_SENT',
     callback: ({ data: message }: MessageEvent) => {
-      if (message.roomId !== roomId) return;
+      setLocalMessages(addMessage(message));
+    },
+  }
 
-      const isNewMessage = !messages.find(
-        ({ messageId }) => messageId === message.messageId
-      );
-      if (isNewMessage) {
-        setMessages(oldMessages => sortByCreatedAt([...oldMessages, message]));
-      }
+  const messageDeletedListener: EventListener = {
+    eventType: 'MESSAGE_DELETED',
+    callback: ({ data: message }: MessageEvent) => {
+      setLocalMessages(removeMessage(message));
     },
   }
 
   React.useEffect(() => {
     events.addEventListener(messageSentListener);
-    return () => events.removeEventListener(messageSentListener);
+    events.addEventListener(messageDeletedListener);
+    return () => {
+      events.removeEventListener(messageSentListener);
+      events.removeEventListener(messageDeletedListener);
+    }
   }, [roomId]);
 
   const sendMessage = (message: Message) => {
@@ -55,11 +82,17 @@ const MessagesProvider: React.FC = ({ children }) => {
     }
   }
 
+  const deleteMessage = (message: Message) => {
+    events.send('MESSAGE_DELETED', message);
+    setLocalMessages(removeMessage(message));
+  }
+
   const state: MessagesStateContext = {
     messages,
     selectedMessage,
     sendMessage,
     selectMessage,
+    deleteMessage,
   }
 
   return (
