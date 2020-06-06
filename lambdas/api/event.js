@@ -1,4 +1,5 @@
 const { error } = require('../helpers/log').buildLogger('API/EVENT');
+const fail = require('../helpers/fail')(error);
 const buildClient = require('./transport');
 
 const EventTypes = {
@@ -14,9 +15,7 @@ exports.EventTypes = EventTypes;
 
 const throwErrorIfInvalidEventType = eventType => {
   if (!EventTypes.hasOwnProperty(eventType)) {
-    const message = 'Unsupported event type: ' + eventType;
-    error(message)
-    throw new Error(message);
+    fail('Unsupported event type: ' + eventType);
   }
 }
 
