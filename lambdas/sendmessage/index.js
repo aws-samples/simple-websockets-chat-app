@@ -33,8 +33,8 @@ module.exports = async event => {
     await handler(event, receivedEvent);
     info(`Handled event type "${eventType}"`);
     return { statusCode: 200, body: `Event ${eventType} handled.` };
-  } catch (error) {
-    error(error.message);
-    throw error
+  } catch (e) {
+    error(`Error handling message: ` + e.message);
+    throw e;
   }
 };

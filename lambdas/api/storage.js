@@ -29,10 +29,17 @@ exports.put = Item => {
     .promise();
 }
 
+exports.delete = Item => {
+  debug('delete', Item);
+  return ddb
+    .delete({ TableName, Item })
+    .promise();
+}
+
 const queryItems = async query => {
-  debug('queryItems', query);
+  debug('quering Items', query);
   const { Items } = await ddb.query(query).promise();
-  debug('queryItems', Items);
+  debug('found Items', Items);
   return Items;
 }
 
