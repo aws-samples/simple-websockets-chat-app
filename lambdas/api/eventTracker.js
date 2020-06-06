@@ -1,4 +1,4 @@
-const log = require('../helpers/log')
+const { debug } = require('../helpers/log').buildLogger('API/EVENT_TRACKER');
 const { throwErrorIfInvalidEventType } = require('./event');
 const AWS = require("aws-sdk");
 
@@ -14,7 +14,7 @@ const buildRecord = event => ({
 });
 
 const buildEvent = (e, data) => {
-  log(e, data);
+  debug(e, data);
   throwErrorIfInvalidEventType(e);
   const ts = new Date().getTime();
   return { ...data, e, ts }

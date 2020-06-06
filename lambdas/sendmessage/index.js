@@ -1,3 +1,4 @@
+const { info, error } = require('../helpers/log').buildLogger('HANDLER/SEND_MESSAGE');
 const { joinRoom, leaveRoom } = require('../api/room')
 const { broadcastMessageInRoom } = require('../api/message')
 const { EventTypes } = require('../api/event')
@@ -23,11 +24,17 @@ const handlers = {
 };
 
 module.exports = async event => {
-  const { body, requestContext } = event;
-  const receivedEvent = JSON.parse(JSON.parse(body).data);
-  const eventType = receivedEvent.meta.e;
-  const handler = handlers[eventType];
-  await handler(event, receivedEvent);
-
-  return { statusCode: 200, body: `Event ${eventType} handled.` };
+  try {
+    const { body, requestContext } = event;
+    const receivedEvent = JSON.parse(JSON.parse(body).data);
+    const eventType = receivedEvent.meta.e;
+    const handler = handlers[eventType];
+    info(`Got event type "${eventType}"`);
+    await handler(event, receivedEvent);
+    info(`Handled event type "${eventType}"`);
+    return { statusCode: 200, body: `Event ${eventType} handled.` };
+  } catch (error) {
+    error(error.message);
+    throw error
+  }
 };

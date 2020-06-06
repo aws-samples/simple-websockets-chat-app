@@ -1,4 +1,5 @@
-const AWS = require("aws-sdk");
+const { error } = require('../helpers/log').buildLogger('API/EVENT');
+const buildClient = require('./transport');
 
 const EventTypes = {
   CONNECTIONS_COUNT_CHANGED: 'CONNECTIONS_COUNT_CHANGED',
@@ -12,9 +13,12 @@ exports.EventTypes = EventTypes;
 
 const throwErrorIfInvalidEventType = eventType => {
   if (!EventTypes.hasOwnProperty(eventType)) {
-    throw new Error('Unsupported event type: ' + eventType);
+    const message = 'Unsupported event type: ' + eventType;
+    error(message)
+    throw new Error(message);
   }
 }
+
 exports.throwErrorIfInvalidEventType = throwErrorIfInvalidEventType
 
 exports.buildEvent = (e, data) => {
@@ -24,18 +28,10 @@ exports.buildEvent = (e, data) => {
   return { meta, data };
 }
 
-const buildApiGatewayManagementApiClient = ({ domainName, stage }) => {
-  return new AWS.ApiGatewayManagementApi({
-    apiVersion: "2018-11-29",
-    endpoint: domainName + "/" + stage,
-  });
-}
-
 exports.emitEvent = (requestContext, event, targets) => {
   const Data = JSON.stringify(event);
   const messages = targets.map(ConnectionId => ({ ConnectionId, Data }));
-  const client = buildApiGatewayManagementApiClient(requestContext);
-  return postToConnections(client, messages);
+  return postToConnections(buildClient(requestContext), messages);
 }
 
 const postToConnections = async (client, messages) => {

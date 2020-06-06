@@ -1,18 +1,23 @@
+const { error } = require('./helpers/log').buildLogger('INDEX')
 const handlers = {
   "$connect": require('./onconnect'),
   "$disconnect": require('./ondisconnect'),
   "sendmessage": require('./sendmessage')
 }
 
-exports.handler = (event) => {
-  const route = event.requestContext.routeKey;
-  const handler = handlers[route]
+const getHandler = (event) => {
   try {
-    return handler(event)
+    return handlers[event.requestContext.routeKey]
   } catch(error) {
-    const message = error.message || error
-    console.error(`Error handling ${route}: ` + message)
-    console.error(error.stack)
-    return { statusCode: 500, body: message }
+    throw new Error(`Didn't find handler: ` + error.message);
+  }
+}
+
+exports.handler = (event) => {
+  try {
+    return getHandler(event)(event)
+  } catch({ message }) {
+    error(`Got error: ${message}. Sending HTTP 500`);
+    return { statusCode: 500, body: 'Internal Server Error' }
   }
 }

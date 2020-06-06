@@ -1,4 +1,4 @@
-const log = require('../helpers/log');
+const { debug } = require('../helpers/log').buildLogger('API/STORAGE');
 const AWS = require("aws-sdk");
 const {
   AWS_REGION,
@@ -23,16 +23,16 @@ const calculateTtl = () => {
 
 exports.put = Item => {
   Item.ttl = calculateTtl();
-  log('put', Item);
+  debug('put', Item);
   return ddb
     .put({ TableName, Item })
     .promise();
 }
 
 const queryItems = async query => {
-  log('queryItems', query);
+  debug('queryItems', query);
   const { Items } = await ddb.query(query).promise();
-  log('queryItems', Items);
+  debug('queryItems', Items);
   return Items;
 }
 
@@ -66,7 +66,7 @@ exports.roomIdsByConnectionId = async connectionId => {
 }
 
 const deleteItems = async items => {
-  log('deleteItems', items);
+  debug('deleteItems', items);
   if (!items || !items.length) {
     return [];
   }
