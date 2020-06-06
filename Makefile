@@ -34,7 +34,8 @@ call-%: check-local-vars
 				TableTtlHours=$(TABLE_TTL_HOURS) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 				AppPrefix=$(STACK_NAME) \
-				DebugMode=1 \
+				LogLevel=DEBUG \
+				Environment=development \
 		--event test/$(eventPrefix)Event.json
 
 test-init:
@@ -73,7 +74,8 @@ sam-deploy: check-vars
 				DomainName=$(DOMAIN_NAME) \
 				CertificateArn=$(CERTIFICATE_ARN) \
 				AppPrefix=$(STACK_NAME) \
-				DebugMode=1 \
+				LogLevel=WARN \
+				Environment=production \
 		--s3-bucket $(DEPLOY_BUCKET)
 
 website-build: check-vars
