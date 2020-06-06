@@ -13,14 +13,15 @@ const handleLeaveRoom = (lambdaEvent, systemEvent) => {
   return leaveRoom(lambdaEvent.requestContext, roomId);
 }
 
-const handleMessageSent = (lambdaEvent, systemEvent) => {
+const handleEventInRoom = (lambdaEvent, systemEvent) => {
   return broadcastEventInRoom(lambdaEvent.requestContext, systemEvent);
 }
 
 const handlers = {
   [EventTypes.ROOM_JOINED]: handleJoinRoom,
   [EventTypes.ROOM_LEFT]: handleLeaveRoom,
-  [EventTypes.MESSAGE_SENT]: handleMessageSent
+  [EventTypes.MESSAGE_SENT]: handleEventInRoom,
+  [EventTypes.MESSAGE_DELETED]: handleEventInRoom,
 };
 
 module.exports = async event => {
