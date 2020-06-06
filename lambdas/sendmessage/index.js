@@ -1,6 +1,6 @@
 const { info, error } = require('../helpers/log').buildLogger('HANDLER/SEND_MESSAGE');
 const { joinRoom, leaveRoom } = require('../api/room')
-const { broadcastMessageInRoom } = require('../api/message')
+const { broadcastEventInRoom } = require('../api/message')
 const { EventTypes } = require('../api/event')
 
 const handleJoinRoom = (lambdaEvent, systemEvent) => {
@@ -14,7 +14,7 @@ const handleLeaveRoom = (lambdaEvent, systemEvent) => {
 }
 
 const handleMessageSent = (lambdaEvent, systemEvent) => {
-  return broadcastMessageInRoom(lambdaEvent.requestContext, systemEvent.data);
+  return broadcastEventInRoom(lambdaEvent.requestContext, systemEvent);
 }
 
 const handlers = {
