@@ -78,7 +78,7 @@ sam-deploy: check-vars
 				DomainName=$(DOMAIN_NAME) \
 				CertificateArn=$(CERTIFICATE_ARN) \
 				AppPrefix=$(STACK_NAME) \
-				LogLevel=WARN \
+				LogLevel=INFO \
 				Environment=production \
 		--s3-bucket $(DEPLOY_BUCKET)
 
