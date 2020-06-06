@@ -27,8 +27,8 @@ create-table: check-local-vars
     --global-secondary-indexes IndexName=ConnectionIdIndex,KeySchema=["{AttributeName=connectionId,KeyType=HASH}"],Projection={ProjectionType=KEYS_ONLY},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}" \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
-call-%: check-local-vars
-	$(SAM) local invoke $(*)Function \
+call-function: check-local-vars
+	$(SAM) local invoke $(fnPrefix)Function \
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
 				TableTtlHours=$(TABLE_TTL_HOURS) \
@@ -43,26 +43,21 @@ test-init:
 	make create-table
 
 test-OnConnect:
-	make call-OnConnect eventPrefix=OnConnect
+	make call-function fnPrefix=OnConnect eventPrefix=OnConnect
 
 test-OnDisconnect:
-	make call-OnDisconnect eventPrefix=OnDisconnect
+	make call-function fnPrefix=OnDisconnect eventPrefix=OnDisconnect
 
-test-SendMessage:
-	make call-SendMessage eventPrefix=SendMessage
-
-test-RoomJoined:
-	make call-SendMessage eventPrefix=RoomJoined
-
-test-RoomLeft:
-	make call-SendMessage eventPrefix=RoomLeft
+test-SendMessage-%:
+	make call-function fnPrefix=SendMessage eventPrefix=$(*)
 
 test-all: test-init
 	make test-OnConnect
-	make test-SendMessage
 	make test-OnDisconnect
-	make test-RoomJoined
-	make test-RoomLeft
+	make test-SendMessage-RoomJoined
+	make test-SendMessage-RoomLeft
+	make test-SendMessage-MessageSent
+	make test-SendMessage-MessageDeleted
 
 sam-package: check-vars
 	$(SAM) package \
