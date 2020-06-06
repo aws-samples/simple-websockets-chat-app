@@ -29,10 +29,10 @@ exports.put = Item => {
     .promise();
 }
 
-exports.delete = Item => {
-  debug('delete', Item);
+exports.delete = Key => {
+  debug('delete', Key);
   return ddb
-    .delete({ TableName, Item })
+    .delete({ TableName, Key })
     .promise();
 }
 
