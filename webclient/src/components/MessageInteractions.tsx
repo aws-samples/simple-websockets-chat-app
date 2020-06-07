@@ -10,10 +10,11 @@ interface Props {
 }
 
 export const MessageInteractions: React.FC<Props> = ({ reverse, message }) => {
-  const { deleteMessage } = React.useContext(MessagesContext);
+  const { deleteMessage, selectMessageToReply } = React.useContext(MessagesContext);
   return (
     <div className={clsn("message-interactions", reverse && 'reverse')}>
       <button onClick={() => deleteMessage(message)}>delete</button>
+      <button onClick={() => selectMessageToReply(message)}>reply</button>
     </div>
   );
 }
