@@ -13,11 +13,11 @@ export const MessageInteractions: React.FC<Props> = ({ reverse, onInteraction })
     event.stopPropagation()
     onInteraction(interaction);
   }
-  
+
   return (
     <div className={clsn("message-interactions", reverse && 'reverse')}>
+    <button onClick={interact('reply')}>reply</button>
       <button onClick={interact('delete')}>delete</button>
-      <button onClick={interact('reply')}>reply</button>
     </div>
   )
 }
