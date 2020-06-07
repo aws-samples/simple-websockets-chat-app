@@ -27,15 +27,37 @@ create-table: check-local-vars
     --global-secondary-indexes IndexName=ConnectionIdIndex,KeySchema=["{AttributeName=connectionId,KeyType=HASH}"],Projection={ProjectionType=KEYS_ONLY},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}" \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
-call-%: check-local-vars
-	$(SAM) local invoke $(*)Function \
+call-function: check-local-vars
+	$(SAM) local invoke $(fnPrefix)Function \
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
 				TableTtlHours=$(TABLE_TTL_HOURS) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 				AppPrefix=$(STACK_NAME) \
-				DebugMode=1 \
-		--event test/$(*)Event.json
+				LogLevel=DEBUG \
+				Environment=development \
+		--event test/$(eventPrefix)Event.json
+
+test-init:
+	make start
+	make create-table
+
+test-OnConnect:
+	make call-function fnPrefix=OnConnect eventPrefix=OnConnect
+
+test-OnDisconnect:
+	make call-function fnPrefix=OnDisconnect eventPrefix=OnDisconnect
+
+test-SendMessage-%:
+	make call-function fnPrefix=SendMessage eventPrefix=$(*)
+
+test-all: test-init
+	make test-OnConnect
+	make test-OnDisconnect
+	make test-SendMessage-RoomJoined
+	make test-SendMessage-RoomLeft
+	make test-SendMessage-MessageSent
+	make test-SendMessage-MessageDeleted
 
 sam-package: check-vars
 	$(SAM) package \
@@ -55,7 +77,8 @@ sam-deploy: check-vars
 				DomainName=$(DOMAIN_NAME) \
 				CertificateArn=$(CERTIFICATE_ARN) \
 				AppPrefix=$(STACK_NAME) \
-				DebugMode=1 \
+				LogLevel=INFO \
+				Environment=production \
 		--s3-bucket $(DEPLOY_BUCKET)
 
 website-build: check-vars

@@ -1,4 +1,4 @@
-const { put, findAllByConnectionId, deleteAllByConnectionId } = require('./storage');
+const { put, delete: deleteItem, findAllByConnectionId, deleteAllByConnectionId } = require('./storage');
 const { broadcastConnectionsCountChangedInRooms } = require('./message');
 const { EventTypes } = require('./event');
 const { trackEvent, createBatch, trackBatch } = require('./eventTracker');
@@ -16,7 +16,7 @@ exports.joinRoom = async (requestContext, roomId) => {
 exports.leaveRoom = async (requestContext, roomId) => {
   const { connectionId } = requestContext;
   const key = { connectionId, roomId };
-  await removeConnection(key);
+  await deleteItem(key);
   await trackEvent(EventTypes.ROOM_LEFT, key);
   await broadcastConnectionsCountChangedInRooms(requestContext, [roomId]);
 

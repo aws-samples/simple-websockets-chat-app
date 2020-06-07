@@ -1,34 +1,15 @@
 import * as React from 'react'
-import '../styles/Messages.css'
+import '../styles/Messages.styl'
 
-import { Message } from '../interfaces'
-import { colorFromUuid, shouldUseDark, clsn } from '../helpers/color'
+import { MessagesContext } from '../context/messagesContext'
+import { Message } from './Message';
 
-interface Props {
-  authorId: string;
-  messages: Message[];
-}
-
-const Messages: React.FC<Props> = ({ authorId, messages }) => {
+const Messages: React.FC = () => {
+  const { messages } = React.useContext(MessagesContext);
   return (
     <div className="messagesContainer">
       <ul className="messages">
-        {messages.map((message) => {
-          const backgroundColor = colorFromUuid(message.authorId);
-          const useDark = shouldUseDark(backgroundColor);
-          const style = { backgroundColor };
-          const className = clsn("messageText txt", useDark && 'dark');
-          return (
-            <li
-              key={message.messageId}
-              className={message.authorId === authorId ? "mine" : "theirs"}
-            >
-              <span className={className} style={style}>
-                {message.text}
-              </span>
-            </li>
-          );
-        })}
+        {messages.map(message => <Message key={message.messageId} message={message} />)}
       </ul>
     </div>
   );

@@ -1,38 +1,68 @@
-import * as React from 'react'
 import '../styles/TextBox.css'
+import * as React from 'react'
+
+import { Message, MessageReply } from '../interfaces'
 
 import ShareRoom from './ShareRoom'
 import SendButton from './SendButton'
 import OptionsToggle from './OptionsToggle'
+import ReplyToMessage from './ReplyToMessage'
 
 import uuid from '../helpers/uuid'
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
 import { RoomContext } from '../context/roomContext'
 import { ChatFeaturesContext } from '../context/chatFeaturesContext'
+import { MessagesContext } from '../context/messagesContext'
 
 
 const TextBox: React.FC = () => {
   const [text, setText] = React.useState("");
   const [isOptionsOpen, setIsOptionsOpen] = React.useState(false);
-  const { authorId, roomId, peopleInRoom, sendMessage } = React.useContext(RoomContext);
+  const { authorId, roomId, peopleInRoom } = React.useContext(RoomContext);
+  const {
+    sendMessage,
+    sendMessageReply,
+    selectMessageToReply,
+    selectedMessageToReply
+  } = React.useContext(MessagesContext);
   const { canToggleOptions } = React.useContext(ChatFeaturesContext);
+
+  if (!roomId) {
+    return null
+  }
 
   const onChange = ({ currentTarget }: React.FormEvent<HTMLInputElement>) => {
     setText(currentTarget.value);
   }
+
+  const createMessage = (): Message => ({
+    createdAt: new Date().toISOString(),
+    authorId,
+    roomId,
+    text,
+    messageId: uuid(),
+  });
+  const createMessageReply = ({ messageId, authorId, text }: Message): MessageReply => ({
+    ...createMessage(),
+    toMessageId: messageId,
+    toAuthorId: authorId,
+    toText: text
+  });
+
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!text || !text.length || !roomId) {
+    if (!text || !text.length) {
       return;
     }
-    sendMessage({
-      createdAt: new Date().toISOString(),
-      authorId,
-      roomId,
-      text,
-      messageId: uuid(),
-    });
+
+    if (selectedMessageToReply) {
+      sendMessageReply(createMessageReply(selectedMessageToReply))
+      selectMessageToReply(undefined);
+    } else {
+      sendMessage(createMessage())
+    }
+
     setText("");
   };
 
@@ -52,6 +82,7 @@ const TextBox: React.FC = () => {
           showInviteTitle
           />
       }
+      <ReplyToMessage />
       <form className="textbox" onSubmit={onSubmit}>
         {peopleInRoom > 0 && (
           <div className="textbox-ppl slide-out-top" key={peopleInRoom}>

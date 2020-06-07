@@ -11,7 +11,7 @@ const App: React.FC<{ roomId: string }> = ({ roomId }) => {
   const [authorId] = React.useState(uuid());
 
   return (
-    <RoomProvider authorId={authorId} roomId={roomId} messages={[]} peopleInRoom={0}>
+    <RoomProvider authorId={authorId} roomId={roomId} peopleInRoom={0}>
       <div className="room">
         <Chat />
       </div>

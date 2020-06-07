@@ -1,0 +1,33 @@
+{
+  "requestContext": {
+    "routeKey": "sendmessage",
+    "messageId": "LJRpKft_LPECFyw=",
+    "eventType": "MESSAGE",
+    "extendedRequestId": "LJRpKG6IrPEFRbQ=",
+    "requestTime": "17/Apr/2020:18:59:44 +0000",
+    "messageDirection": "IN",
+    "stage": "Prod",
+    "connectedAt": 1587149601253,
+    "requestTimeEpoch": 1587149984924,
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "cognitoIdentityId": null,
+      "principalOrgId": null,
+      "cognitoAuthenticationType": null,
+      "userArn": null,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36",
+      "accountId": null,
+      "caller": null,
+      "sourceIp": "77.20.249.92",
+      "accessKey": null,
+      "cognitoAuthenticationProvider": null,
+      "user": null
+    },
+    "requestId": "LJRpKG6IrPEFRbQ=",
+    "domainName": "o0y9gmaw4m.execute-api.eu-west-2.amazonaws.com",
+    "connectionId": "LJQtNfaILPECFyw=",
+    "apiId": "o0y9gmaw4m"
+  },
+  "body": "{\"message\":\"sendmessage\",\"data\":\"{\\\"meta\\\":{\\\"e\\\":\\\"MESSAGE_SENT\\\",\\\"ts\\\":1589105874195},\\\"data\\\":{\\\"createdAt\\\":\\\"2020-04-17T18:59:44.890Z\\\",\\\"authorId\\\":\\\"775e3aeb-d1eb-4360-935f-1005c3a80cae\\\",\\\"roomId\\\":\\\"8b1c9957-ad24-4a60-8592-53cbe095842e\\\",\\\"text\\\":\\\"una vez mas\\\",\\\"messageId\\\":\\\"6762920d-c71e-4a09-91d9-d1fd5819667e\\\"}}\"}",
+  "isBase64Encoded": false
+}

@@ -117,7 +117,7 @@ const Section: React.FC<{white?: boolean}> = ({ white, children }) => {
 export const Home: React.FC = () => {
   const [authorId] = React.useState(uuid());
   return (
-    <RoomProvider authorId={authorId} roomId="home" messages={[]} peopleInRoom={0}>
+    <RoomProvider authorId={authorId} roomId="home" peopleInRoom={0}>
       <div className="home">
         <Section white>
           <Navbar />
