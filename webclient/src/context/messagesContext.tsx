@@ -1,22 +1,34 @@
 import * as React from 'react'
 
 import noop from '../helpers/noop'
-import { MessagesState, Message, EventListener, MessageEvent, MessageReplySentEvent } from '../interfaces'
+import {
+  MessagesState,
+  Message,
+  MessageReply,
+  EventListener,
+  MessageEvent,
+  MessageReplySentEvent
+} from '../interfaces'
 
 import { EventContext } from './eventContext'
 import { RoomContext } from './roomContext'
 
 interface MessagesStateContext extends MessagesState {
   sendMessage: (message: Message) => void;
+  sendMessageReply: (replyMessage: MessageReply) => void;
   selectMessage: (message?: Message) => void;
+  selectMessageToReply: (message?: Message) => void;
   deleteMessage: (message: Message) => void;
 }
 
 const DEFAULT_MESSAGES_STATE_CONTEXT: MessagesStateContext = {
   messages: [],
   selectedMessage: undefined,
+  selectedMessageToReply: undefined,
   sendMessage: noop,
+  sendMessageReply: noop,
   selectMessage: noop,
+  selectMessageToReply: noop,
   deleteMessage: noop,
 }
 
@@ -34,6 +46,7 @@ const findUnique = (messages: Message[]): Message[] => {
 const MessagesProvider: React.FC = ({ children }) => {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [selectedMessage, selectMessage] = React.useState<Message>();
+  const [selectedMessageToReply, selectMessageToReply] = React.useState<Message>();
   const events = React.useContext(EventContext);
   const { roomId } = React.useContext(RoomContext);
 
@@ -89,6 +102,13 @@ const MessagesProvider: React.FC = ({ children }) => {
     }
   }
 
+  const sendMessageReply = (message: MessageReply) => {
+    if (roomId) {
+      events.send('MESSAGE_REPLY_SENT', message);
+      setLocalMessages(addMessage(message));
+    }
+  }
+
   const deleteMessage = (message: Message) => {
     events.send('MESSAGE_DELETED', message);
     setLocalMessages(removeMessage(message));
@@ -97,8 +117,11 @@ const MessagesProvider: React.FC = ({ children }) => {
   const state: MessagesStateContext = {
     messages,
     selectedMessage,
+    selectedMessageToReply,
     sendMessage,
+    sendMessageReply,
     selectMessage,
+    selectMessageToReply,
     deleteMessage,
   }
 

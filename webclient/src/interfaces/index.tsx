@@ -68,4 +68,5 @@ export interface ChatFeaturesState {
 export interface MessagesState {
   readonly messages: Message[];
   readonly selectedMessage?: Message;
+  readonly selectedMessageToReply?: Message;
 }
