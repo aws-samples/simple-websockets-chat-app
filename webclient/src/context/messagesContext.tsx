@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import noop from '../helpers/noop'
-import { MessagesState, Message, EventListener, MessageEvent } from '../interfaces'
+import { MessagesState, Message, EventListener, MessageEvent, MessageReplySentEvent } from '../interfaces'
 
 import { EventContext } from './eventContext'
 import { RoomContext } from './roomContext'
@@ -57,6 +57,13 @@ const MessagesProvider: React.FC = ({ children }) => {
     },
   }
 
+  const messageReplySentListener: EventListener = {
+    eventType: 'MESSAGE_REPLY_SENT',
+    callback: ({ data: message }: MessageReplySentEvent) => {
+      setLocalMessages(addMessage(message));
+    },
+  }
+
   const messageDeletedListener: EventListener = {
     eventType: 'MESSAGE_DELETED',
     callback: ({ data: message }: MessageEvent) => {
@@ -66,9 +73,11 @@ const MessagesProvider: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     events.addEventListener(messageSentListener);
+    events.addEventListener(messageReplySentListener);
     events.addEventListener(messageDeletedListener);
     return () => {
       events.removeEventListener(messageSentListener);
+      events.removeEventListener(messageReplySentListener);
       events.removeEventListener(messageDeletedListener);
     }
   }, [roomId]);

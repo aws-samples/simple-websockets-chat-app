@@ -6,10 +6,17 @@ export interface Message {
   createdAt: string;
 }
 
+export interface MessageReply extends Message {
+  toMessageId: string;
+  toAuthorId: string;
+  toText: string;
+}
+
 export type EventType = 'CONNECTIONS_COUNT_CHANGED'
   | 'CONNECTION_CONNECTED'
   | 'CONNECTION_DISCONNECTED'
   | 'MESSAGE_SENT'
+  | 'MESSAGE_REPLY_SENT'
   | 'MESSAGE_DELETED'
   | 'ROOM_JOINED'
   | 'ROOM_LEFT';
@@ -24,6 +31,10 @@ export interface Event {
 
 export interface MessageEvent extends Event {
   data: Message;
+}
+
+export interface MessageReplySentEvent extends MessageEvent {
+  data: MessageReply;
 }
 
 export interface PeopleInRoomChangedEvent extends Event {
