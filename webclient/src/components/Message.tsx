@@ -1,3 +1,5 @@
+import '../styles/Message.styl'
+
 import * as React from 'react'
 
 import * as interfaces from '../interfaces';
@@ -13,6 +15,8 @@ interface Props {
   message: interfaces.Message;
 }
 
+// const RegularMessage: React.FC<Props> = ({ message }) => {}
+
 export const Message: React.FC<Props> = ({ message }) => {
   const { authorId } = React.useContext(RoomContext);
   const {
@@ -25,7 +29,6 @@ export const Message: React.FC<Props> = ({ message }) => {
   const backgroundColor = colorFromUuid(message.authorId);
   const useDark = shouldUseDark(backgroundColor);
   const style = { backgroundColor };
-  const className = clsn("messageText txt", useDark && 'dark');
   const isMine = message.authorId === authorId;
   const isSelected = selectedMessage && message.messageId === selectedMessage.messageId;
 
@@ -47,12 +50,14 @@ export const Message: React.FC<Props> = ({ message }) => {
   return (
     <li
       key={message.messageId}
-      className={isMine ? "mine" : "theirs"}
+      className={clsn('message', isMine ? "mine" : "theirs")}
       onClick={() => selectMessage(isSelected ? undefined : message)}
     >
-      <span className={className} style={style}>
-        {message.text}
-      </span>
+      <div className="messageText" style={style}>
+        <span className={clsn(useDark && 'dark')}>
+          {message.text}
+        </span>
+      </div>
       {
         isSelected &&
         <MessageInteractions onInteraction={onInteraction} reverse={isMine} />

@@ -1,0 +1,18 @@
+.message
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+
+  &.mine
+    flex-direction: row-reverse;
+
+  & .messageText
+    max-width: 55%;
+    border: var(--border);
+    border-radius: 5px;
+    padding: 0.5rem;
+
+  & span
+    font-size: 1rem;
+    font-weight: bold;
+    pointer-events: none;
