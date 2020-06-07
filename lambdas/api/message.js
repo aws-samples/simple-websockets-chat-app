@@ -21,6 +21,21 @@ const cleanupEvent = ({ meta, data }) => {
     case EventTypes.MESSAGE_SENT: {
       return { meta, data: buildData(data, ['messageId', 'roomId', 'authorId', 'text', 'createdAt']) };
     }
+    case EventTypes.MESSAGE_REPLY_SENT: {
+      return {
+        meta,
+        data: buildData(data, [
+          'messageId',
+          'roomId',
+          'authorId',
+          'text',
+          'createdAt',
+          'toMessageId',
+          'toAuthorId',
+          'toText'
+        ])
+      };
+    }
     case EventTypes.MESSAGE_DELETED: {
       return { meta, data: buildData(data, ['messageId', 'roomId']) };
     }
