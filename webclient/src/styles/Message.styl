@@ -5,14 +5,23 @@
 
   &.mine
     flex-direction: row-reverse;
+    text-align: right;
 
-  & .messageText
-    max-width: 55%;
+.message-component
+  display: flex;
+  flex-direction: column;
+  max-width: 55%;
+  border: var(--border);
+  border-radius: 5px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+
+  &.reply
+    font-size: small;
     border: var(--border);
-    border-radius: 5px;
-    padding: 0.5rem;
-
-  & span
-    font-size: 1rem;
-    font-weight: bold;
-    pointer-events: none;
+    border-radius: 3px;
+    border-width: 1px;
+    padding: 0.25rem;
+    margin-bottom: 0.5rem;
+    max-width: none;

@@ -36,6 +36,9 @@ export interface MessageEvent extends Event {
 export interface MessageReplySentEvent extends MessageEvent {
   data: MessageReply;
 }
+export const instanceOfMessageReply = (message: Message): message is MessageReply => {
+  return 'toMessageId' in message
+}
 
 export interface PeopleInRoomChangedEvent extends Event {
   data: {
