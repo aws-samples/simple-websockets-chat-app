@@ -6,7 +6,7 @@ import { Message, MessageReply } from '../interfaces'
 import ShareRoom from './ShareRoom'
 import SendButton from './SendButton'
 import OptionsToggle from './OptionsToggle'
-import { MessageComponent } from './Message'
+import ReplyToMessage from './ReplyToMessage'
 
 import uuid from '../helpers/uuid'
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
@@ -82,7 +82,7 @@ const TextBox: React.FC = () => {
           showInviteTitle
           />
       }
-      {selectedMessageToReply && <MessageComponent message={selectedMessageToReply} isReply={true} />}
+      <ReplyToMessage />
       <form className="textbox" onSubmit={onSubmit}>
         {peopleInRoom > 0 && (
           <div className="textbox-ppl slide-out-top" key={peopleInRoom}>
