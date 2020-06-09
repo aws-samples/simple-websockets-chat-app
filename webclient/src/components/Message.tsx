@@ -50,7 +50,7 @@ export const Message: React.FC<Props> = ({ message }) => {
   const {
     selectedMessage,
     selectMessage,
-    selectMessageToReply,
+    selectMessageToReplyTo,
     deleteMessage,
   } = React.useContext(MessagesContext);
 
@@ -63,7 +63,10 @@ export const Message: React.FC<Props> = ({ message }) => {
         deleteMessage(message);
         break;
       case 'reply':
-        selectMessageToReply(message);
+        selectMessageToReplyTo(message);
+        break;
+      case 'react':
+        selectMessageToReplyTo(message);
         break;
       default:
         throw new Error('Invalid interaction: ' + interaction);

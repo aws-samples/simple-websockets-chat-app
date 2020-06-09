@@ -17,7 +17,7 @@ interface MessagesStateContext extends MessagesState {
   sendMessage: (message: Message) => void;
   sendMessageReply: (replyMessage: MessageReply) => void;
   selectMessage: (message?: Message) => void;
-  selectMessageToReply: (message?: Message) => void;
+  selectMessageToReplyTo: (message?: Message) => void;
   deleteMessage: (message: Message) => void;
 }
 
@@ -28,7 +28,7 @@ const DEFAULT_MESSAGES_STATE_CONTEXT: MessagesStateContext = {
   sendMessage: noop,
   sendMessageReply: noop,
   selectMessage: noop,
-  selectMessageToReply: noop,
+  selectMessageToReplyTo: noop,
   deleteMessage: noop,
 }
 
@@ -46,7 +46,7 @@ const findUnique = (messages: Message[]): Message[] => {
 const MessagesProvider: React.FC = ({ children }) => {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [selectedMessage, selectMessage] = React.useState<Message>();
-  const [selectedMessageToReply, selectMessageToReply] = React.useState<Message>();
+  const [selectedMessageToReply, selectMessageToReplyTo] = React.useState<Message>();
   const events = React.useContext(EventContext);
   const { roomId } = React.useContext(RoomContext);
 
@@ -121,7 +121,7 @@ const MessagesProvider: React.FC = ({ children }) => {
     sendMessage,
     sendMessageReply,
     selectMessage,
-    selectMessageToReply,
+    selectMessageToReplyTo,
     deleteMessage,
   }
 
