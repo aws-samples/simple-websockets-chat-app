@@ -1,20 +1,10 @@
 .message-interactions
-  // flex: 1;
+  display: flex
+  padding: 0.5rem;
+  justify-content: space-between;
 
-  .interactions
-    display: flex
-    padding: 0.5rem;
-    justify-content: space-between;
+  button
+    margin: 0 1rem;
 
-    &.reverse
-      flex-direction: row-reverse;
-
-  .reactions
-    // position: absolute;
-    top: -30px;
-    .reaction
-      font-size: 2rem;
-      border: var(--border);
-      border-radius: 5px;
-      padding: 0.5rem;
-      margin: 0 0.25rem;
+  &.reverse
+    flex-direction: row-reverse;
