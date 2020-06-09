@@ -29,6 +29,7 @@
   border-radius: 5px;
   padding: 1rem;
   color: var(--dark);
+  pointer-events: none;
 }
 
 .slide-out-top {
