@@ -24,7 +24,7 @@ const TextBox: React.FC = () => {
     sendMessage,
     sendMessageReply,
     selectMessageToReplyTo,
-    selectedMessageToReply
+    selectedMessageToReplyTo
   } = React.useContext(MessagesContext);
   const { canToggleOptions } = React.useContext(ChatFeaturesContext);
 
@@ -56,8 +56,8 @@ const TextBox: React.FC = () => {
       return;
     }
 
-    if (selectedMessageToReply) {
-      sendMessageReply(createMessageReply(selectedMessageToReply))
+    if (selectedMessageToReplyTo) {
+      sendMessageReply(createMessageReply(selectedMessageToReplyTo))
       selectMessageToReplyTo(undefined);
     } else {
       sendMessage(createMessage())

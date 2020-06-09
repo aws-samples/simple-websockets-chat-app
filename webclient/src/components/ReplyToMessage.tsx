@@ -7,7 +7,7 @@ import { MessageComponent } from './Message'
 
 const ReplyToMessage: React.FC = () => {
   const {
-    selectedMessageToReply: message,
+    selectedMessageToReplyTo: message,
     selectMessageToReplyTo
   } = React.useContext(MessagesContext);
   if (!message) return null;

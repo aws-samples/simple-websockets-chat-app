@@ -18,17 +18,20 @@ interface MessagesStateContext extends MessagesState {
   sendMessageReply: (replyMessage: MessageReply) => void;
   selectMessage: (message?: Message) => void;
   selectMessageToReplyTo: (message?: Message) => void;
+  selectMessageToReactTo: (message?: Message) => void;
   deleteMessage: (message: Message) => void;
 }
 
 const DEFAULT_MESSAGES_STATE_CONTEXT: MessagesStateContext = {
   messages: [],
   selectedMessage: undefined,
-  selectedMessageToReply: undefined,
+  selectedMessageToReplyTo: undefined,
+  selectedMessageToReactTo: undefined,
   sendMessage: noop,
   sendMessageReply: noop,
   selectMessage: noop,
   selectMessageToReplyTo: noop,
+  selectMessageToReactTo: noop,
   deleteMessage: noop,
 }
 
@@ -46,7 +49,8 @@ const findUnique = (messages: Message[]): Message[] => {
 const MessagesProvider: React.FC = ({ children }) => {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [selectedMessage, selectMessage] = React.useState<Message>();
-  const [selectedMessageToReply, selectMessageToReplyTo] = React.useState<Message>();
+  const [selectedMessageToReplyTo, selectMessageToReplyTo] = React.useState<Message>();
+  const [selectedMessageToReactTo, selectMessageToReactTo] = React.useState<Message>();
   const events = React.useContext(EventContext);
   const { roomId } = React.useContext(RoomContext);
 
@@ -117,11 +121,25 @@ const MessagesProvider: React.FC = ({ children }) => {
   const state: MessagesStateContext = {
     messages,
     selectedMessage,
-    selectedMessageToReply,
+    selectedMessageToReplyTo,
+    selectedMessageToReactTo,
     sendMessage,
     sendMessageReply,
-    selectMessage,
-    selectMessageToReplyTo,
+    selectMessage: (message?: Message) => {
+      selectMessageToReactTo(undefined);
+      selectMessageToReplyTo(undefined);
+      selectMessage(message);
+    },
+    selectMessageToReplyTo: (message?: Message) => {
+      selectMessage(undefined);
+      selectMessageToReactTo(undefined);
+      selectMessageToReplyTo(message);
+    },
+    selectMessageToReactTo: (message?: Message) => {
+      selectMessage(undefined);
+      selectMessageToReplyTo(undefined);
+      selectMessageToReactTo(message);
+    },
     deleteMessage,
   }
 

@@ -45,18 +45,25 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({ message, isR
   )
 }
 
+const areEqual = (one: interfaces.Message, another?: interfaces.Message) => {
+  if (!another) return false;
+  return one.messageId === another.messageId;
+}
+
 export const Message: React.FC<Props> = ({ message }) => {
   const { authorId } = React.useContext(RoomContext);
   const {
     selectedMessage,
+    selectedMessageToReactTo,
     selectMessage,
     selectMessageToReplyTo,
+    selectMessageToReactTo,
     deleteMessage,
   } = React.useContext(MessagesContext);
-  const [showReactions, setShowReactions] = React.useState(false);
 
   const isMine = message.authorId === authorId;
-  const showInteractions = selectedMessage && message.messageId === selectedMessage.messageId;
+  const showInteractions = areEqual(message, selectedMessage);
+  const showReactions = !selectedMessage && areEqual(message, selectedMessageToReactTo);
 
   const onInteraction = (interaction: Interaction) => {
     switch(interaction) {
@@ -67,23 +74,26 @@ export const Message: React.FC<Props> = ({ message }) => {
         selectMessageToReplyTo(message);
         break;
       case 'react':
-        setShowReactions(true);
+        selectMessageToReactTo(message);
         break;
       default:
         throw new Error('Invalid interaction: ' + interaction);
     }
-
-    selectMessage(undefined);
   }
 
   const onReaction = (reaction: ReactionType) => {
     alert(reaction + ' for ' + message.messageId);
-    setShowReactions(false);
+    selectMessageToReactTo(undefined);
   }
 
   const onMessageClick = () => {
-    selectMessage(showInteractions ? undefined : message);
-    setShowReactions(false);
+    const isReact = areEqual(message, selectedMessageToReactTo);
+    const isSelected = areEqual(message, selectedMessage);
+    if (isReact || isSelected) {
+      selectMessage(undefined);
+    } else {
+      selectMessage(isSelected ? undefined : message);      
+    }
   }
 
   return (
