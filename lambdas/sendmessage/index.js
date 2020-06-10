@@ -22,6 +22,7 @@ const handlers = {
   [EventTypes.ROOM_LEFT]: handleLeaveRoom,
   [EventTypes.MESSAGE_SENT]: handleEventInRoom,
   [EventTypes.MESSAGE_REPLY_SENT]: handleEventInRoom,
+  [EventTypes.MESSAGE_REACTION_SENT]: handleEventInRoom,
   [EventTypes.MESSAGE_DELETED]: handleEventInRoom,
 };
 

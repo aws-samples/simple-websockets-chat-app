@@ -36,6 +36,18 @@ const cleanupEvent = ({ meta, data }) => {
         ])
       };
     }
+    case EventTypes.MESSAGE_REACTION_SENT: {
+      return {
+        meta,
+        data: buildData(data, [
+          'roomId',
+          'authorId',
+          'reaction',
+          'createdAt',
+          'toMessageId',
+        ])
+      };
+    }
     case EventTypes.MESSAGE_DELETED: {
       return { meta, data: buildData(data, ['messageId', 'roomId']) };
     }

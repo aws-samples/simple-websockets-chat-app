@@ -64,11 +64,8 @@ export const instanceOfMessageReply = (message: Message): message is MessageRepl
   return 'toMessageId' in message
 }
 
-export interface MessageReactionSentEvent extends MessageEvent {
+export interface MessageReactionSentEvent {
   data: MessageReaction;
-}
-export const instanceOfMessageReaction = (message: Message): message is MessageReaction => {
-  return 'reaction' in message
 }
 
 
