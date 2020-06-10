@@ -33,7 +33,7 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({ message, isR
   const useDark = shouldUseDark(backgroundColor);
   const style = { backgroundColor };
   return (
-    <div className={clsn("message-component", isReply && 'reply')} style={style}>
+    <button className={clsn("message-component", isReply && 'reply')} style={style}>
       {
         interfaces.instanceOfMessageReply(message) && !isReply &&
         <MessageComponent message={messageFromReply(message)} isReply={true} />
@@ -41,7 +41,7 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({ message, isR
       <span className={clsn(useDark && 'dark')}>
         {message.text}
       </span>
-    </div>
+    </button>
   )
 }
 
@@ -92,7 +92,7 @@ export const Message: React.FC<Props> = ({ message }) => {
     if (isReact || isSelected) {
       selectMessage(undefined);
     } else {
-      selectMessage(isSelected ? undefined : message);      
+      selectMessage(isSelected ? undefined : message);
     }
   }
 
