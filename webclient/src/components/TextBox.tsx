@@ -1,19 +1,18 @@
 import '../styles/TextBox.css'
 import * as React from 'react'
 
-import { Message, MessageReply } from '../interfaces'
-
 import ShareRoom from './ShareRoom'
 import SendButton from './SendButton'
 import OptionsToggle from './OptionsToggle'
 import ReplyToMessage from './ReplyToMessage'
 
-import uuid from '../helpers/uuid'
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
 import { RoomContext } from '../context/roomContext'
 import { ChatFeaturesContext } from '../context/chatFeaturesContext'
 import { MessagesContext } from '../context/messagesContext'
+import MessageEntity from '../entities/MessageEntity'
+import MessageReplyEntity from '../entities/MessageReplyEntity'
 
 
 const TextBox: React.FC = () => {
@@ -36,31 +35,18 @@ const TextBox: React.FC = () => {
     setText(currentTarget.value);
   }
 
-  const createMessage = (): Message => ({
-    createdAt: new Date().toISOString(),
-    authorId,
-    roomId,
-    text,
-    messageId: uuid(),
-  });
-  const createMessageReply = ({ messageId, authorId, text }: Message): MessageReply => ({
-    ...createMessage(),
-    toMessageId: messageId,
-    toAuthorId: authorId,
-    toText: text
-  });
-
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!text || !text.length) {
       return;
     }
 
+    const message = new MessageEntity({ roomId, authorId, text });
     if (selectedMessageToReplyTo) {
-      sendMessageReply(createMessageReply(selectedMessageToReplyTo))
+      sendMessageReply(new MessageReplyEntity(message, selectedMessageToReplyTo))
       selectMessageToReplyTo(undefined);
     } else {
-      sendMessage(createMessage())
+      sendMessage(message);
     }
 
     setText("");

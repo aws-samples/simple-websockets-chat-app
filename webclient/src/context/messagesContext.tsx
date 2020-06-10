@@ -5,9 +5,11 @@ import {
   MessagesState,
   Message,
   MessageReply,
+  MessageReaction,
   EventListener,
   MessageEvent,
-  MessageReplySentEvent
+  MessageReplySentEvent,
+  MessageReactionSentEvent,
 } from '../interfaces'
 
 import { EventContext } from './eventContext'
@@ -16,6 +18,7 @@ import { RoomContext } from './roomContext'
 interface MessagesStateContext extends MessagesState {
   sendMessage: (message: Message) => void;
   sendMessageReply: (replyMessage: MessageReply) => void;
+  sendMessageReaction: (reactionMessage: MessageReaction) => void;
   selectMessage: (message?: Message) => void;
   selectMessageToReplyTo: (message?: Message) => void;
   selectMessageToReactTo: (message?: Message) => void;
@@ -29,6 +32,7 @@ const DEFAULT_MESSAGES_STATE_CONTEXT: MessagesStateContext = {
   selectedMessageToReactTo: undefined,
   sendMessage: noop,
   sendMessageReply: noop,
+  sendMessageReaction: noop,
   selectMessage: noop,
   selectMessageToReplyTo: noop,
   selectMessageToReactTo: noop,
@@ -81,6 +85,13 @@ const MessagesProvider: React.FC = ({ children }) => {
     },
   }
 
+  const messageReactionSentListener: EventListener = {
+    eventType: 'MESSAGE_REACTION_SENT',
+    callback: ({ data: message }: MessageReactionSentEvent) => {
+      setLocalMessages(addMessage(message));
+    },
+  }
+
   const messageDeletedListener: EventListener = {
     eventType: 'MESSAGE_DELETED',
     callback: ({ data: message }: MessageEvent) => {
@@ -91,10 +102,12 @@ const MessagesProvider: React.FC = ({ children }) => {
   React.useEffect(() => {
     events.addEventListener(messageSentListener);
     events.addEventListener(messageReplySentListener);
+    events.addEventListener(messageReactionSentListener);
     events.addEventListener(messageDeletedListener);
     return () => {
       events.removeEventListener(messageSentListener);
       events.removeEventListener(messageReplySentListener);
+      events.removeEventListener(messageReactionSentListener);
       events.removeEventListener(messageDeletedListener);
     }
   }, [roomId]);
@@ -113,6 +126,13 @@ const MessagesProvider: React.FC = ({ children }) => {
     }
   }
 
+  const sendMessageReaction = (message: MessageReaction) => {
+    if (roomId) {
+      events.send('MESSAGE_REACTION_SENT', message);
+      setLocalMessages(addMessage(message));
+    }
+  }
+
   const deleteMessage = (message: Message) => {
     events.send('MESSAGE_DELETED', message);
     setLocalMessages(removeMessage(message));
@@ -125,6 +145,7 @@ const MessagesProvider: React.FC = ({ children }) => {
     selectedMessageToReactTo,
     sendMessage,
     sendMessageReply,
+    sendMessageReaction,
     selectMessage: (message?: Message) => {
       selectMessageToReactTo(undefined);
       selectMessageToReplyTo(undefined);

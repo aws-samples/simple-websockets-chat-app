@@ -10,7 +10,8 @@ import { MessagesContext } from '../context/messagesContext'
 import { colorFromUuid, shouldUseDark, clsn } from '../helpers/color'
 
 import { MessageInteractions, Interaction } from './MessageInteractions';
-import MessageReactions, { ReactionType } from './MessageReactions';
+import MessageReactions from './MessageReactions';
+import MessageReactionEntity from '../entities/MessageReactionEntity';
 
 interface Props {
   message: interfaces.Message;
@@ -58,6 +59,7 @@ export const Message: React.FC<Props> = ({ message }) => {
     selectMessage,
     selectMessageToReplyTo,
     selectMessageToReactTo,
+    sendMessageReaction,
     deleteMessage,
   } = React.useContext(MessagesContext);
 
@@ -81,8 +83,13 @@ export const Message: React.FC<Props> = ({ message }) => {
     }
   }
 
-  const onReaction = (reaction: ReactionType) => {
-    alert(reaction + ' for ' + message.messageId);
+  const onReaction = (reaction: interfaces.Reaction) => {
+    if (selectedMessageToReactTo) {
+      sendMessageReaction(new MessageReactionEntity({
+        reaction,
+        authorId,
+      }, selectedMessageToReactTo));
+    }
     selectMessageToReactTo(undefined);
   }
 
