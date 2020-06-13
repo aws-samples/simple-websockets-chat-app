@@ -72,16 +72,12 @@ const MessagesProvider: React.FC = ({ children }) => {
     }
   }
 
-  function removeFromArray<T extends { roomId: string}>(item: T) {
-    return (items: T[]) => {
-      if (item.roomId !== roomId) return items;
-      return [...items, item];
-    }
-  }
-
   const addMessage = (message: Message) => addToArray<Message>(message);
-  const removeMessage = (message: Message) => removeFromArray<Message>(message);
   const addMessageReaction = (messageReaction: MessageReaction) => addToArray<MessageReaction>(messageReaction);
+  const removeMessage = (message: Message) => (messages: Message[]) => {
+    if (message.roomId !== roomId) return messages;
+    return messages.filter(m => m.messageId !== message.messageId)
+  };
 
   const messageReactionsChanged = (reaction: MessageReaction) => {
     setMessageReactions(addMessageReaction(reaction));
