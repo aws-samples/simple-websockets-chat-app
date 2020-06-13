@@ -28,9 +28,10 @@ export const messageFromReply = ({ roomId, toText, toAuthorId, toMessageId, crea
 
 interface MessageComponentProps extends Props {
   isReply?: boolean;
+  reactions?: interfaces.MessageReaction[]
 }
 
-export const MessageComponent: React.FC<MessageComponentProps> = ({ message, isReply }) => {
+export const MessageComponent: React.FC<MessageComponentProps> = ({ message, isReply, reactions }) => {
   const backgroundColor = colorFromUuid(message.authorId);
   const useDark = shouldUseDark(backgroundColor);
   const style = { backgroundColor };
@@ -43,6 +44,10 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({ message, isR
       <span className={clsn(useDark && 'dark')}>
         {message.text}
       </span>
+      {
+        reactions && !isReply &&
+        <ReactionsToMessage reactions={reactions} />
+      }
     </button>
   )
 }
@@ -118,7 +123,7 @@ export const Message: React.FC<Props> = ({ message }) => {
       className={clsn('message', isMine ? "mine" : "theirs")}
       onClick={onMessageClick}
     >
-      <MessageComponent message={message} />
+      <MessageComponent message={message} reactions={getReactionsToMessage(message)} />
       {
         showInteractions &&
         <MessageInteractions onInteraction={onInteraction} reverse={isMine} />
@@ -127,7 +132,6 @@ export const Message: React.FC<Props> = ({ message }) => {
         showReactions &&
         <MessageReactions onReaction={onReaction} />
       }
-      <ReactionsToMessage reactions={getReactionsToMessage(message)} />
     </li>
   );
 }

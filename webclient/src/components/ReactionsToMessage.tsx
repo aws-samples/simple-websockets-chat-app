@@ -1,3 +1,4 @@
+import '../styles/ReactionsToMessage.styl'
 import * as React from 'react'
 import { MessageReaction } from '../interfaces'
 import { Emoji, emojiFromReaction } from '../api/emoji'
@@ -36,6 +37,8 @@ const messageReactionsToEmojiCount = (reactions: MessageReaction[]): ReactionCom
 }
 
 const ReactionsToMessage: React.FC<{reactions: MessageReaction[]}> = ({ reactions }) => {
+  if (!reactions.length) return null
+  
   return (
     <div className="reactions-to-message">
       {
