@@ -1,18 +1,25 @@
 import '../styles/ReactionsToMessage.styl'
 import * as React from 'react'
-import { MessageReaction } from '../interfaces'
+import { Reaction, MessageReaction } from '../interfaces'
 import { Emoji, emojiFromReaction } from '../api/emoji'
 
 interface ReactionComponentProps {
-  emoji?: Emoji,
-  count: number
+  reaction: Reaction;
+  emoji?: Emoji;
+  count: number;
+  onReaction?: (reaction: Reaction) => void;
 }
 
-const ReactionComponent: React.FC<ReactionComponentProps> = ({ emoji, count }) => {
+const ReactionComponent: React.FC<ReactionComponentProps> = ({ reaction, emoji, count, onReaction }) => {
   if (!emoji) return null;
 
+  const onClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    onReaction && onReaction(reaction);
+  }
+
   return (
-    <div className="reaction">
+    <div className="reaction" onClick={onClick}>
       <span className="emoji">{emoji}</span>
       <span className="count">{count}</span>
     </div>
@@ -21,13 +28,14 @@ const ReactionComponent: React.FC<ReactionComponentProps> = ({ emoji, count }) =
 
 const messageReactionsToEmojiCount = (reactions: MessageReaction[]): ReactionComponentProps[] => {
   return reactions.map(({ reaction, remove }) => ({
+      reaction,
       emoji: emojiFromReaction(reaction),
       count: remove ? -1 : 1,
     }))
-    .reduce((prev: ReactionComponentProps[], { emoji, count }) => {
+    .reduce((prev: ReactionComponentProps[], { reaction, emoji, count }) => {
       const props = prev.find(prop => prop.emoji == emoji);
       if (!props) {
-         emoji && prev.push({ emoji, count })
+         emoji && prev.push({ reaction, emoji, count })
       } else {
         props.count += count;
       }
@@ -36,14 +44,18 @@ const messageReactionsToEmojiCount = (reactions: MessageReaction[]): ReactionCom
     .filter(({ emoji, count }) => emoji && count > 0);
 }
 
-const ReactionsToMessage: React.FC<{reactions: MessageReaction[]}> = ({ reactions }) => {
-  if (!reactions.length) return null
-  
+interface Props {
+  reactions: MessageReaction[];
+  onReaction?: (reaction: Reaction) => void;
+}
+const ReactionsToMessage: React.FC<Props> = ({ reactions, onReaction }) => {
+  const emojis = messageReactionsToEmojiCount(reactions);
+  if (!emojis.length) return null
+
   return (
     <div className="reactions-to-message">
       {
-        messageReactionsToEmojiCount(reactions)
-          .map(props => <ReactionComponent key={props.emoji} {...props} />)
+        emojis.map(props => <ReactionComponent key={props.emoji} {...props} onReaction={onReaction} />)
       }
     </div>
   )

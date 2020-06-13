@@ -29,9 +29,15 @@ export const messageFromReply = ({ roomId, toText, toAuthorId, toMessageId, crea
 interface MessageComponentProps extends Props {
   isReply?: boolean;
   reactions?: interfaces.MessageReaction[]
+  onReaction?: (reaction: interfaces.Reaction) => void;
 }
 
-export const MessageComponent: React.FC<MessageComponentProps> = ({ message, isReply, reactions }) => {
+export const MessageComponent: React.FC<MessageComponentProps> = ({
+  message,
+  isReply,
+  reactions,
+  onReaction
+}) => {
   const backgroundColor = colorFromUuid(message.authorId);
   const useDark = shouldUseDark(backgroundColor);
   const style = { backgroundColor };
@@ -46,7 +52,7 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({ message, isR
       </span>
       {
         reactions && !isReply &&
-        <ReactionsToMessage reactions={reactions} />
+        <ReactionsToMessage reactions={reactions} onReaction={onReaction} />
       }
     </button>
   )
@@ -90,20 +96,18 @@ export const Message: React.FC<Props> = ({ message }) => {
     }
   }
 
-  const onReaction = (reaction: interfaces.Reaction) => {
-    if (selectedMessageToReactTo) {
-      const lastReactionByAuthor = getReactionsToMessage(selectedMessageToReactTo)
-        .filter(messageReaction => messageReaction.authorId === authorId && messageReaction.reaction === reaction)
-        .sort((a, b) => a.createdAt < b.createdAt ? -1 : 1)
-        .pop();
+  const onReaction = (message: interfaces.Message, reaction: interfaces.Reaction) => {
+    const lastReactionByAuthor = getReactionsToMessage(message)
+      .filter(messageReaction => messageReaction.authorId === authorId && messageReaction.reaction === reaction)
+      .sort((a, b) => a.createdAt < b.createdAt ? -1 : 1)
+      .pop();
 
-      const remove = lastReactionByAuthor ? !lastReactionByAuthor.remove : false;
-      sendMessageReaction(new MessageReactionEntity({
-        reaction,
-        authorId,
-        remove
-      }, selectedMessageToReactTo));
-    }
+    const remove = lastReactionByAuthor ? !lastReactionByAuthor.remove : false;
+    sendMessageReaction(new MessageReactionEntity({
+      reaction,
+      authorId,
+      remove
+    }, message));
     selectMessageToReactTo(undefined);
   }
 
@@ -123,14 +127,14 @@ export const Message: React.FC<Props> = ({ message }) => {
       className={clsn('message', isMine ? "mine" : "theirs")}
       onClick={onMessageClick}
     >
-      <MessageComponent message={message} reactions={getReactionsToMessage(message)} />
+      <MessageComponent message={message} reactions={getReactionsToMessage(message)} onReaction={reaction => onReaction(message, reaction)} />
       {
         showInteractions &&
         <MessageInteractions onInteraction={onInteraction} reverse={isMine} />
       }
       {
         showReactions &&
-        <MessageReactions onReaction={onReaction} />
+        <MessageReactions onReaction={reaction => onReaction(message, reaction)} />
       }
     </li>
   );
