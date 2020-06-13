@@ -19,10 +19,10 @@ const ReactionComponent: React.FC<ReactionComponentProps> = ({ reaction, emoji, 
   }
 
   return (
-    <div className="reaction" onClick={onClick}>
+    <button className="reaction" onClick={onClick}>
       <span className="emoji">{emoji}</span>
       <span className="count">{count}</span>
-    </div>
+    </button>
   )
 }
 
