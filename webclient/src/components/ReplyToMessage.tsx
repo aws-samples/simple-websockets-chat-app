@@ -7,15 +7,15 @@ import { MessageComponent } from './Message'
 
 const ReplyToMessage: React.FC = () => {
   const {
-    selectedMessageToReply: message,
-    selectMessageToReply
+    selectedMessageToReplyTo: message,
+    selectMessageToReplyTo
   } = React.useContext(MessagesContext);
   if (!message) return null;
 
   return (
     <div className="reply-to-message">
       {message && <MessageComponent message={message} isReply={true} />}
-      <button onClick={() => selectMessageToReply(undefined)}>cancel</button>
+      <button onClick={() => selectMessageToReplyTo(undefined)}>cancel</button>
     </div>
   )
 }

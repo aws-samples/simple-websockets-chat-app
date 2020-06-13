@@ -57,6 +57,8 @@ test-all: test-init
 	make test-SendMessage-RoomJoined
 	make test-SendMessage-RoomLeft
 	make test-SendMessage-MessageSent
+	make test-SendMessage-MessageReplySent
+	make test-SendMessage-MessageReactionSent
 	make test-SendMessage-MessageDeleted
 
 sam-package: check-vars

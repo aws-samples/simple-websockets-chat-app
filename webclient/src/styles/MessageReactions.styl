@@ -1,8 +1,10 @@
-.message-interactions
+.message-reactions
+  position: absolute
+  top: -1.8rem
+  width: 100%
   display: flex
-  margin: 0 0.5rem
-
-  & > *
+  justify-content: center
+  .reaction
     font-size: 1.5rem
     border: none
     border-radius: 5px
@@ -11,6 +13,3 @@
     background-color: var(--white)
     box-shadow: 0 2px 4px rgba(0, 0, 0, .15)
     cursor: pointer
-
-  &.reverse
-    flex-direction: row-reverse

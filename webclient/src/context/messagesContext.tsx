@@ -5,9 +5,11 @@ import {
   MessagesState,
   Message,
   MessageReply,
+  MessageReaction,
   EventListener,
   MessageEvent,
-  MessageReplySentEvent
+  MessageReplySentEvent,
+  MessageReactionSentEvent,
 } from '../interfaces'
 
 import { EventContext } from './eventContext'
@@ -16,20 +18,27 @@ import { RoomContext } from './roomContext'
 interface MessagesStateContext extends MessagesState {
   sendMessage: (message: Message) => void;
   sendMessageReply: (replyMessage: MessageReply) => void;
+  sendMessageReaction: (reactionMessage: MessageReaction) => void;
   selectMessage: (message?: Message) => void;
-  selectMessageToReply: (message?: Message) => void;
+  selectMessageToReplyTo: (message?: Message) => void;
+  selectMessageToReactTo: (message?: Message) => void;
   deleteMessage: (message: Message) => void;
+  getReactionsToMessage: (message: Message) => MessageReaction[];
 }
 
 const DEFAULT_MESSAGES_STATE_CONTEXT: MessagesStateContext = {
   messages: [],
   selectedMessage: undefined,
-  selectedMessageToReply: undefined,
+  selectedMessageToReplyTo: undefined,
+  selectedMessageToReactTo: undefined,
   sendMessage: noop,
   sendMessageReply: noop,
+  sendMessageReaction: noop,
   selectMessage: noop,
-  selectMessageToReply: noop,
+  selectMessageToReplyTo: noop,
+  selectMessageToReactTo: noop,
   deleteMessage: noop,
+  getReactionsToMessage: () => []
 }
 
 const MessagesContext = React.createContext<MessagesStateContext>(DEFAULT_MESSAGES_STATE_CONTEXT);
@@ -46,7 +55,9 @@ const findUnique = (messages: Message[]): Message[] => {
 const MessagesProvider: React.FC = ({ children }) => {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [selectedMessage, selectMessage] = React.useState<Message>();
-  const [selectedMessageToReply, selectMessageToReply] = React.useState<Message>();
+  const [selectedMessageToReplyTo, selectMessageToReplyTo] = React.useState<Message>();
+  const [selectedMessageToReactTo, selectMessageToReactTo] = React.useState<Message>();
+  const [messageReations, setMessageReactions] = React.useState<MessageReaction[]>([]);
   const events = React.useContext(EventContext);
   const { roomId } = React.useContext(RoomContext);
 
@@ -54,13 +65,26 @@ const MessagesProvider: React.FC = ({ children }) => {
     setMessages(messages => updateMessagesFn(sortByCreatedAt(findUnique(messages))))
   }
 
-  const addMessage = (message: Message) => (messages: Message[]) => {
-    if (message.roomId !== roomId) return messages;
-    return [...messages, message]
-  };
-  const removeMessage = (message: Message) => (messages: Message[]) => {
-    if (message.roomId !== roomId) return messages;
-    return messages.filter(({messageId}) => message.messageId !== messageId)
+  function addToArray<T extends { roomId: string}>(item: T) {
+    return (items: T[]) => {
+      if (item.roomId !== roomId) return items;
+      return [...items, item];
+    }
+  }
+
+  function removeFromArray<T extends { roomId: string}>(item: T) {
+    return (items: T[]) => {
+      if (item.roomId !== roomId) return items;
+      return [...items, item];
+    }
+  }
+
+  const addMessage = (message: Message) => addToArray<Message>(message);
+  const removeMessage = (message: Message) => removeFromArray<Message>(message);
+  const addMessageReaction = (messageReaction: MessageReaction) => addToArray<MessageReaction>(messageReaction);
+
+  const messageReactionsChanged = (reaction: MessageReaction) => {
+    setMessageReactions(addMessageReaction(reaction));
   }
 
   const messageSentListener: EventListener = {
@@ -77,6 +101,13 @@ const MessagesProvider: React.FC = ({ children }) => {
     },
   }
 
+  const messageReactionSentListener: EventListener = {
+    eventType: 'MESSAGE_REACTION_SENT',
+    callback: ({ data: message }: MessageReactionSentEvent) => {
+      messageReactionsChanged(message);
+    },
+  }
+
   const messageDeletedListener: EventListener = {
     eventType: 'MESSAGE_DELETED',
     callback: ({ data: message }: MessageEvent) => {
@@ -87,10 +118,12 @@ const MessagesProvider: React.FC = ({ children }) => {
   React.useEffect(() => {
     events.addEventListener(messageSentListener);
     events.addEventListener(messageReplySentListener);
+    events.addEventListener(messageReactionSentListener);
     events.addEventListener(messageDeletedListener);
     return () => {
       events.removeEventListener(messageSentListener);
       events.removeEventListener(messageReplySentListener);
+      events.removeEventListener(messageReactionSentListener);
       events.removeEventListener(messageDeletedListener);
     }
   }, [roomId]);
@@ -109,20 +142,47 @@ const MessagesProvider: React.FC = ({ children }) => {
     }
   }
 
+  const sendMessageReaction = (message: MessageReaction) => {
+    if (roomId) {
+      events.send('MESSAGE_REACTION_SENT', message);
+      messageReactionsChanged(message);
+    }
+  }
+
   const deleteMessage = (message: Message) => {
     events.send('MESSAGE_DELETED', message);
     setLocalMessages(removeMessage(message));
   }
 
+  const getReactionsToMessage = (message: Message) => {
+    return messageReations.filter(({ toMessageId }) => message.messageId == toMessageId);
+  }
+
   const state: MessagesStateContext = {
     messages,
     selectedMessage,
-    selectedMessageToReply,
+    selectedMessageToReplyTo,
+    selectedMessageToReactTo,
     sendMessage,
     sendMessageReply,
-    selectMessage,
-    selectMessageToReply,
+    sendMessageReaction,
+    selectMessage: (message?: Message) => {
+      selectMessageToReactTo(undefined);
+      selectMessageToReplyTo(undefined);
+      selectMessage(message);
+    },
+    selectMessageToReplyTo: (message?: Message) => {
+      selectMessage(undefined);
+      selectMessageToReactTo(undefined);
+      selectMessageToReplyTo(message);
+    },
+    selectMessageToReactTo: (message?: Message) => {
+      selectMessage(undefined);
+      selectMessageToReplyTo(undefined);
+      selectMessageToReactTo(message);
+    },
     deleteMessage,
+    getReactionsToMessage
   }
 
   return (

@@ -2,34 +2,35 @@
   margin: 4px 0
   display: flex
   align-items: center
+  position: relative;
 
   &.mine
     flex-direction: row-reverse
 
-  & .message-component
-    & .reply
-      margin-bottom: 0.5rem
+  & .message-component-reply
+    margin-bottom: 0.5rem
 
 .message-component
   display: flex
   flex-direction: column
+  flex-shrink: 0
   max-width: 55%
   border: var(--border)
   border-radius: 5px
   font-size: 1rem
   font-weight: bold
   padding: 0.5rem
+  text-align: left
 
-  &.reply
-    font-size: small
-    font-style: italic
-    border: var(--border)
-    border-radius: 3px
-    border-width: 1px
-    padding: 0.25rem
-    max-width: none
+.message-component-reply
+  font-size: small
+  font-style: italic
+  border: var(--border)
+  border-radius: 3px
+  border-width: 1px
+  padding: 0.25rem
 
-    span
-      white-space: nowrap
-      overflow: hidden
-      text-overflow: ellipsis
+  &, & > *
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
