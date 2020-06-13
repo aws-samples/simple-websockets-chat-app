@@ -31,12 +31,12 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({
   onReaction
 }) => {
   const backgroundColor = colorFromUuid(message.authorId);
-  const useDark = shouldUseDark(backgroundColor);
   const style = { backgroundColor };
+  const className = clsn('txt', shouldUseDark(backgroundColor) && 'dark');
 
   const Reply: React.FC<{text: string}> = ({ text }) => (
     <div className="message-component-reply" style={style}>
-      <span className={clsn(useDark && 'dark')} style={style}>
+      <span className={className} style={style}>
         {text}
       </span>
     </div>
@@ -51,7 +51,7 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({
       {
         interfaces.instanceOfMessageReply(message) && <Reply text={message.toText} />
       }
-      <span className={clsn(useDark && 'dark')}>
+      <span className={className}>
         {message.text}
       </span>
       {
