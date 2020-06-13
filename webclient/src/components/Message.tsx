@@ -11,6 +11,7 @@ import { colorFromUuid, shouldUseDark, clsn } from '../helpers/color'
 
 import { MessageInteractions, Interaction } from './MessageInteractions';
 import MessageReactions from './MessageReactions';
+import ReactionsToMessage from './ReactionsToMessage';
 import MessageReactionEntity from '../entities/MessageReactionEntity';
 
 interface Props {
@@ -61,6 +62,7 @@ export const Message: React.FC<Props> = ({ message }) => {
     selectMessageToReactTo,
     sendMessageReaction,
     deleteMessage,
+    getReactionsToMessage
   } = React.useContext(MessagesContext);
 
   const isMine = message.authorId === authorId;
@@ -118,6 +120,7 @@ export const Message: React.FC<Props> = ({ message }) => {
         showReactions &&
         <MessageReactions onReaction={onReaction} />
       }
+      <ReactionsToMessage reactions={getReactionsToMessage(message)} />
     </li>
   );
 }
