@@ -3,7 +3,8 @@ import * as React from 'react'
 
 import { MessagesContext } from '../context/messagesContext'
 
-import { MessageComponent } from './Message'
+import { ReplyComponent } from './Message'
+import MessageReplyEntity from '../entities/MessageReplyEntity'
 
 const ReplyToMessage: React.FC = () => {
   const {
@@ -14,7 +15,7 @@ const ReplyToMessage: React.FC = () => {
 
   return (
     <div className="reply-to-message">
-      {message && <MessageComponent message={message} isReply={true} />}
+      {message && <ReplyComponent reply={new MessageReplyEntity(message, message)} />}
       <button onClick={() => selectMessageToReplyTo(undefined)}>cancel</button>
     </div>
   )
