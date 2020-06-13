@@ -87,9 +87,16 @@ export const Message: React.FC<Props> = ({ message }) => {
 
   const onReaction = (reaction: interfaces.Reaction) => {
     if (selectedMessageToReactTo) {
+      const lastReactionByAuthor = getReactionsToMessage(selectedMessageToReactTo)
+        .filter(messageReaction => messageReaction.authorId === authorId && messageReaction.reaction === reaction)
+        .sort((a, b) => a.createdAt < b.createdAt ? -1 : 1)
+        .pop();
+
+      const remove = lastReactionByAuthor ? !lastReactionByAuthor.remove : false;
       sendMessageReaction(new MessageReactionEntity({
         reaction,
         authorId,
+        remove
       }, selectedMessageToReactTo));
     }
     selectMessageToReactTo(undefined);

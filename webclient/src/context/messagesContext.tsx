@@ -82,7 +82,7 @@ const MessagesProvider: React.FC = ({ children }) => {
   const addMessage = (message: Message) => addToArray<Message>(message);
   const removeMessage = (message: Message) => removeFromArray<Message>(message);
   const addMessageReaction = (messageReaction: MessageReaction) => addToArray<MessageReaction>(messageReaction);
-  
+
   const messageReactionsChanged = (reaction: MessageReaction) => {
     setMessageReactions(addMessageReaction(reaction));
   }
