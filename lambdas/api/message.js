@@ -43,6 +43,7 @@ const cleanupEvent = ({ meta, data }) => {
           'roomId',
           'authorId',
           'reaction',
+          'remove',
           'createdAt',
           'toMessageId',
         ])
