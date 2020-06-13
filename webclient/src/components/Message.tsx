@@ -18,14 +18,6 @@ interface Props {
   message: interfaces.Message;
 }
 
-export const messageFromReply = ({ roomId, toText, toAuthorId, toMessageId, createdAt }: interfaces.MessageReply): interfaces.Message => ({
-  messageId: toMessageId,
-  text: toText,
-  authorId: toAuthorId,
-  roomId: roomId,
-  createdAt
-})
-
 interface MessageComponentProps extends Props {
   isReply?: boolean;
   reactions?: interfaces.MessageReaction[]
@@ -41,20 +33,32 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({
   const backgroundColor = colorFromUuid(message.authorId);
   const useDark = shouldUseDark(backgroundColor);
   const style = { backgroundColor };
+
+  const Reply: React.FC<{text: string}> = ({ text }) => (
+    <div className="message-component-reply" style={style}>
+      <span className={clsn(useDark && 'dark')} style={style}>
+        {text}
+      </span>
+    </div>
+  )
+
+  if (isReply) {
+    return <Reply text={message.text} />
+  }
+
   return (
-    <button className={clsn("message-component", isReply && 'reply')} style={style}>
+    <a className="message-component" style={style}>
       {
-        interfaces.instanceOfMessageReply(message) && !isReply &&
-        <MessageComponent message={messageFromReply(message)} isReply={true} />
+        interfaces.instanceOfMessageReply(message) && <Reply text={message.toText} />
       }
       <span className={clsn(useDark && 'dark')}>
         {message.text}
       </span>
       {
-        reactions && !isReply &&
+        reactions &&
         <ReactionsToMessage reactions={reactions} onReaction={onReaction} />
       }
-    </button>
+    </a>
   )
 }
 

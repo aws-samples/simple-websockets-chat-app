@@ -15,9 +15,9 @@ const MessageReactions: React.FC<Props> = ({ onReaction }) => {
   return (
     <div className="message-reactions">
       {reactionEmojiPairs().map(({reaction, emoji}) => (
-        <button key={reaction} className="reaction" onClick={onClick(reaction)}>
+        <a key={reaction} className="reaction" onClick={onClick(reaction)}>
           {emoji}
-        </button>
+        </a>
       ))}
     </div>
   )
