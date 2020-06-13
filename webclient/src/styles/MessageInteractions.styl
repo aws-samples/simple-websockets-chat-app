@@ -1,10 +1,16 @@
 .message-interactions
   display: flex
-  padding: 0.5rem;
-  justify-content: space-between;
+  margin: 0 0.5rem
 
-  button
-    margin: 0 1rem;
+  & > *
+    font-size: 1.5rem
+    border: none
+    border-radius: 5px
+    padding: 0.25rem 0.5rem
+    margin: 0 0.25rem
+    background-color: var(--white)
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .15)
+    cursor: pointer
 
   &.reverse
-    flex-direction: row-reverse;
+    flex-direction: row-reverse

@@ -17,9 +17,9 @@ export const MessageInteractions: React.FC<Props> = ({ reverse, onInteraction })
 
   return (
     <div className={clsn("message-interactions", reverse && 'reverse')}>
-      <button onClick={interact('react')}>:)</button>
-      <button onClick={interact('reply')}>reply</button>
-      <button onClick={interact('delete')}>delete</button>
+      <a onClick={interact('react')}>👍</a>
+      <a onClick={interact('reply')}>↩️</a>
+      <a onClick={interact('delete')}>🚫</a>
     </div>
   )
 }
