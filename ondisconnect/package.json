@@ -6,6 +6,6 @@
   "author": "SAM CLI",
   "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.690.0"
+    "aws-sdk": "^2.739.0"
   }
 }
