@@ -28,7 +28,6 @@ If you prefer, you can install the [AWS SAM CLI](https://docs.aws.amazon.com/ser
 sam package \
     --template-file template.yaml \
     --output-template-file packaged.yaml \
-    --capabilities CAPABILITY_IAM \
     --s3-bucket REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME
 
 sam deploy \
