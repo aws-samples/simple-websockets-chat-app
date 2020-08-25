@@ -25,20 +25,13 @@ The first and fastest way is to use AWS's Serverless Application Respository to 
 If you prefer, you can install the [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) and use it to package, deploy, and describe your application.  These are the commands you'll need to use:
 
 ```
-sam package \
-    --template-file template.yaml \
-    --output-template-file packaged.yaml \
-    --s3-bucket REPLACE_THIS_WITH_YOUR_S3_BUCKET_NAME
-
-sam deploy \
-    --template-file packaged.yaml \
-    --stack-name simple-websocket-chat-app \
-    --capabilities CAPABILITY_IAM \
-    --parameter-overrides MyParameterSample=MySampleValue
+sam deploy --guided
 
 aws cloudformation describe-stacks \
     --stack-name simple-websocket-chat-app --query 'Stacks[].Outputs'
 ```
+
+Note: `.gitignore` contains the samconfig.toml, hence make sure backup this file, or modify your .gitignore locally.
 
 ## Testing the chat API
 
