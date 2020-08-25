@@ -31,7 +31,7 @@ aws cloudformation describe-stacks \
     --stack-name simple-websocket-chat-app --query 'Stacks[].Outputs'
 ```
 
-Note: `.gitignore` contains the samconfig.toml, hence make sure backup this file, or modify your .gitignore locally.
+**Note:** `.gitignore` contains the `samconfig.toml`, hence make sure backup this file, or modify your .gitignore locally.
 
 ## Testing the chat API
 
