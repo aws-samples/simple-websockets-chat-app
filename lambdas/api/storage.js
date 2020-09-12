@@ -4,6 +4,7 @@ const {
   AWS_REGION,
   LOCAL_DYNAMODB_ENDPOINT: endpoint,
   TABLE_NAME: TableName,
+  TABLE_NAME_MESSAGES: TableNameMessages,
   TABLE_TTL_HOURS: ttlHours,
   CONNECTION_ID_INDEX: IndexName
 } = process.env;
@@ -21,9 +22,8 @@ const calculateTtl = () => {
   return Math.floor(ttl / 1000);
 }
 
-exports.put = Item => {
-  Item.ttl = calculateTtl();
-  debug('put', Item);
+const put = ({ Item, TableName }) => {
+  debug('put', { TableName, Item });
   return ddb
     .put({ TableName, Item })
     .promise();
@@ -99,4 +99,13 @@ exports.deleteAllByRoomId = async roomId => {
 exports.deleteAllByConnectionId = async connectionId => {
   const items = await findAllByConnectionId(connectionId);
   return deleteItems(items);
+}
+
+exports.putMessage = Item => {
+  return put({ Item, TableName: TableNameMessages });
+}
+
+exports.putConnection = Item => {
+  Item.ttl = calculateTtl();
+  return put({ Item, TableName });
 }
