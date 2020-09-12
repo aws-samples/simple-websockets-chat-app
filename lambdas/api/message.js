@@ -1,7 +1,7 @@
 const { debug, warn, error } = require('../helpers/log').buildLogger('API/MESSAGE');
 const fail = require('../helpers/fail')(error)
 const { assertNotEmpty, assertNoEmptyProperties } = require('../helpers/assertions')(error)
-const { connectionIdsByRoomId } = require('./storage')
+const { putMessage, connectionIdsByRoomId } = require('./storage')
 const { createBatch, trackBatch } = require('./eventTracker')
 const { buildEvent, emitEvent, EventTypes } = require('./event')
 
@@ -101,3 +101,9 @@ const broadcastConnectionsCountChangedInRoom = async (requestContext, roomId) =>
   await emitEvent(requestContext, systemEvent, connectionIds);
 }
 exports.broadcastConnectionsCountChangedInRoom = broadcastConnectionsCountChangedInRoom;
+
+exports.saveMessage = (requestContext, systemEvent) => {
+  const messageEvent = cleanupEvent(systemEvent);
+  console.log(messageEvent);
+  return putMessage(messageEvent.data);
+}

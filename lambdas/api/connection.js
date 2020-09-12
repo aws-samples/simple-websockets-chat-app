@@ -1,13 +1,13 @@
-const { put, deleteAllByConnectionId } = require('./storage')
+const { putConnection, deleteAllByConnectionId } = require('./storage')
 const { trackEvent } = require('./eventTracker')
 const { EventTypes } = require('./event')
 
 exports.saveConnection = async connectionId => {
-  await put({ roomId: connectionId, connectionId });
-  await trackEvent(EventTypes.CONNECTION_CONNECTED, { connectionId }); 
+  await putConnection({ roomId: connectionId, connectionId });
+  await trackEvent(EventTypes.CONNECTION_CONNECTED, { connectionId });
 }
 
 exports.removeConnection = async connectionId => {
   await deleteAllByConnectionId(connectionId);
-  await trackEvent(EventTypes.CONNECTION_DISCONNECTED, { connectionId }); 
+  await trackEvent(EventTypes.CONNECTION_DISCONNECTED, { connectionId });
 }

@@ -27,10 +27,23 @@ create-table: check-local-vars
     --global-secondary-indexes IndexName=ConnectionIdIndex,KeySchema=["{AttributeName=connectionId,KeyType=HASH}"],Projection={ProjectionType=KEYS_ONLY},ProvisionedThroughput="{ReadCapacityUnits=1,WriteCapacityUnits=1}" \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
+create-messages-table: check-local-vars
+	@echo deleting $(TABLE_NAME_MESSAGES)
+	-$(AWS) dynamodb delete-table \
+		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
+    --table-name $(TABLE_NAME_MESSAGES)
+	$(AWS) dynamodb create-table \
+		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
+    --table-name $(TABLE_NAME_MESSAGES) \
+    --attribute-definitions AttributeName=roomId,AttributeType=S AttributeName=createdAt,AttributeType=S \
+    --key-schema AttributeName=roomId,KeyType=HASH AttributeName=createdAt,KeyType=RANGE \
+    --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+
 call-function: check-local-vars
 	$(SAM) local invoke $(fnPrefix)Function \
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
+				TableNameMessages=$(TABLE_NAME_MESSAGES) \
 				TableTtlHours=$(TABLE_TTL_HOURS) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 				AppPrefix=$(STACK_NAME) \
@@ -41,6 +54,7 @@ call-function: check-local-vars
 test-init:
 	make start
 	make create-table
+	make create-messages-table
 
 test-OnConnect:
 	make call-function fnPrefix=OnConnect eventPrefix=OnConnect
@@ -74,6 +88,7 @@ sam-deploy: check-vars
 		--capabilities CAPABILITY_IAM \
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
+				TableNameMessages=$(TABLE_NAME_MESSAGES) \
 				TableTtlHours=$(TABLE_TTL_HOURS) \
 				WebsiteBucketName=$(WEBSITE_BUCKET) \
 				DomainName=$(DOMAIN_NAME) \
@@ -114,6 +129,7 @@ check-vars:
 	@make guard-STACK_NAME
 	@make guard-DEPLOY_BUCKET
 	@make guard-TABLE_NAME
+	@make guard-TABLE_NAME_MESSAGES
 	@make guard-TABLE_TTL_HOURS
 	@make guard-WEBSITE_BUCKET
 	@make guard-DOMAIN_NAME
@@ -122,6 +138,7 @@ check-vars:
 check-local-vars:
 	@make guard-STACK_NAME
 	@make guard-TABLE_NAME
+	@make guard-TABLE_NAME_MESSAGES
 	@make guard-TABLE_TTL_HOURS
 	@make guard-LOCAL_DYNAMODB_ENDPOINT
 	@make guard-LOCAL_DYNAMODB_PORT
