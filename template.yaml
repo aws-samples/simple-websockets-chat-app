@@ -296,6 +296,8 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TableName
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableNameMessages
         - Statement:
             - Effect: Allow
               Action:

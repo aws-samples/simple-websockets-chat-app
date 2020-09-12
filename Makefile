@@ -88,6 +88,7 @@ sam-deploy: check-vars
 		--capabilities CAPABILITY_IAM \
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
+				TableNameMessages=$(TABLE_NAME_MESSAGES) \
 				TableTtlHours=$(TABLE_TTL_HOURS) \
 				WebsiteBucketName=$(WEBSITE_BUCKET) \
 				DomainName=$(DOMAIN_NAME) \
