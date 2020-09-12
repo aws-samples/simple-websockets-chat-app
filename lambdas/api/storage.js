@@ -109,3 +109,13 @@ exports.putConnection = Item => {
   Item.ttl = calculateTtl();
   return put({ Item, TableName });
 }
+
+exports.recentMessagesInRoom = roomId => {
+  const query = {
+    TableName: TableNameMessages,
+    KeyConditionExpression: `roomId = :key`,
+    ExpressionAttributeValues: { ":key": roomId }
+  };
+
+  return queryItems(query);
+}

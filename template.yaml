@@ -19,6 +19,14 @@ Parameters:
     MaxLength: 50
     AllowedPattern: ^[A-Za-z_-]+$
     ConstraintDescription: "Required. Can be characters, dash, and underscore only. No numbers or special characters allowed."
+  TableNameMessages:
+    Type: String
+    Default: "simplechat-messages-table"
+    Description: (Required) The name of the new DynamoDB to store messages in a room. Minimum 3 characters
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: ^[A-Za-z_-]+$
+    ConstraintDescription: "Required. Can be characters, dash, and underscore only. No numbers or special characters allowed."
   TableTtlHours:
     Type: Number
     Default: 6
@@ -165,6 +173,23 @@ Resources:
       SSESpecification:
         SSEEnabled: True
       TableName: !Ref TableName
+  MessagesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: roomId
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: roomId
+          KeyType: HASH
+        - AttributeName: createdAt
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: True
+      TableName: !Ref TableNameMessages
   OnConnectFunction:
     DependsOn:
       - EventsStream
@@ -262,6 +287,7 @@ Resources:
         Variables:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
           TABLE_NAME: !Ref TableName
+          TABLE_NAME_MESSAGES: !Ref TableNameMessages
           TABLE_TTL_HOURS: !Ref TableTtlHours
           LOG_LEVEL: !Ref LogLevel
           ENVIRONMENT: !Ref Environment

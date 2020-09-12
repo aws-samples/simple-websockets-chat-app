@@ -43,6 +43,7 @@ call-function: check-local-vars
 	$(SAM) local invoke $(fnPrefix)Function \
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
+				TableNameMessages=$(TABLE_NAME_MESSAGES) \
 				TableTtlHours=$(TABLE_TTL_HOURS) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 				AppPrefix=$(STACK_NAME) \
@@ -53,6 +54,7 @@ call-function: check-local-vars
 test-init:
 	make start
 	make create-table
+	make create-messages-table
 
 test-OnConnect:
 	make call-function fnPrefix=OnConnect eventPrefix=OnConnect
