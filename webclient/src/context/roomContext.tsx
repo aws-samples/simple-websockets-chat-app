@@ -49,7 +49,7 @@ const RoomProvider: React.FC<RoomState> = ({
   }
 
   const joinRoom = (roomId: string) => {
-    addRoom(roomId);
+    addRoom(roomId, { authorId });
     events.send('ROOM_JOINED', { roomId, authorId });
     events.addEventListener(peopleInRoomChangedListener);
     setRoomId(roomId);
