@@ -1,7 +1,7 @@
 const { debug, warn, error } = require('../helpers/log').buildLogger('API/MESSAGE');
 const fail = require('../helpers/fail')(error)
 const { assertNotEmpty, assertNoEmptyProperties } = require('../helpers/assertions')(error)
-const { putMessage, connectionIdsByRoomId } = require('./storage')
+const { putMessage, connectionIdsByRoomId, latestMessagesInRoom } = require('./storage')
 const { createBatch, trackBatch } = require('./eventTracker')
 const { buildEvent, emitEvent, EventTypes } = require('./event')
 
@@ -20,6 +20,9 @@ const cleanupEvent = ({ meta, data }) => {
   switch (meta.e) {
     case EventTypes.MESSAGE_SENT: {
       return { meta, data: buildData(data, ['messageId', 'roomId', 'authorId', 'text', 'createdAt']) };
+    }
+    case EventTypes.MESSAGE_BATCH_SENT: {
+      return { meta, data };
     }
     case EventTypes.MESSAGE_REPLY_SENT: {
       return {
@@ -54,7 +57,7 @@ const cleanupEvent = ({ meta, data }) => {
       return { meta, data: buildData(data, ['messageId', 'roomId']) };
     }
     default:
-      fail(`Invalid message event type: ` + systemEvent.meta.e);
+      fail(`Invalid message event type: ` + meta.e);
   }
 }
 
@@ -104,6 +107,9 @@ exports.broadcastConnectionsCountChangedInRoom = broadcastConnectionsCountChange
 
 exports.saveMessage = (requestContext, systemEvent) => {
   const messageEvent = cleanupEvent(systemEvent);
-  console.log(messageEvent);
   return putMessage(messageEvent.data);
+}
+
+exports.latestMessagesInRoom = roomId => {
+  return latestMessagesInRoom(roomId);
 }
