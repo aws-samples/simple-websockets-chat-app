@@ -1,6 +1,9 @@
 import { emitEvent } from './eventEmitter'
 
+
+
 export const joinRoom = (connection: WebSocket, roomId: string) => {
+  addRoom(roomId)
   return emitEvent(connection, "ROOM_JOINED", { roomId });
 }
 export const leaveRoom = (connection: WebSocket, roomId: string) => {

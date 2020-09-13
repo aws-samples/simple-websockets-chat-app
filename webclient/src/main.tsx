@@ -9,9 +9,10 @@ import { Home } from './pages/Home'
 import { ConnectionProvider } from './context/connectionContext'
 
 import ConnectionStatus from './components/ConnectionStatus'
+import { Rooms } from './pages/Rooms';
 
 const rootElement = document.getElementById("root")
-const serverUrl = process.env.SERVER_URL
+const serverUrl = process.env.SERVER_URL || 'wss://at7ejxghod.execute-api.eu-west-2.amazonaws.com/Prod'
 
 if (!serverUrl) {
   alert('Error in configuration')
@@ -27,7 +28,12 @@ render(
       <Route exact={true} path="/" component={Home} />
       <Route
         exact={true}
-        path="/:roomId"
+        path="/o"
+        render={(props) => <Rooms />}
+      />
+      <Route
+        exact={true}
+        path="/r/:roomId"
         render={(props) => <App roomId={props.match.params.roomId} />}
       />
     </ConnectionProvider>

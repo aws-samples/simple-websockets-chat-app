@@ -7,6 +7,7 @@ import { RoomState, EventListener, PeopleInRoomChangedEvent } from '../interface
 
 import { EventContext } from './eventContext'
 import { MessagesProvider } from './messagesContext'
+import { addRoom } from '../store'
 
 interface RoomStateContext extends RoomState {
   newRoomId: () => string;
@@ -50,6 +51,7 @@ const RoomProvider: React.FC<RoomState> = ({
   }
 
   const joinRoom = (roomId: string) => {
+    addRoom(roomId);
     events.send('ROOM_JOINED', { roomId, authorId });
     events.addEventListener(peopleInRoomChangedListener);
     setRoomId(roomId);
