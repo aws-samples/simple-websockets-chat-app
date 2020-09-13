@@ -6,9 +6,10 @@ import uuid from './helpers/uuid'
 import Chat from './components/Chat'
 
 import { RoomProvider } from './context/roomContext'
+import { getAuthorIdOrInit } from './store'
 
 const App: React.FC<{ roomId: string }> = ({ roomId }) => {
-  const [authorId] = React.useState(uuid());
+  const [authorId] = React.useState(getAuthorIdOrInit(roomId));
 
   return (
     <RoomProvider authorId={authorId} roomId={roomId} peopleInRoom={0}>
