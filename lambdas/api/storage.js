@@ -114,7 +114,9 @@ exports.latestMessagesInRoom = roomId => {
   const query = {
     TableName: TableNameMessages,
     KeyConditionExpression: `roomId = :key`,
-    ExpressionAttributeValues: { ":key": roomId }
+    ExpressionAttributeValues: { ":key": roomId },
+    ScanIndexForward: false, // descending
+    Limit: 100
   };
 
   return queryItems(query);
