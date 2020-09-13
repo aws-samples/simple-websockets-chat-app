@@ -110,7 +110,7 @@ exports.putConnection = Item => {
   return put({ Item, TableName });
 }
 
-exports.recentMessagesInRoom = roomId => {
+exports.latestMessagesInRoom = roomId => {
   const query = {
     TableName: TableNameMessages,
     KeyConditionExpression: `roomId = :key`,

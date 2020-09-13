@@ -2,6 +2,7 @@ import * as React from 'react'
 
 import uuid from '../helpers/uuid'
 import noop from '../helpers/noop'
+import { getNewRoomUrl } from '../helpers/url'
 
 import { RoomState, EventListener, PeopleInRoomChangedEvent } from '../interfaces'
 
@@ -15,9 +16,6 @@ interface RoomStateContext extends RoomState {
   joinRoom: (roomId: string) => void;
   leaveRoom: (roomId: string) => void;
 }
-
-const getRoomUrl = (roomId: string): string => '/' + roomId;
-const getNewRoomUrl = () => getRoomUrl(uuid());
 
 const DEFAULT_ROOM_STATE_CONTEXT: RoomStateContext = {
   roomId: undefined,
