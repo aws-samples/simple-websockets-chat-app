@@ -11,6 +11,7 @@ import {
   MessageBatchSentEvent,
   MessageReplySentEvent,
   MessageReactionSentEvent,
+  instanceOfMessageReaction,
 } from '../interfaces'
 
 import { EventContext } from './eventContext'
@@ -94,7 +95,13 @@ const MessagesProvider: React.FC = ({ children }) => {
   const messageBatchSentListener: EventListener = {
     eventType: 'MESSAGE_BATCH_SENT',
     callback: ({ data: { messages } }: MessageBatchSentEvent) => {
-      messages.forEach(message => setLocalMessages(addMessage(message)))
+      messages.forEach(message => {
+        if (instanceOfMessageReaction(message)) {
+          messageReactionsChanged(message);
+        } else {
+          setLocalMessages(addMessage(message));
+        }
+      })
     },
   }
 

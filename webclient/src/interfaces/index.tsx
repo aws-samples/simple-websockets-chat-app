@@ -65,8 +65,11 @@ export interface MessageBatchSentEvent extends Event {
 export interface MessageReplySentEvent extends MessageEvent {
   data: MessageReply;
 }
+export const instanceOfMessageReaction = (message: any): message is MessageReaction => {
+  return 'reaction' in message
+}
 export const instanceOfMessageReply = (message: Message): message is MessageReply => {
-  return 'toMessageId' in message
+  return 'toMessageId' in message && !instanceOfMessageReaction(message)
 }
 
 export interface MessageReactionSentEvent {
