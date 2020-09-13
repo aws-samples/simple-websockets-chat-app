@@ -8,6 +8,7 @@ import {
   MessageReaction,
   EventListener,
   MessageEvent,
+  MessageBatchSentEvent,
   MessageReplySentEvent,
   MessageReactionSentEvent,
 } from '../interfaces'
@@ -90,6 +91,13 @@ const MessagesProvider: React.FC = ({ children }) => {
     },
   }
 
+  const messageBatchSentListener: EventListener = {
+    eventType: 'MESSAGE_BATCH_SENT',
+    callback: ({ data: { messages } }: MessageBatchSentEvent) => {
+      messages.forEach(message => setLocalMessages(addMessage(message)))
+    },
+  }
+
   const messageReplySentListener: EventListener = {
     eventType: 'MESSAGE_REPLY_SENT',
     callback: ({ data: message }: MessageReplySentEvent) => {
@@ -113,11 +121,13 @@ const MessagesProvider: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     events.addEventListener(messageSentListener);
+    events.addEventListener(messageBatchSentListener);
     events.addEventListener(messageReplySentListener);
     events.addEventListener(messageReactionSentListener);
     events.addEventListener(messageDeletedListener);
     return () => {
       events.removeEventListener(messageSentListener);
+      events.removeEventListener(messageBatchSentListener);
       events.removeEventListener(messageReplySentListener);
       events.removeEventListener(messageReactionSentListener);
       events.removeEventListener(messageDeletedListener);
