@@ -27,7 +27,7 @@ render(
       <Route exact={true} path="/" component={Home} />
       <Route
         exact={true}
-        path="/:roomId"
+        path="/r/:roomId"
         render={(props) => <App roomId={props.match.params.roomId} />}
       />
     </ConnectionProvider>

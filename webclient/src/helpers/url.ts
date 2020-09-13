@@ -1,7 +1,7 @@
 import uuid from "./uuid";
 
 export const getRoomUrl = (room: string): string => {
-  const roomUrl = new URL(window.location.origin + `/` + room);
+  const roomUrl = new URL(window.location.origin + `/r/` + room);
   return roomUrl.toString();
 };
 
