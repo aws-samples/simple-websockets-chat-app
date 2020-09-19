@@ -7,6 +7,7 @@ import Chat from './components/Chat'
 
 import { RoomProvider } from './context/roomContext'
 import { getAuthorIdOrInit } from './store'
+import { Link } from 'react-router-dom'
 
 const App: React.FC<{ roomId: string }> = ({ roomId }) => {
   const [authorId] = React.useState(getAuthorIdOrInit(roomId));
@@ -14,6 +15,8 @@ const App: React.FC<{ roomId: string }> = ({ roomId }) => {
   return (
     <RoomProvider authorId={authorId} roomId={roomId} peopleInRoom={0}>
       <div className="room">
+      <div style={{ width: "100%" }}>
+        <Link to="/o">Back</Link></div>
         <Chat />
       </div>
     </RoomProvider>
