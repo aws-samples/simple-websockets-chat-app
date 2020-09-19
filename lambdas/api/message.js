@@ -19,7 +19,7 @@ const cleanupEvent = ({ meta, data }) => {
 
   switch (meta.e) {
     case EventTypes.MESSAGE_SENT: {
-      return { meta, data: buildData(data, ['messageId', 'roomId', 'authorId', 'text', 'createdAt']) };
+      return { meta, data: buildData(data, ['messageId', 'roomId', 'authorId', 'authorName', 'text', 'createdAt']) };
     }
     case EventTypes.MESSAGE_BATCH_SENT: {
       return { meta, data };
@@ -31,6 +31,7 @@ const cleanupEvent = ({ meta, data }) => {
           'messageId',
           'roomId',
           'authorId',
+          'authorName',
           'text',
           'createdAt',
           'toMessageId',
@@ -44,6 +45,7 @@ const cleanupEvent = ({ meta, data }) => {
       const cleanedData = buildData(data, [
         'roomId',
         'authorId',
+        'authorName',
         'reaction',
         'createdAt',
         'toMessageId',
