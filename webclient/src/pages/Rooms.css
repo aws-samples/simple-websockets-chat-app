@@ -1,0 +1,23 @@
+.rooms__list {
+  display: flex;
+  list-style-type: none;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.rooms__list-element {
+  height: 50px;
+  border-bottom: 1px var(--dark) solid;
+  padding: 10px;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.rooms__list-element__text {
+  display: inline-flex;
+  justify-content: center;
+  margin-left: 75px;
+}

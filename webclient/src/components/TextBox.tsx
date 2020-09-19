@@ -52,7 +52,7 @@ const TextBox: React.FC = () => {
     setText("");
   };
 
-  const backgroundColor = colorFromUuid(authorId);
+  const backgroundColor = colorFromUuid(roomId);
   const style = { backgroundColor };
   const inverted = shouldUseDark(backgroundColor);
   const showShareRoom = canToggleOptions && (isOptionsOpen || peopleInRoom == 1);
