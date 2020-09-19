@@ -10,10 +10,6 @@
   max-width: 80%;
 }
 
-.invite-title, .people-in-room {
-  color: white;
-  mix-blend-mode: difference;
-}
 
 .copy-link {
 }
