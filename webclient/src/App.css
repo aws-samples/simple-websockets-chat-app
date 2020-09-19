@@ -29,7 +29,7 @@
    margin: 0;
    padding: 0;
    display: block;
-   font-family: Helvetica, Arial, sans-serif;
+   font-family: "Nunito Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
    -webkit-font-smoothing: antialiased;
    color: var(--dark);
  }
