@@ -5,6 +5,7 @@ import ShareRoom from './ShareRoom'
 import SendButton from './SendButton'
 import OptionsToggle from './OptionsToggle'
 import ReplyToMessage from './ReplyToMessage'
+import SetAuthorName from './SetAuthorName'
 
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
@@ -69,6 +70,7 @@ const TextBox: React.FC = () => {
           />
       }
       <ReplyToMessage />
+      <SetAuthorName />
       <form className="textbox" onSubmit={onSubmit}>
         {peopleInRoom > 0 && (
           <div className="textbox-ppl slide-out-top" key={peopleInRoom}>
