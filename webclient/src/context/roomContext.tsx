@@ -11,6 +11,7 @@ import { MessagesProvider } from './messagesContext'
 import { addRoom } from '../store'
 
 interface RoomStateContext extends RoomState {
+  setAuthorName: (name?: string) => void;
   newRoomId: () => string;
   getNewRoomUrl: () => string;
   joinRoom: (roomId: string) => void;
@@ -20,11 +21,13 @@ interface RoomStateContext extends RoomState {
 const DEFAULT_ROOM_STATE_CONTEXT: RoomStateContext = {
   roomId: undefined,
   authorId: uuid(),
+  authorName: undefined,
   peopleInRoom: 0,
   newRoomId: uuid,
   getNewRoomUrl,
   joinRoom: noop,
   leaveRoom: noop,
+  setAuthorName: noop,
 };
 
 
@@ -38,6 +41,7 @@ const RoomProvider: React.FC<RoomState> = ({
 }) => {
   const [peopleInRoom, setPeopleInRoom] = React.useState(initialPeopleInRoom);
   const [roomId, setRoomId] = React.useState(initialRoomId);
+  const [authorName, setAuthorName] = React.useState<string>();
 
   const events = React.useContext(EventContext);
 
@@ -73,11 +77,13 @@ const RoomProvider: React.FC<RoomState> = ({
   const state: RoomStateContext = {
     roomId,
     authorId,
+    authorName,
     peopleInRoom,
     newRoomId: uuid,
     getNewRoomUrl,
     joinRoom,
     leaveRoom,
+    setAuthorName
   }
 
   return (
