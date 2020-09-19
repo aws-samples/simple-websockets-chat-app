@@ -2,12 +2,12 @@ import * as React from 'react'
 import { RoomContext } from '../context/roomContext';
 
 const SetAuthorName: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [name, setName] = React.useState('');
   const {
     authorName,
     setAuthorName
   } = React.useContext(RoomContext)
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [name, setName] = React.useState(authorName);
 
   const onSave = () => {
     setAuthorName(name)
@@ -36,9 +36,11 @@ const SetAuthorName: React.FC = () => {
 
   return (
     <div>
-      <input name="name" onChange={onChange} value={name} />
-      <button onClick={onSave}>Save</button>
-      <button onClick={onCancel}>Cancel</button>
+      <form onSubmit={onSave}>
+        <input name="name" onChange={onChange} value={name} />
+        <button type="submit">Save</button>
+        <button type="button" onClick={onCancel}>Cancel</button>
+      </form>
     </div>
   )
 };

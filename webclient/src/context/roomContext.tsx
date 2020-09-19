@@ -36,12 +36,13 @@ const RoomContext = React.createContext<RoomStateContext>(DEFAULT_ROOM_STATE_CON
 const RoomProvider: React.FC<RoomState> = ({
   roomId: initialRoomId,
   authorId,
+  authorName: initialAuthorName,
   peopleInRoom: initialPeopleInRoom,
   children
 }) => {
   const [peopleInRoom, setPeopleInRoom] = React.useState(initialPeopleInRoom);
   const [roomId, setRoomId] = React.useState(initialRoomId);
-  const [authorName, setAuthorName] = React.useState<string>();
+  const [authorName, changeAuthorName] = React.useState<string | undefined>(initialAuthorName);
 
   const events = React.useContext(EventContext);
 
@@ -53,7 +54,7 @@ const RoomProvider: React.FC<RoomState> = ({
   }
 
   const joinRoom = (roomId: string) => {
-    addRoom(roomId, { authorId });
+    addRoom(roomId, { authorId, authorName });
     events.send('ROOM_JOINED', { roomId, authorId });
     events.addEventListener(peopleInRoomChangedListener);
     setRoomId(roomId);
@@ -63,6 +64,13 @@ const RoomProvider: React.FC<RoomState> = ({
     events.send('ROOM_LEFT', { roomId: newRoomId, authorId });
     events.removeEventListener(peopleInRoomChangedListener);
     setRoomId(undefined);
+  }
+
+  const setAuthorName = (authorName: string) => {
+    if (roomId) {
+      addRoom(roomId, { authorId, authorName });
+      changeAuthorName(authorName);
+    }
   }
 
   React.useEffect(() => {
