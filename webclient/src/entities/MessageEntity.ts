@@ -11,12 +11,15 @@ export default class MessageEntity implements Message {
 
   readonly authorId: string;
 
+  readonly authorName?: string;
+
   readonly text: string;
 
   readonly createdAt: string;
 
   constructor(params: MessageEntityParams) {
     this.authorId = params.authorId;
+    this.authorName = params.authorName;
     this.roomId = params.roomId;
     this.text = params.text;
     this.messageId = params.messageId ? params.messageId : uuid();

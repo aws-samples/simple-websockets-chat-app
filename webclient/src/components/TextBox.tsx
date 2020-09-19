@@ -19,7 +19,7 @@ import MessageReplyEntity from '../entities/MessageReplyEntity'
 const TextBox: React.FC = () => {
   const [text, setText] = React.useState("");
   const [isOptionsOpen, setIsOptionsOpen] = React.useState(false);
-  const { authorId, roomId, peopleInRoom } = React.useContext(RoomContext);
+  const { authorId, authorName, roomId, peopleInRoom } = React.useContext(RoomContext);
   const {
     sendMessage,
     sendMessageReply,
@@ -42,7 +42,7 @@ const TextBox: React.FC = () => {
       return;
     }
 
-    const message = new MessageEntity({ roomId, authorId, text });
+    const message = new MessageEntity({ roomId, authorId, authorName, text });
     if (selectedMessageToReplyTo) {
       sendMessageReply(new MessageReplyEntity(message, selectedMessageToReplyTo))
       selectMessageToReplyTo(undefined);
