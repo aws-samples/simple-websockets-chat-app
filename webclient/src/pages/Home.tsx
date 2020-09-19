@@ -64,7 +64,7 @@ const CTA: React.FC<{hot?: boolean, text: string}> = ({ hot, text }) => {
 const Features: React.FC = () => {
   const features: { headline: string, copy: string}[] = [
     { headline: 'Simple', copy: `Scan the QR Code or open the link and start texting. You won't be prompted to fill email, phone number or any other kind of information. Not even a name. Get straight to sharing your message.`},
-    { headline: 'Annonymous', copy: `When you join a Chat Room, you get assigned a random color. There's no way of knowing who you are unless you share that info yourself. All your messages will have the same color, the same as the messages from another unknown author will all have the same color.` },
+    { headline: 'Anonymous', copy: `When you join a Chat Room, you get assigned a random color. There's no way of knowing who you are unless you share that info yourself. All your messages will have the same color, the same as the messages from another unknown author will all have the same color.` },
     { headline: 'Ephimeral', copy: `Conversations are not stored. There's no history. Messages are delivered to the people in the Chat Room. If you reload the page you will get assigned a new color and only new messages will be displayed.` },
     { headline: 'Present', copy: `Are you done chatting? just close the tab. You will not get notified about new messages in the room. Do you want to join again? reload the page and take part of the conversation.` },
   ];
