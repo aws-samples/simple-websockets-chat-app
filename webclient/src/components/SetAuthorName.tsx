@@ -28,7 +28,7 @@ const SetAuthorName: React.FC = () => {
     const hasName = authorName && authorName.length;
     return (
       <div className="set-author-name">
-          <button className="open" onClick={() => setIsOpen(true)}>
+          <button className="clean" onClick={() => setIsOpen(true)}>
             {!hasName && "(optional) set name"}
             {hasName && authorName}
           </button>
@@ -39,9 +39,9 @@ const SetAuthorName: React.FC = () => {
   return (
     <div className="set-author-name">
       <form onSubmit={onSave}>
-        <input name="name" onChange={onChange} value={name} />
+        <input name="name" onChange={onChange} value={name} autoFocus />
         <button type="submit">Save</button>
-        <button type="button" onClick={onCancel}>Cancel</button>
+        <button className="clean" type="button" onClick={onCancel}>Cancel</button>
       </form>
     </div>
   )
