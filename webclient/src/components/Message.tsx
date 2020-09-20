@@ -139,7 +139,6 @@ export const Message: React.FC<Props> = ({ message }) => {
     <li
       key={message.messageId}
       className={clsn('message', isMine ? "mine" : "theirs")}
-      onClick={onMessageClick}
     >
       <MessageComponent message={message} reactions={getReactionsToMessage(message)} onReaction={reaction => onReaction(message, reaction)} />
       {
