@@ -32,6 +32,12 @@ export const ReplyComponent: React.FC<{ reply: interfaces.MessageReply }> = ({ r
   </div>
 )
 
+const time = (date: string): string => {
+  const time = new Date(date)
+  const mins = (time.getMinutes() < 10 ? '0' : '') + time.getMinutes()
+  return time.getHours() + ":" + mins
+}
+
 export const MessageComponent: React.FC<MessageComponentProps> = ({
   message,
   reactions,
@@ -40,17 +46,21 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({
   const backgroundColor = colorFromUuid(message.authorId);
   const style = { backgroundColor };
   const className = clsn('txt', shouldUseDark(backgroundColor) && 'dark');
-
   return (
     <a className="message-component" style={style}>
       {
         interfaces.instanceOfMessageReply(message) && <ReplyComponent reply={message} />
       }
-      { message.authorName && message.authorName.length && (
-        <span className={className + " author-name"}>
+      <div className={className}>
+        { message.authorName && message.authorName.length && (
+          <span className="author-name">
           {message.authorName}
+          </span>
+        )}
+        <span className="message-time">
+          {time(message.createdAt)}
         </span>
-      )}
+      </div>
       <span className={className}>
         {message.text}
       </span>
