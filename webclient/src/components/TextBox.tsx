@@ -5,6 +5,7 @@ import ShareRoom from './ShareRoom'
 import SendButton from './SendButton'
 import OptionsToggle from './OptionsToggle'
 import ReplyToMessage from './ReplyToMessage'
+import SetAuthorName from './SetAuthorName'
 
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
@@ -18,7 +19,7 @@ import MessageReplyEntity from '../entities/MessageReplyEntity'
 const TextBox: React.FC = () => {
   const [text, setText] = React.useState("");
   const [isOptionsOpen, setIsOptionsOpen] = React.useState(false);
-  const { authorId, roomId, peopleInRoom } = React.useContext(RoomContext);
+  const { authorId, authorName, roomId, peopleInRoom } = React.useContext(RoomContext);
   const {
     sendMessage,
     sendMessageReply,
@@ -41,7 +42,7 @@ const TextBox: React.FC = () => {
       return;
     }
 
-    const message = new MessageEntity({ roomId, authorId, text });
+    const message = new MessageEntity({ roomId, authorId, authorName, text });
     if (selectedMessageToReplyTo) {
       sendMessageReply(new MessageReplyEntity(message, selectedMessageToReplyTo))
       selectMessageToReplyTo(undefined);
@@ -55,7 +56,7 @@ const TextBox: React.FC = () => {
   const backgroundColor = colorFromUuid(roomId);
   const style = { backgroundColor };
   const inverted = shouldUseDark(backgroundColor);
-  const showShareRoom = canToggleOptions && (isOptionsOpen || peopleInRoom == 1);
+  const showShareRoom = canToggleOptions && isOptionsOpen;
   return (
     <div className="textbox-wrapper" style={style}>
       {
@@ -69,6 +70,7 @@ const TextBox: React.FC = () => {
           />
       }
       <ReplyToMessage />
+      <SetAuthorName />
       <form className="textbox" onSubmit={onSubmit}>
         {peopleInRoom > 0 && (
           <div className="textbox-ppl slide-out-top" key={peopleInRoom}>

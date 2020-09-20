@@ -46,6 +46,11 @@ export const MessageComponent: React.FC<MessageComponentProps> = ({
       {
         interfaces.instanceOfMessageReply(message) && <ReplyComponent reply={message} />
       }
+      { message.authorName && message.authorName.length && (
+        <span className={className + " author-name"}>
+          {message.authorName}
+        </span>
+      )}
       <span className={className}>
         {message.text}
       </span>

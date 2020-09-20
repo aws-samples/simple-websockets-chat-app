@@ -6,6 +6,7 @@ export interface Message {
   messageId: string;
   roomId: string;
   authorId: string;
+  authorName?: string;
   text: string;
   createdAt: string;
 }
@@ -98,6 +99,7 @@ export interface ConnectionState {
 export interface RoomState {
   roomId?: string;
   authorId: string;
+  authorName?: string;
   peopleInRoom: number;
 }
 

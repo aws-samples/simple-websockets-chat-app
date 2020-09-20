@@ -8,6 +8,7 @@ type Data = {
 
 type RoomData = {
   authorId: string;
+  authorName?: string;
 }
 
 const initialValue = {
@@ -43,8 +44,15 @@ export const addRoom = (roomId: string, roomData: RoomData): Data => {
   return setData(data)
 }
 
-export const getAuthorIdOrInit = (roomId: string): UUID => {
+export const getRoomData = (roomId: string): RoomData | undefined => {
   const data = getData()
-  const room =  data.rooms[roomId] || addRoom(roomId, { authorId: uuid() }).rooms[roomId]
-  return room.authorId
+  data.rooms = data.rooms || {}
+  return data.rooms[roomId]
+}
+
+export const getOrInitRoomData = (roomId: string): RoomData => {
+  if (getRoomData(roomId)) return getRoomData(roomId)!
+
+  addRoom(roomId, { authorId: uuid(), authorName: undefined })
+  return getRoomData(roomId)!
 }

@@ -2,18 +2,17 @@ import './App.css'
 
 import * as React from 'react'
 
-import uuid from './helpers/uuid'
 import Chat from './components/Chat'
 
 import { RoomProvider } from './context/roomContext'
-import { getAuthorIdOrInit } from './store'
+import { getOrInitRoomData } from './store'
 import { Link } from 'react-router-dom'
 
 const App: React.FC<{ roomId: string }> = ({ roomId }) => {
-  const [authorId] = React.useState(getAuthorIdOrInit(roomId));
+  const { authorId, authorName } = getOrInitRoomData(roomId)  
 
   return (
-    <RoomProvider authorId={authorId} roomId={roomId} peopleInRoom={0}>
+    <RoomProvider authorId={authorId} authorName={authorName} roomId={roomId} peopleInRoom={0}>
       <div className="room">
         <div>
           <Link to="/o">
