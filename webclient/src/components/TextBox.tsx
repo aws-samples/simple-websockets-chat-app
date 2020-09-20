@@ -64,7 +64,6 @@ const TextBox: React.FC = () => {
         <ShareRoom roomId={roomId}
           showQr
           showCopyLink
-          showNewRoom
           showPeopleInRoom
           showInviteTitle
           />
