@@ -56,7 +56,7 @@ const TextBox: React.FC = () => {
   const backgroundColor = colorFromUuid(roomId);
   const style = { backgroundColor };
   const inverted = shouldUseDark(backgroundColor);
-  const showShareRoom = canToggleOptions && (isOptionsOpen || peopleInRoom == 1);
+  const showShareRoom = canToggleOptions && isOptionsOpen;
   return (
     <div className="textbox-wrapper" style={style}>
       {
