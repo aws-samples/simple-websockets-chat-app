@@ -9,7 +9,7 @@ const Messages: React.FC = () => {
   return (
     <div className="messagesContainer">
       <ul className="messages">
-        {messages.reverse().map(message => <Message key={message.messageId} message={message} />)}
+        {messages.map(message => <Message key={message.messageId} message={message} />)}
       </ul>
     </div>
   );
