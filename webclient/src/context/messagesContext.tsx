@@ -63,8 +63,12 @@ const MessagesProvider: React.FC = ({ children }) => {
   const events = React.useContext(EventContext);
   const { roomId } = React.useContext(RoomContext);
 
-  const setLocalMessages = (updateMessagesFn: (messages: Message[]) => Message[]) => {
-    setMessages(messages => updateMessagesFn(sortByCreatedAt(findUnique(messages))))
+  const setLocalMessages = (newMessages: Message[]) => {
+    setMessages(currentMessages => {
+      return findUnique([...currentMessages, ...newMessages])
+        .filter(m => m.roomId === roomId)
+        .sort((a, b) => (a.createdAt > b.createdAt) ? -1 : 1)
+    })
   }
 
   function addToArray<T extends { roomId: string}>(item: T) {
@@ -74,12 +78,7 @@ const MessagesProvider: React.FC = ({ children }) => {
     }
   }
 
-  const addMessage = (message: Message) => addToArray<Message>(message);
   const addMessageReaction = (messageReaction: MessageReaction) => addToArray<MessageReaction>(messageReaction);
-  const removeMessage = (message: Message) => (messages: Message[]) => {
-    if (message.roomId !== roomId) return messages;
-    return messages.filter(m => m.messageId !== message.messageId)
-  };
 
   const messageReactionsChanged = (reaction: MessageReaction) => {
     setMessageReactions(addMessageReaction(reaction));
@@ -88,7 +87,7 @@ const MessagesProvider: React.FC = ({ children }) => {
   const messageSentListener: EventListener = {
     eventType: 'MESSAGE_SENT',
     callback: ({ data: message }: MessageEvent) => {
-      setLocalMessages(addMessage(message));
+      setLocalMessages([...messages, message]);
     },
   }
 
@@ -99,7 +98,7 @@ const MessagesProvider: React.FC = ({ children }) => {
         if (instanceOfMessageReaction(message)) {
           messageReactionsChanged(message);
         } else {
-          setLocalMessages(addMessage(message));
+          setLocalMessages([...messages, message]);
         }
       })
     },
@@ -108,7 +107,7 @@ const MessagesProvider: React.FC = ({ children }) => {
   const messageReplySentListener: EventListener = {
     eventType: 'MESSAGE_REPLY_SENT',
     callback: ({ data: message }: MessageReplySentEvent) => {
-      setLocalMessages(addMessage(message));
+      setLocalMessages([...messages, message]);
     },
   }
 
@@ -122,7 +121,9 @@ const MessagesProvider: React.FC = ({ children }) => {
   const messageDeletedListener: EventListener = {
     eventType: 'MESSAGE_DELETED',
     callback: ({ data: message }: MessageEvent) => {
-      setLocalMessages(removeMessage(message));
+      setMessages(currentMessages => currentMessages.filter(
+        m => m.messageId !== message.messageId
+      ));
     },
   }
 
@@ -144,14 +145,14 @@ const MessagesProvider: React.FC = ({ children }) => {
   const sendMessage = (message: Message) => {
     if (roomId) {
       events.send('MESSAGE_SENT', message);
-      setLocalMessages(addMessage(message));
+      setLocalMessages([...messages, message]);
     }
   }
 
   const sendMessageReply = (message: MessageReply) => {
     if (roomId) {
       events.send('MESSAGE_REPLY_SENT', message);
-      setLocalMessages(addMessage(message));
+      setLocalMessages([...messages, message]);
     }
   }
 
