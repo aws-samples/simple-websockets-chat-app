@@ -113,3 +113,11 @@ export interface MessagesState {
   readonly selectedMessageToReplyTo?: Message;
   readonly selectedMessageToReactTo?: Message;
 }
+
+export interface RoomSetupState {
+  roomId: string;
+  welcomeMessage?: {
+    title: string;
+    message: string;
+  }
+}
