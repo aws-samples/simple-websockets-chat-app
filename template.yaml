@@ -27,6 +27,14 @@ Parameters:
     MaxLength: 50
     AllowedPattern: ^[A-Za-z_-]+$
     ConstraintDescription: "Required. Can be characters, dash, and underscore only. No numbers or special characters allowed."
+  TableNameRooms:
+    Type: String
+    Default: "simplechat-rooms-table"
+    Description: (Required) The name of the new DynamoDB to store the room setup info. Minimum 3 characters
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: ^[A-Za-z_-]+$
+    ConstraintDescription: "Required. Can be characters, dash, and underscore only. No numbers or special characters allowed."
   TableTtlHours:
     Type: Number
     Default: 6
@@ -190,6 +198,19 @@ Resources:
       SSESpecification:
         SSEEnabled: True
       TableName: !Ref TableNameMessages
+  RoomsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: roomId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: roomId
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: True
+      TableName: !Ref TableNameRooms
   OnConnectFunction:
     DependsOn:
       - EventsStream
@@ -288,6 +309,7 @@ Resources:
           EVENTS_STREAM: !Join ["-", [!Ref AppPrefix, "events-stream"]]
           TABLE_NAME: !Ref TableName
           TABLE_NAME_MESSAGES: !Ref TableNameMessages
+          TABLE_NAME_ROOMS: !Ref TableNameRooms
           TABLE_TTL_HOURS: !Ref TableTtlHours
           LOG_LEVEL: !Ref LogLevel
           ENVIRONMENT: !Ref Environment
@@ -298,6 +320,8 @@ Resources:
             TableName: !Ref TableName
         - DynamoDBCrudPolicy:
             TableName: !Ref TableNameMessages
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableNameRooms
         - Statement:
             - Effect: Allow
               Action:

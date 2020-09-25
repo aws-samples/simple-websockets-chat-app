@@ -2,6 +2,7 @@ const { info, error } = require('../helpers/log').buildLogger('HANDLER/SEND_MESS
 const { joinRoom, leaveRoom } = require('../api/room')
 const { saveMessage, broadcastEventInRoom, latestMessagesInRoom, sendLatestMessages } = require('../api/message')
 const { buildEvent, EventTypes, emitEvent } = require('../api/event')
+const { loadRoomSetupInfo, updateRoomSetupInfo } = require('../api/roomSetup')
 
 const handleJoinRoom = async (lambdaEvent, systemEvent) => {
   const { roomId } = systemEvent.data;
@@ -24,9 +25,37 @@ const handleLeaveRoom = (lambdaEvent, systemEvent) => {
 }
 
 const handleEventInRoom = async (lambdaEvent, systemEvent) => {
-  console.log(systemEvent)
   await saveMessage(lambdaEvent.requestContext, systemEvent);
   return broadcastEventInRoom(lambdaEvent.requestContext, systemEvent);
+}
+
+const handleRoomSetupLoad = async (lambdaEvent, systemEvent) => {
+  const { roomId } = systemEvent.data;
+  if (!roomId || !roomId.length) return;
+
+  const info = await loadRoomSetupInfo(roomId)
+  const roomSetupSystemEvent = buildEvent(
+    EventTypes.ROOM_SETUP_UPDATED,
+    { roomId, ...info }
+  );
+  return emitEvent(lambdaEvent.requestContext, roomSetupSystemEvent, [
+    lambdaEvent.requestContext.connectionId
+  ]);
+}
+
+const handleRoomSetupUpdate = async (lambdaEvent, systemEvent) => {
+  const { roomId } = systemEvent.data;
+  if (!roomId || !roomId.length) return;
+
+  const info = await updateRoomSetupInfo(roomId, systemEvent.data)
+  const responseEvent = buildEvent(
+    EventTypes.ROOM_SETUP_UPDATED,
+    { roomId, ...info }
+  );
+
+  return emitEvent(lambdaEvent.requestContext, responseEvent, [
+    lambdaEvent.requestContext.connectionId
+  ]);
 }
 
 const handlers = {
@@ -36,6 +65,8 @@ const handlers = {
   [EventTypes.MESSAGE_REPLY_SENT]: handleEventInRoom,
   [EventTypes.MESSAGE_REACTION_SENT]: handleEventInRoom,
   [EventTypes.MESSAGE_DELETED]: handleEventInRoom,
+  [EventTypes.ROOM_SETUP_LOAD]: handleRoomSetupLoad,
+  [EventTypes.ROOM_SETUP_UPDATE_REQUESTED]: handleRoomSetupUpdate,
 };
 
 module.exports = async event => {
