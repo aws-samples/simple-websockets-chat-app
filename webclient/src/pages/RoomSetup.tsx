@@ -1,10 +1,10 @@
 import './RoomSetup.styl'
 import * as React from 'react'
 import { RoomSetupState } from '../interfaces'
-import { RoomSetupContext } from '../context/roomSetupContext'
+import { RoomSetupContext, RoomSetupProvider } from '../context/roomSetupContext'
 
-export const RoomSetup: React.FC<{ roomId: string }> = ({ roomId }) => {
-  const { welcomeMessage, setRoomSetupInfo } = React.useContext(RoomSetupContext)
+export const RoomSetupForm: React.FC = () => {
+  const { roomId, welcomeMessage, setRoomSetupInfo } = React.useContext(RoomSetupContext)
   const [title, setTitle] = React.useState(welcomeMessage?.title)
   const [message, setMessage] = React.useState(welcomeMessage?.message)
 
@@ -40,5 +40,13 @@ export const RoomSetup: React.FC<{ roomId: string }> = ({ roomId }) => {
         </div>
       </form>
     </div>
+  )
+}
+
+export const RoomSetup: React.FC<{ roomId: string }> = ({ roomId }) => {
+  return (
+    <RoomSetupProvider roomId={roomId}>
+      <RoomSetupForm  />
+    </RoomSetupProvider>
   )
 }

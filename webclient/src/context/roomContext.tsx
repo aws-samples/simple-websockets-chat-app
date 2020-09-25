@@ -66,7 +66,7 @@ const RoomProvider: React.FC<RoomState> = ({
     setRoomId(undefined);
   }
 
-  const setAuthorName = (authorName: string) => {
+  const setAuthorName = (authorName?: string) => {
     if (roomId) {
       addRoom(roomId, { authorId, authorName });
       changeAuthorName(authorName);

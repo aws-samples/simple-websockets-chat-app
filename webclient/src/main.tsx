@@ -9,7 +9,7 @@ import { Home } from './pages/Home'
 import { ConnectionProvider } from './context/connectionContext'
 
 import ConnectionStatus from './components/ConnectionStatus'
-import { Rooms } from './pages/Rooms';
+import { Rooms } from './pages/Rooms'
 import { RoomSetup } from './pages/RoomSetup'
 
 const rootElement = document.getElementById("root")
@@ -30,7 +30,7 @@ render(
       <Route
         exact={true}
         path="/o"
-        render={(props) => <Rooms />}
+        render={() => <Rooms />}
       />
       <Route
         exact={true}
