@@ -10,6 +10,7 @@ import { ConnectionProvider } from './context/connectionContext'
 
 import ConnectionStatus from './components/ConnectionStatus'
 import { Rooms } from './pages/Rooms';
+import { RoomSetup } from './pages/RoomSetup'
 
 const rootElement = document.getElementById("root")
 const serverUrl = process.env.SERVER_URL || 'wss://at7ejxghod.execute-api.eu-west-2.amazonaws.com/Prod'
@@ -30,6 +31,11 @@ render(
         exact={true}
         path="/o"
         render={(props) => <Rooms />}
+      />
+      <Route
+      exact={true}
+      path="/r/:roomId/setup"
+      render={(props) => <RoomSetup roomId={props.match.params.roomId} />}
       />
       <Route
         exact={true}
