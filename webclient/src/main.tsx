@@ -33,9 +33,9 @@ render(
         render={(props) => <Rooms />}
       />
       <Route
-      exact={true}
-      path="/r/:roomId/setup"
-      render={(props) => <RoomSetup roomId={props.match.params.roomId} />}
+        exact={true}
+        path="/r/:roomId/setup"
+        render={(props) => <RoomSetup roomId={props.match.params.roomId} />}
       />
       <Route
         exact={true}

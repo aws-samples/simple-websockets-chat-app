@@ -1,20 +1,26 @@
 import './RoomSetup.styl'
 import * as React from 'react'
 import { RoomSetupState } from '../interfaces'
+import { RoomSetupContext } from '../context/roomSetupContext'
 
 export const RoomSetup: React.FC<{ roomId: string }> = ({ roomId }) => {
-  const [title, setTitle] = React.useState(roomId)
-  const [message, setMessage] = React.useState('')
+  const { welcomeMessage, setRoomSetupInfo } = React.useContext(RoomSetupContext)
+  const [title, setTitle] = React.useState(welcomeMessage?.title)
+  const [message, setMessage] = React.useState(welcomeMessage?.message)
 
-  const onSubmit = () => {
+  const onSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    let wm = welcomeMessage
+    if (title && message) {
+      wm = { title, message }
+    }
     const info: RoomSetupState = {
       roomId,
-      welcomeMessage: {
-        title,
-        message
-      }
+      welcomeMessage: wm
     }
+    setRoomSetupInfo(info)
   }
+
   return (
     <div className="room-setup">
       <h1>Set up chat room</h1>
