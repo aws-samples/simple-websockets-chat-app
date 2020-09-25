@@ -41,6 +41,7 @@ const RoomSetupProvider: React.FC<RoomSetupState> = ({
       return;
     }
 
+    events.addEventListener(setupInfoUpdatedListener);
     events.send('ROOM_SETUP_LOAD', { roomId });
     return () => events.removeEventListener(setupInfoUpdatedListener);
   }, [roomId])

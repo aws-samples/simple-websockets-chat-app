@@ -5,18 +5,18 @@ import { RoomSetupContext, RoomSetupProvider } from '../context/roomSetupContext
 
 export const RoomSetupForm: React.FC = () => {
   const { roomId, welcomeMessage, setRoomSetupInfo } = React.useContext(RoomSetupContext)
-  const [title, setTitle] = React.useState(welcomeMessage?.title)
-  const [message, setMessage] = React.useState(welcomeMessage?.message)
+  const [title, setTitle] = React.useState('')
+  const [message, setMessage] = React.useState('')
 
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    let wm = welcomeMessage
-    if (title && message) {
-      wm = { title, message }
-    }
     const info: RoomSetupState = {
       roomId,
-      welcomeMessage: wm
+      welcomeMessage: {
+        ...welcomeMessage,
+        title,
+        message
+      }
     }
     setRoomSetupInfo(info)
   }
@@ -29,10 +29,9 @@ export const RoomSetupForm: React.FC = () => {
         <input readOnly value={roomId}/>
         <h2>Welcome message</h2>
         <label>title</label>
-        <input value={title} onChange={e => setTitle(e.currentTarget.value)}/>
+        <input value={title || welcomeMessage?.title} onChange={e => setTitle(e.currentTarget.value)}/>
         <label>message</label>
-        <textarea onChange={e => setMessage(e.currentTarget.value)}>
-          {message}
+        <textarea value={message || welcomeMessage?.message} onChange={e => setMessage(e.currentTarget.value)}>
         </textarea>
         <div>
           <button>Save</button>
