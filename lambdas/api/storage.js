@@ -5,6 +5,7 @@ const {
   LOCAL_DYNAMODB_ENDPOINT: endpoint,
   TABLE_NAME: TableName,
   TABLE_NAME_MESSAGES: TableNameMessages,
+  TABLE_NAME_ROOMS: TableNameRooms,
   TABLE_TTL_HOURS: ttlHours,
   CONNECTION_ID_INDEX: IndexName
 } = process.env;
@@ -120,4 +121,18 @@ exports.latestMessagesInRoom = roomId => {
   };
 
   return queryItems(query);
+}
+
+exports.queryRoomSetup = roomId => {
+  const query = {
+    TableName: TableNameRooms,
+    KeyConditionExpression: `roomId = :key`,
+    ExpressionAttributeValues: { ":key": roomId }
+  };
+
+  return queryItems(query);
+}
+
+exports.putRoomSetup = Item => {
+  return put({ Item, TableName: TableNameRooms });
 }

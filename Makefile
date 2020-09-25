@@ -39,11 +39,24 @@ create-messages-table: check-local-vars
     --key-schema AttributeName=roomId,KeyType=HASH AttributeName=createdAt,KeyType=RANGE \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
+create-rooms-table: check-local-vars
+	@echo deleting $(TABLE_NAME_ROOMS)
+	-$(AWS) dynamodb delete-table \
+		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
+    --table-name $(TABLE_NAME_ROOMS)
+	$(AWS) dynamodb create-table \
+		--endpoint-url http://localhost:$(LOCAL_DYNAMODB_PORT) \
+    --table-name $(TABLE_NAME_ROOMS) \
+    --attribute-definitions AttributeName=roomId,AttributeType=S \
+    --key-schema AttributeName=roomId,KeyType=HASH \
+    --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+
 call-function: check-local-vars
 	$(SAM) local invoke $(fnPrefix)Function \
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
 				TableNameMessages=$(TABLE_NAME_MESSAGES) \
+				TableNameRooms=$(TABLE_NAME_ROOMS) \
 				TableTtlHours=$(TABLE_TTL_HOURS) \
 				LocalDynamodbEndpoint=$(LOCAL_DYNAMODB_ENDPOINT) \
 				AppPrefix=$(STACK_NAME) \
@@ -55,6 +68,7 @@ test-init:
 	make start
 	make create-table
 	make create-messages-table
+	make create-rooms-table
 
 test-OnConnect:
 	make call-function fnPrefix=OnConnect eventPrefix=OnConnect
@@ -74,6 +88,8 @@ test-all: test-init
 	make test-SendMessage-MessageReplySent
 	make test-SendMessage-MessageReactionSent
 	make test-SendMessage-MessageDeleted
+	make test-SendMessage-RoomSetupLoad
+	make test-SendMessage-RoomSetupUpdateRequested
 
 sam-package: check-vars
 	$(SAM) package \
@@ -89,6 +105,7 @@ sam-deploy: check-vars
 		--parameter-overrides \
 				TableName=$(TABLE_NAME) \
 				TableNameMessages=$(TABLE_NAME_MESSAGES) \
+				TableNameRooms=$(TABLE_NAME_ROOMS) \
 				TableTtlHours=$(TABLE_TTL_HOURS) \
 				WebsiteBucketName=$(WEBSITE_BUCKET) \
 				DomainName=$(DOMAIN_NAME) \
@@ -130,6 +147,7 @@ check-vars:
 	@make guard-DEPLOY_BUCKET
 	@make guard-TABLE_NAME
 	@make guard-TABLE_NAME_MESSAGES
+	@make guard-TABLE_NAME_ROOMS
 	@make guard-TABLE_TTL_HOURS
 	@make guard-WEBSITE_BUCKET
 	@make guard-DOMAIN_NAME
@@ -139,6 +157,7 @@ check-local-vars:
 	@make guard-STACK_NAME
 	@make guard-TABLE_NAME
 	@make guard-TABLE_NAME_MESSAGES
+	@make guard-TABLE_NAME_ROOMS
 	@make guard-TABLE_TTL_HOURS
 	@make guard-LOCAL_DYNAMODB_ENDPOINT
 	@make guard-LOCAL_DYNAMODB_PORT
