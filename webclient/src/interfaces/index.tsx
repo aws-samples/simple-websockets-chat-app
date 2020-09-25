@@ -45,7 +45,10 @@ export type EventType = 'CONNECTIONS_COUNT_CHANGED'
   | 'MESSAGE_REACTION_SENT'
   | 'MESSAGE_DELETED'
   | 'ROOM_JOINED'
-  | 'ROOM_LEFT';
+  | 'ROOM_LEFT'
+  | 'ROOM_SETUP_LOAD'
+  | 'ROOM_SETUP_UPDATE_REQUESTED'
+  | 'ROOM_SETUP_UPDATED';
 
 export interface Event {
   meta: {
@@ -120,4 +123,12 @@ export interface RoomSetupState {
     title: string;
     message: string;
   }
+}
+
+export interface RoomSetupUpdatedEvent extends Event {
+  data: RoomSetupState;
+}
+
+export interface RoomSetupLoadEvent extends Event {
+  data: { roomId: string };
 }
