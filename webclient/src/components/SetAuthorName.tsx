@@ -2,12 +2,12 @@ import '../styles/SetAuthorName.styl'
 import * as React from 'react'
 import { RoomContext } from '../context/roomContext';
 
-const SetAuthorName: React.FC = () => {
+const SetAuthorName: React.FC<{ text: string, open?: boolean }> = ({ text, open }) => {
   const {
     authorName,
     setAuthorName
   } = React.useContext(RoomContext)
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(open);
   const [name, setName] = React.useState(authorName);
 
   const onSave = () => {
@@ -29,7 +29,7 @@ const SetAuthorName: React.FC = () => {
     return (
       <div className="set-author-name">
           <button className="clean" onClick={() => setIsOpen(true)}>
-            {!hasName && "(optional) set name"}
+            {!hasName && text}
             {hasName && authorName}
           </button>
       </div>
@@ -39,6 +39,7 @@ const SetAuthorName: React.FC = () => {
   return (
     <div className="set-author-name">
       <form onSubmit={onSave}>
+        <h4>{text}</h4>
         <input name="name" onChange={onChange} value={name} autoFocus />
         <button type="submit">Save</button>
         <button className="clean" type="button" onClick={onCancel}>Cancel</button>

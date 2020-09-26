@@ -13,6 +13,7 @@ import { RoomContext } from '../context/roomContext'
 import { MessagesContext } from '../context/messagesContext'
 import MessageEntity from '../entities/MessageEntity'
 import MessageReplyEntity from '../entities/MessageReplyEntity'
+import { RoomSetupContext } from '../context/roomSetupContext'
 
 const TextBox: React.FC = () => {
   const [text, setText] = React.useState("");
@@ -24,9 +25,23 @@ const TextBox: React.FC = () => {
     selectMessageToReplyTo,
     selectedMessageToReplyTo
   } = React.useContext(MessagesContext);
+  const { requiresAuthorNameToWrite } = React.useContext(RoomSetupContext).chatFeatures;
+
+  const backgroundColor = colorFromUuid(roomId);
+  const style = { backgroundColor };
+  const inverted = shouldUseDark(backgroundColor);
+
 
   if (!roomId) {
     return null
+  }
+
+  if ((!authorName || !authorName.length) && requiresAuthorNameToWrite) {
+    return (
+      <div className="textbox-wrapper" style={style}>
+        <SetAuthorName text="choose a name to chat" open={true} />
+      </div>
+    )
   }
 
   const onChange = ({ currentTarget }: React.FormEvent<HTMLInputElement>) => {
@@ -50,9 +65,6 @@ const TextBox: React.FC = () => {
     setText("");
   };
 
-  const backgroundColor = colorFromUuid(roomId);
-  const style = { backgroundColor };
-  const inverted = shouldUseDark(backgroundColor);
   return (
     <div className="textbox-wrapper" style={style}>
       {
@@ -65,7 +77,7 @@ const TextBox: React.FC = () => {
           />
       }
       <ReplyToMessage />
-      <SetAuthorName />
+      <SetAuthorName text={ (requiresAuthorNameToWrite ? "" : "(optional) ") + "choose a name"} />
       <form className="textbox" onSubmit={onSubmit}>
         {peopleInRoom > 0 && (
           <div className="textbox-ppl slide-out-top" key={peopleInRoom}>
