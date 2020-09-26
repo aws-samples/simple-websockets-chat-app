@@ -107,7 +107,7 @@ export interface RoomState {
 }
 
 export interface ChatFeaturesState {
-  canToggleOptions?: boolean;
+  shareOptionsDisabled?: boolean;
   requiresAuthorNameToRead?: boolean;
   requiresAuthorNameToWrite?: boolean;
 }
@@ -121,11 +121,11 @@ export interface MessagesState {
 
 export interface RoomSetupState {
   roomId: string;
-  welcomeMessage?: {
+  welcomeMessage: {
     title: string;
     message: string;
   }
-  chatFeatures?: ChatFeaturesState;
+  chatFeatures: ChatFeaturesState;
 }
 
 export interface RoomSetupUpdatedEvent extends Event {

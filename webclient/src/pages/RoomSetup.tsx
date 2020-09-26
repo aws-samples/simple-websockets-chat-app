@@ -6,13 +6,13 @@ import { RoomSetupContext, RoomSetupProvider } from '../context/roomSetupContext
 export const RoomSetupForm: React.FC = () => {
   const { roomId, welcomeMessage, chatFeatures, setRoomSetupInfo } = React.useContext(RoomSetupContext)
   const [welcome, setWelcome] = React.useState({
-    title: welcomeMessage?.title || '',
-    message: welcomeMessage?.message || '',
+    title: welcomeMessage.title,
+    message: welcomeMessage.message,
   })
   const [features, setFeatures] = React.useState<ChatFeaturesState>({
-    canToggleOptions: chatFeatures?.canToggleOptions || false,
-    requiresAuthorNameToRead: chatFeatures?.requiresAuthorNameToRead || false,
-    requiresAuthorNameToWrite: chatFeatures?.requiresAuthorNameToWrite || false
+    shareOptionsDisabled: chatFeatures.shareOptionsDisabled,
+    requiresAuthorNameToRead: chatFeatures.requiresAuthorNameToRead,
+    requiresAuthorNameToWrite: chatFeatures.requiresAuthorNameToWrite,
   });
 
   const onSubmit = (event: React.FormEvent) => {
@@ -47,15 +47,15 @@ export const RoomSetupForm: React.FC = () => {
         <textarea value={welcome.message} onChange={e => setWelcome({ ...welcome, message: e.currentTarget.value })}>
         </textarea>
         <label>
-          <input type="checkbox" checked={features.canToggleOptions} onChange={e => setFeatures({...features, canToggleOptions: !features.canToggleOptions})} />
-          Can toggle options
+          <input type="checkbox" checked={features.shareOptionsDisabled} onChange={() => setFeatures({...features, shareOptionsDisabled: !features.shareOptionsDisabled})} />
+          Share option disabled
         </label>
         <label>
-          <input type="checkbox" checked={features.requiresAuthorNameToRead} onChange={e => setFeatures({...features, requiresAuthorNameToRead: !features.requiresAuthorNameToRead})} />
+          <input type="checkbox" checked={features.requiresAuthorNameToRead} onChange={() => setFeatures({...features, requiresAuthorNameToRead: !features.requiresAuthorNameToRead})} />
           Requires Author Name to Read
         </label>
         <label>
-          <input type="checkbox" checked={features.requiresAuthorNameToWrite} onChange={e => setFeatures({...features, requiresAuthorNameToWrite: !features.requiresAuthorNameToWrite})} />
+          <input type="checkbox" checked={features.requiresAuthorNameToWrite} onChange={() => setFeatures({...features, requiresAuthorNameToWrite: !features.requiresAuthorNameToWrite})} />
           Requires Author Name to Write
         </label>
         <div>

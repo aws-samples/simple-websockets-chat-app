@@ -10,11 +10,9 @@ import SetAuthorName from './SetAuthorName'
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
 import { RoomContext } from '../context/roomContext'
-import { ChatFeaturesContext } from '../context/chatFeaturesContext'
 import { MessagesContext } from '../context/messagesContext'
 import MessageEntity from '../entities/MessageEntity'
 import MessageReplyEntity from '../entities/MessageReplyEntity'
-
 
 const TextBox: React.FC = () => {
   const [text, setText] = React.useState("");
@@ -26,7 +24,6 @@ const TextBox: React.FC = () => {
     selectMessageToReplyTo,
     selectedMessageToReplyTo
   } = React.useContext(MessagesContext);
-  const { canToggleOptions } = React.useContext(ChatFeaturesContext);
 
   if (!roomId) {
     return null
@@ -56,11 +53,10 @@ const TextBox: React.FC = () => {
   const backgroundColor = colorFromUuid(roomId);
   const style = { backgroundColor };
   const inverted = shouldUseDark(backgroundColor);
-  const showShareRoom = canToggleOptions && isOptionsOpen;
   return (
     <div className="textbox-wrapper" style={style}>
       {
-        showShareRoom && roomId &&
+        isOptionsOpen && roomId &&
         <ShareRoom roomId={roomId}
           showQr
           showCopyLink
@@ -76,7 +72,7 @@ const TextBox: React.FC = () => {
             {peopleInRoom}
           </div>
         )}
-        <OptionsToggle inverted={inverted} active={showShareRoom}
+        <OptionsToggle inverted={inverted} active={isOptionsOpen}
           onClick={() => setIsOptionsOpen(!isOptionsOpen)}
         />
         <input
