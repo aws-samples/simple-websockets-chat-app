@@ -12,6 +12,7 @@ interface RoomSetupStateContext extends RoomSetupState {
 const DEFAULT_ROOM_SETUP_STATE_CONTEXT: RoomSetupStateContext = {
   roomId: 'ignore',
   welcomeMessage: undefined,
+  chatFeatures: undefined,
   setRoomSetupInfo: noop,
 };
 
@@ -22,12 +23,14 @@ const RoomSetupProvider: React.FC<RoomSetupState> = ({
   children
 }) => {
   const events = React.useContext(EventContext);
-  const [info, setInfo] = React.useState<RoomSetupState>()
+  const [info, setInfo] = React.useState<RoomSetupState>({ roomId })
 
   const setupInfoUpdatedListener: EventListener = {
     eventType: 'ROOM_SETUP_UPDATED',
     callback: ({ data }: RoomSetupUpdatedEvent) => {
+      console.log('new data', data)
       setInfo(data)
+      console.log('post info')
     },
   }
 
@@ -47,8 +50,7 @@ const RoomSetupProvider: React.FC<RoomSetupState> = ({
   }, [roomId])
 
   const state: RoomSetupStateContext = {
-    roomId,
-    welcomeMessage: info?.welcomeMessage,
+    ...info,
     setRoomSetupInfo
   }
 
