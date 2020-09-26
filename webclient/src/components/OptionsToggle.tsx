@@ -2,7 +2,7 @@ import * as React from 'react'
 import '../styles/OptionsToggle.css'
 
 import { clsn } from '../helpers/color'
-import { ChatFeaturesContext } from '../context/chatFeaturesContext'
+import { RoomSetupContext } from '../context/roomSetupContext'
 
 interface Props {
   active?: boolean;
@@ -11,8 +11,9 @@ interface Props {
 }
 
 const OptionsToggle: React.FC<Props> = ({ active, onClick, inverted }) => {
-  const { canToggleOptions } = React.useContext(ChatFeaturesContext);
-  if (!canToggleOptions) {
+  const { shareOptionsDisabled } = React.useContext(RoomSetupContext).chatFeatures;
+
+  if (shareOptionsDisabled) {
     return null;
   }
 

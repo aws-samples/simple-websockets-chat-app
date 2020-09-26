@@ -10,11 +10,10 @@ import SetAuthorName from './SetAuthorName'
 import { colorFromUuid, shouldUseDark } from '../helpers/color'
 
 import { RoomContext } from '../context/roomContext'
-import { ChatFeaturesContext } from '../context/chatFeaturesContext'
 import { MessagesContext } from '../context/messagesContext'
 import MessageEntity from '../entities/MessageEntity'
 import MessageReplyEntity from '../entities/MessageReplyEntity'
-
+import { RoomSetupContext } from '../context/roomSetupContext'
 
 const TextBox: React.FC = () => {
   const [text, setText] = React.useState("");
@@ -26,10 +25,24 @@ const TextBox: React.FC = () => {
     selectMessageToReplyTo,
     selectedMessageToReplyTo
   } = React.useContext(MessagesContext);
-  const { canToggleOptions } = React.useContext(ChatFeaturesContext);
+  const { requiresAuthorNameToWrite } = React.useContext(RoomSetupContext).chatFeatures;
+
+  const backgroundColor = colorFromUuid(roomId);
+  const style = { backgroundColor };
+  const inverted = shouldUseDark(backgroundColor);
 
   if (!roomId) {
     return null
+  }
+
+  const needsToSetName = () => (!authorName || !authorName.length) && requiresAuthorNameToWrite
+
+  if (needsToSetName()) {
+    return (
+      <div className="textbox-wrapper" style={style}>
+        <SetAuthorName text="choose a name to chat" open={true} />
+      </div>
+    )
   }
 
   const onChange = ({ currentTarget }: React.FormEvent<HTMLInputElement>) => {
@@ -39,6 +52,10 @@ const TextBox: React.FC = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!text || !text.length) {
+      return;
+    }
+
+    if (needsToSetName()) {
       return;
     }
 
@@ -53,14 +70,10 @@ const TextBox: React.FC = () => {
     setText("");
   };
 
-  const backgroundColor = colorFromUuid(roomId);
-  const style = { backgroundColor };
-  const inverted = shouldUseDark(backgroundColor);
-  const showShareRoom = canToggleOptions && isOptionsOpen;
   return (
     <div className="textbox-wrapper" style={style}>
       {
-        showShareRoom && roomId &&
+        isOptionsOpen && roomId &&
         <ShareRoom roomId={roomId}
           showQr
           showCopyLink
@@ -69,14 +82,14 @@ const TextBox: React.FC = () => {
           />
       }
       <ReplyToMessage />
-      <SetAuthorName />
+      <SetAuthorName text={ (requiresAuthorNameToWrite ? "" : "(optional) ") + "choose a name"} />
       <form className="textbox" onSubmit={onSubmit}>
         {peopleInRoom > 0 && (
           <div className="textbox-ppl slide-out-top" key={peopleInRoom}>
             {peopleInRoom}
           </div>
         )}
-        <OptionsToggle inverted={inverted} active={showShareRoom}
+        <OptionsToggle inverted={inverted} active={isOptionsOpen}
           onClick={() => setIsOptionsOpen(!isOptionsOpen)}
         />
         <input

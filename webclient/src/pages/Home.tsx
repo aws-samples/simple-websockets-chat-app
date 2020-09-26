@@ -5,7 +5,6 @@ import * as React from 'react'
 import Chat from '../components/Chat'
 import { RoomContext, RoomProvider } from '../context/roomContext';
 import { clsn } from '../helpers/color'
-import { ChatFeaturesProvider } from '../context/chatFeaturesContext';
 import uuid from '../helpers/uuid';
 import { Link } from 'react-router-dom';
 
@@ -28,9 +27,7 @@ const MiniChat: React.FC = () => {
   return (
     <div className="minichat">
       <div className="room">
-        <ChatFeaturesProvider features={{ canToggleOptions: false }}>
-          <Chat />
-        </ChatFeaturesProvider>
+        <Chat />
       </div>
     </div>
   )

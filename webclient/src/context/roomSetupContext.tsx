@@ -11,23 +11,28 @@ interface RoomSetupStateContext extends RoomSetupState {
 
 const DEFAULT_ROOM_SETUP_STATE_CONTEXT: RoomSetupStateContext = {
   roomId: 'ignore',
-  welcomeMessage: undefined,
+  welcomeMessage: { title: '', message: '' },
+  chatFeatures: {
+    shareOptionsDisabled: false,
+    requiresAuthorNameToRead: false,
+    requiresAuthorNameToWrite: false
+  },
   setRoomSetupInfo: noop,
 };
 
 const RoomSetupContext = React.createContext<RoomSetupStateContext>(DEFAULT_ROOM_SETUP_STATE_CONTEXT);
 
-const RoomSetupProvider: React.FC<RoomSetupState> = ({
+const RoomSetupProvider: React.FC<{ roomId: string }> = ({
   roomId,
   children
 }) => {
   const events = React.useContext(EventContext);
-  const [info, setInfo] = React.useState<RoomSetupState>()
+  const [info, setInfo] = React.useState<RoomSetupState>({ ...DEFAULT_ROOM_SETUP_STATE_CONTEXT, roomId })
 
   const setupInfoUpdatedListener: EventListener = {
     eventType: 'ROOM_SETUP_UPDATED',
     callback: ({ data }: RoomSetupUpdatedEvent) => {
-      setInfo(data)
+      setInfo({ ...DEFAULT_ROOM_SETUP_STATE_CONTEXT, ...data })
     },
   }
 
@@ -47,14 +52,13 @@ const RoomSetupProvider: React.FC<RoomSetupState> = ({
   }, [roomId])
 
   const state: RoomSetupStateContext = {
-    roomId,
-    welcomeMessage: info?.welcomeMessage,
+    ...info,
     setRoomSetupInfo
   }
 
   return (
     <RoomSetupContext.Provider value={state}>
-      {children}
+        {children}
     </RoomSetupContext.Provider>
   )
 }

@@ -9,6 +9,7 @@ import { RoomState, EventListener, PeopleInRoomChangedEvent } from '../interface
 import { EventContext } from './eventContext'
 import { MessagesProvider } from './messagesContext'
 import { addRoom } from '../store'
+import { RoomSetupProvider } from './roomSetupContext'
 
 interface RoomStateContext extends RoomState {
   setAuthorName: (name?: string) => void;
@@ -96,9 +97,11 @@ const RoomProvider: React.FC<RoomState> = ({
 
   return (
     <RoomContext.Provider value={state}>
-      <MessagesProvider>
-        {children}
-      </MessagesProvider>
+      <RoomSetupProvider roomId={roomId!}>
+        <MessagesProvider>
+          {children}
+        </MessagesProvider>
+      </RoomSetupProvider>
     </RoomContext.Provider>
   )
 }

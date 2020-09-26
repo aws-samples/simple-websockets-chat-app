@@ -1,38 +1,63 @@
 import './RoomSetup.styl'
 import * as React from 'react'
-import { RoomSetupState } from '../interfaces'
+import { RoomSetupState, ChatFeaturesState } from '../interfaces'
 import { RoomSetupContext, RoomSetupProvider } from '../context/roomSetupContext'
 
 export const RoomSetupForm: React.FC = () => {
-  const { roomId, welcomeMessage, setRoomSetupInfo } = React.useContext(RoomSetupContext)
-  const [title, setTitle] = React.useState('')
-  const [message, setMessage] = React.useState('')
+  const { roomId, welcomeMessage, chatFeatures, setRoomSetupInfo } = React.useContext(RoomSetupContext)
+  const [welcome, setWelcome] = React.useState({
+    title: welcomeMessage.title,
+    message: welcomeMessage.message,
+  })
+  const [features, setFeatures] = React.useState<ChatFeaturesState>({
+    shareOptionsDisabled: chatFeatures.shareOptionsDisabled,
+    requiresAuthorNameToRead: chatFeatures.requiresAuthorNameToRead,
+    requiresAuthorNameToWrite: chatFeatures.requiresAuthorNameToWrite,
+  });
 
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const info: RoomSetupState = {
       roomId,
-      welcomeMessage: {
-        ...welcomeMessage,
-        title,
-        message
-      }
+      welcomeMessage: welcome,
+      chatFeatures: features
     }
     setRoomSetupInfo(info)
   }
+
+  React.useEffect(() => {
+    if (welcomeMessage) {
+      setWelcome(welcomeMessage)
+    }
+    if (chatFeatures) {
+      setFeatures(chatFeatures)
+    }
+  }, [welcomeMessage, chatFeatures])
 
   return (
     <div className="room-setup">
       <h1>Set up chat room</h1>
       <form onSubmit={onSubmit}>
         <label>id</label>
-        <input readOnly value={roomId}/>
+        <input type="text" readOnly value={roomId}/>
         <h2>Welcome message</h2>
         <label>title</label>
-        <input value={title || welcomeMessage?.title} onChange={e => setTitle(e.currentTarget.value)}/>
+        <input type="text" value={welcome.title} onChange={e => setWelcome({ ...welcome, title: e.currentTarget.value })}/>
         <label>message</label>
-        <textarea value={message || welcomeMessage?.message} onChange={e => setMessage(e.currentTarget.value)}>
+        <textarea value={welcome.message} onChange={e => setWelcome({ ...welcome, message: e.currentTarget.value })}>
         </textarea>
+        <label>
+          <input type="checkbox" checked={features.shareOptionsDisabled} onChange={() => setFeatures({...features, shareOptionsDisabled: !features.shareOptionsDisabled})} />
+          Share option disabled
+        </label>
+        <label>
+          <input type="checkbox" checked={features.requiresAuthorNameToRead} onChange={() => setFeatures({...features, requiresAuthorNameToRead: !features.requiresAuthorNameToRead})} />
+          Requires Author Name to Read
+        </label>
+        <label>
+          <input type="checkbox" checked={features.requiresAuthorNameToWrite} onChange={() => setFeatures({...features, requiresAuthorNameToWrite: !features.requiresAuthorNameToWrite})} />
+          Requires Author Name to Write
+        </label>
         <div>
           <button>Save</button>
           <button type="button">Cancel</button>
