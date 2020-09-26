@@ -31,12 +31,13 @@ const TextBox: React.FC = () => {
   const style = { backgroundColor };
   const inverted = shouldUseDark(backgroundColor);
 
-
   if (!roomId) {
     return null
   }
 
-  if ((!authorName || !authorName.length) && requiresAuthorNameToWrite) {
+  const needsToSetName = () => (!authorName || !authorName.length) && requiresAuthorNameToWrite
+
+  if (needsToSetName()) {
     return (
       <div className="textbox-wrapper" style={style}>
         <SetAuthorName text="choose a name to chat" open={true} />
@@ -51,6 +52,10 @@ const TextBox: React.FC = () => {
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!text || !text.length) {
+      return;
+    }
+
+    if (needsToSetName()) {
       return;
     }
 
