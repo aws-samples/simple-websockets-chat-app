@@ -4,11 +4,12 @@ import uuid from '../helpers/uuid'
 import noop from '../helpers/noop'
 import { getNewRoomUrl } from '../helpers/url'
 
-import { RoomState, EventListener, PeopleInRoomChangedEvent } from '../interfaces'
+import { RoomState } from '../interfaces'
 
-import { EventContext } from './eventContext'
 import { MessagesProvider } from './messagesContext'
 import { addRoom } from '../store'
+import { EventListener } from '../api/Api'
+import { api } from '../api'
 
 interface RoomStateContext extends RoomState {
   setAuthorName: (name?: string) => void;
@@ -43,12 +44,11 @@ const RoomProvider: React.FC<RoomState> = ({
   const [peopleInRoom, setPeopleInRoom] = React.useState(initialPeopleInRoom);
   const [roomId, setRoomId] = React.useState(initialRoomId);
   const [authorName, changeAuthorName] = React.useState<string | undefined>(initialAuthorName);
+  const events = api;
 
-  const events = React.useContext(EventContext);
-
-  const peopleInRoomChangedListener: EventListener = {
+  const peopleInRoomChangedListener: EventListener<'CONNECTIONS_COUNT_CHANGED'> = {
     eventType: 'CONNECTIONS_COUNT_CHANGED',
-    callback: ({ data }: PeopleInRoomChangedEvent) => {
+    callback: (_: Error, { data }) => {
       setPeopleInRoom(data.connectionsCount);
     },
   }

@@ -6,16 +6,15 @@ import {
   Message,
   MessageReply,
   MessageReaction,
-  EventListener,
-  MessageEvent,
-  MessageBatchSentEvent,
-  MessageReplySentEvent,
-  MessageReactionSentEvent,
   instanceOfMessageReaction,
 } from '../interfaces'
 
-import { EventContext } from './eventContext'
+import {
+  EventListener
+} from '../api/Api'
+
 import { RoomContext } from './roomContext'
+import { api } from '../api'
 
 interface MessagesStateContext extends MessagesState {
   sendMessage: (message: Message) => void;
@@ -60,7 +59,7 @@ const MessagesProvider: React.FC = ({ children }) => {
   const [selectedMessageToReplyTo, selectMessageToReplyTo] = React.useState<Message>();
   const [selectedMessageToReactTo, selectMessageToReactTo] = React.useState<Message>();
   const [messageReations, setMessageReactions] = React.useState<MessageReaction[]>([]);
-  const events = React.useContext(EventContext);
+  const events = api;
   const { roomId } = React.useContext(RoomContext);
 
   const setLocalMessages = (newMessages: Message[]) => {
@@ -84,16 +83,16 @@ const MessagesProvider: React.FC = ({ children }) => {
     setMessageReactions(addMessageReaction(reaction));
   }
 
-  const messageSentListener: EventListener = {
+  const messageSentListener: EventListener<'MESSAGE_SENT'> = {
     eventType: 'MESSAGE_SENT',
-    callback: ({ data: message }: MessageEvent) => {
+    callback: (_: Error, { data: message }) => {
       setLocalMessages([...messages, message]);
     },
   }
 
-  const messageBatchSentListener: EventListener = {
+  const messageBatchSentListener: EventListener<'MESSAGE_BATCH_SENT'> = {
     eventType: 'MESSAGE_BATCH_SENT',
-    callback: ({ data: { messages } }: MessageBatchSentEvent) => {
+    callback: (_: Error, { data: { messages } }) => {
       messages.forEach(message => {
         if (instanceOfMessageReaction(message)) {
           messageReactionsChanged(message);
@@ -104,23 +103,23 @@ const MessagesProvider: React.FC = ({ children }) => {
     },
   }
 
-  const messageReplySentListener: EventListener = {
+  const messageReplySentListener: EventListener<'MESSAGE_REPLY_SENT'> = {
     eventType: 'MESSAGE_REPLY_SENT',
-    callback: ({ data: message }: MessageReplySentEvent) => {
+    callback: (_: Error, { data: message }) => {
       setLocalMessages([...messages, message]);
     },
   }
 
-  const messageReactionSentListener: EventListener = {
+  const messageReactionSentListener: EventListener<'MESSAGE_REACTION_SENT'> = {
     eventType: 'MESSAGE_REACTION_SENT',
-    callback: ({ data: message }: MessageReactionSentEvent) => {
+    callback: (_: Error, { data: message }) => {
       messageReactionsChanged(message);
     },
   }
 
-  const messageDeletedListener: EventListener = {
+  const messageDeletedListener: EventListener<'MESSAGE_DELETED'> = {
     eventType: 'MESSAGE_DELETED',
-    callback: ({ data: message }: MessageEvent) => {
+    callback: (_: Error, { data: message }) => {
       setMessages(currentMessages => currentMessages.filter(
         m => m.messageId !== message.messageId
       ));
@@ -165,7 +164,7 @@ const MessagesProvider: React.FC = ({ children }) => {
 
   const deleteMessage = (message: Message) => {
     events.send('MESSAGE_DELETED', message);
-    setLocalMessages(removeMessage(message));
+    setLocalMessages(messages.filter(x => x !== message));
   }
 
   const getReactionsToMessage = (message: Message) => {

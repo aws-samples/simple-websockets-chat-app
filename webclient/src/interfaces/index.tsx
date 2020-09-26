@@ -36,28 +36,6 @@ export interface MessageReaction {
   createdAt: string;
 }
 
-export type EventType = 'CONNECTIONS_COUNT_CHANGED'
-  | 'CONNECTION_CONNECTED'
-  | 'CONNECTION_DISCONNECTED'
-  | 'MESSAGE_SENT'
-  | 'MESSAGE_BATCH_SENT'
-  | 'MESSAGE_REPLY_SENT'
-  | 'MESSAGE_REACTION_SENT'
-  | 'MESSAGE_DELETED'
-  | 'ROOM_JOINED'
-  | 'ROOM_LEFT'
-  | 'ROOM_SETUP_LOAD'
-  | 'ROOM_SETUP_UPDATE_REQUESTED'
-  | 'ROOM_SETUP_UPDATED';
-
-export interface Event {
-  meta: {
-    e: EventType;
-    ts: number;
-  };
-  data: any;
-}
-
 export interface MessageEvent extends Event {
   data: Message;
 }
@@ -86,11 +64,6 @@ export interface PeopleInRoomChangedEvent extends Event {
     roomId: string;
     connectionsCount: number;
   }
-}
-
-export interface EventListener {
-  eventType: EventType;
-  callback: (event: Event) => void;
 }
 
 export interface ConnectionState {

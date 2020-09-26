@@ -11,20 +11,14 @@ import { ConnectionProvider } from './context/connectionContext'
 import ConnectionStatus from './components/ConnectionStatus'
 import { Rooms } from './pages/Rooms'
 import { RoomSetup } from './pages/RoomSetup'
+import { api } from './api';
 
 const rootElement = document.getElementById("root")
-const serverUrl = process.env.SERVER_URL || 'wss://at7ejxghod.execute-api.eu-west-2.amazonaws.com/Prod'
 
-if (!serverUrl) {
-  alert('Error in configuration')
-  throw new Error("No serverUrl");
-}
-
-const connection = new WebSocket(serverUrl);
 
 render(
   <BrowserRouter>
-    <ConnectionProvider connection={connection}>
+    <ConnectionProvider connection={api.connection}>
       <ConnectionStatus />
       <Route exact={true} path="/" component={Home} />
       <Route

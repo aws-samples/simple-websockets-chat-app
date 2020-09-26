@@ -1,9 +1,10 @@
 import * as React from 'react'
+import { api } from '../api';
+import { EventListener } from '../api/Api';
 
 import noop from '../helpers/noop'
 
-import { RoomSetupState, EventListener, RoomSetupUpdatedEvent } from '../interfaces'
-import { EventContext } from './eventContext'
+import { RoomSetupState } from '../interfaces'
 
 interface RoomSetupStateContext extends RoomSetupState {
   setRoomSetupInfo: (info: RoomSetupState) => void;
@@ -21,12 +22,12 @@ const RoomSetupProvider: React.FC<RoomSetupState> = ({
   roomId,
   children
 }) => {
-  const events = React.useContext(EventContext);
+  const events = api;
   const [info, setInfo] = React.useState<RoomSetupState>()
 
-  const setupInfoUpdatedListener: EventListener = {
+  const setupInfoUpdatedListener: EventListener<'ROOM_SETUP_UPDATED'> = {
     eventType: 'ROOM_SETUP_UPDATED',
-    callback: ({ data }: RoomSetupUpdatedEvent) => {
+    callback: (_: Error, { data }) => {
       setInfo(data)
     },
   }
