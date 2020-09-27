@@ -1,0 +1,44 @@
+.welcome-screen
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .overlay
+    background: #aaaaaa99;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+
+  .content
+    display: flex;
+    background: white;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    z-index: 1;
+    padding: 2rem;
+    border: var(--border);
+    border-radius: 5px;
+    margin: 0 2rem;
+    max-width: 360px;
+
+    h4
+      font-weight: normal;
+
+    p
+      font-size: 1.3rem;
+
+    button
+      background: var(--highlight)
+      border: var(--border)
+      border-radius: 3px;
+      border-width: 2px;
+      padding: 6px 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 1.1rem;

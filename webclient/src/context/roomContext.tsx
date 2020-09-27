@@ -8,7 +8,7 @@ import { RoomState, EventListener, PeopleInRoomChangedEvent } from '../interface
 
 import { EventContext } from './eventContext'
 import { MessagesProvider } from './messagesContext'
-import { addRoom } from '../store'
+import { appendRoomData } from '../store'
 import { RoomSetupProvider } from './roomSetupContext'
 
 interface RoomStateContext extends RoomState {
@@ -55,7 +55,7 @@ const RoomProvider: React.FC<RoomState> = ({
   }
 
   const joinRoom = (roomId: string) => {
-    addRoom(roomId, { authorId, authorName });
+    appendRoomData(roomId, { authorId, authorName });
     events.send('ROOM_JOINED', { roomId, authorId });
     events.addEventListener(peopleInRoomChangedListener);
     setRoomId(roomId);
@@ -69,7 +69,7 @@ const RoomProvider: React.FC<RoomState> = ({
 
   const setAuthorName = (authorName?: string) => {
     if (roomId) {
-      addRoom(roomId, { authorId, authorName });
+      appendRoomData(roomId, { authorId, authorName });
       changeAuthorName(authorName);
     }
   }
