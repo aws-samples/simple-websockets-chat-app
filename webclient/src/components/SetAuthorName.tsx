@@ -10,7 +10,8 @@ const SetAuthorName: React.FC<{ text: string, open?: boolean }> = ({ text, open 
   const [isOpen, setIsOpen] = React.useState(open);
   const [name, setName] = React.useState(authorName);
 
-  const onSave = () => {
+  const onSave = (event: React.FormEvent) => {
+    event.preventDefault()
     setAuthorName(name)
     setIsOpen(false)
   }
