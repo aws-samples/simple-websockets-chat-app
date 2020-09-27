@@ -8,9 +8,7 @@ const WelcomeScreen: React.FC = () => {
   const { roomId } = React.useContext(RoomSetupContext)
   const roomData = getOrInitRoomData(roomId)
   const [closed, setClosed] = React.useState(roomData.dismissedWelcomeScreen)
-  // const { title, message } = React.useContext(RoomSetupContext).welcomeMessage
-  const title = 'Lisboa Central Hostel'
-  const message = 'We want you to do this and that'
+  const { title, message } = React.useContext(RoomSetupContext).welcomeMessage
 
   React.useEffect(() => setClosed(roomData.dismissedWelcomeScreen), [roomData])
 
@@ -29,12 +27,15 @@ const WelcomeScreen: React.FC = () => {
 
   return (
     <div className="welcome-screen">
-        <h4>Welcome to</h4>
-        <h1>{title}</h1>
-        <p>{message}</p>
-        <div>
-          <button onClick={close}>Let's go</button>
-        </div>
+      <div className="overlay"></div>
+      <div className="content">
+          <h4>Welcome to</h4>
+          <h1>{title}</h1>
+          <p>{message}</p>
+          <div>
+            <button onClick={close}>Let's go</button>
+          </div>
+      </div>
     </div>
   )
 };
