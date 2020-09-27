@@ -1,4 +1,4 @@
-import uuid, { UUID } from '../helpers/uuid'
+import uuid from '../helpers/uuid'
 
 const key = 'dilo'
 
@@ -9,6 +9,7 @@ type Data = {
 type RoomData = {
   authorId: string;
   authorName?: string;
+  dismissedWelcomeScreen?: boolean;
 }
 
 const initialValue = {
@@ -35,13 +36,17 @@ const setData = (data: Data): Data => {
   }
 }
 
-export const addRoom = (roomId: string, roomData: RoomData): Data => {
+const setRoomData = (roomId: string, roomData: RoomData) => {
   const data = getData()
 
   data.rooms = data.rooms || {}
   data.rooms[roomId] = roomData
+  setData(data)
+}
 
-  return setData(data)
+export const appendRoomData = (roomId: string, data:Partial<RoomData>) => {
+  const roomData = getOrInitRoomData(roomId)
+  setRoomData(roomId, { ...roomData, ...data })
 }
 
 export const getRoomData = (roomId: string): RoomData | undefined => {
@@ -52,7 +57,7 @@ export const getRoomData = (roomId: string): RoomData | undefined => {
 
 export const getOrInitRoomData = (roomId: string): RoomData => {
   if (getRoomData(roomId)) return getRoomData(roomId)!
-
-  addRoom(roomId, { authorId: uuid(), authorName: undefined })
+  console.log('no initial data', getRoomData(roomId))
+  setRoomData(roomId, { authorId: uuid(), authorName: undefined })
   return getRoomData(roomId)!
 }
