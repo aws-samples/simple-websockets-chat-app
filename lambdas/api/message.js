@@ -19,41 +19,20 @@ const cleanupEvent = ({ meta, data }) => {
 
   switch (meta.e) {
     case EventTypes.MESSAGE_SENT: {
-      const { authorName } = data
       const cleanedData = buildData(data, ['messageId', 'roomId', 'authorId', 'text', 'createdAt'])
-      return { meta, data: { ...cleanedData, authorName } };
+      return { meta, data: { ...cleanedData, authorName: data.authorName } };
     }
     case EventTypes.MESSAGE_BATCH_SENT: {
       return { meta, data };
     }
     case EventTypes.MESSAGE_REPLY_SENT: {
-      return {
-        meta,
-        data: buildData(data, [
-          'messageId',
-          'roomId',
-          'authorId',
-          'text',
-          'createdAt',
-          'toMessageId',
-          'toAuthorId',
-          'toText'
-        ])
-      };
+      const cleanedData = buildData(data, [ 'messageId', 'roomId', 'authorId', 'text', 'createdAt', 'toMessageId', 'toAuthorId', 'toText']);
+      return { meta, data: { ...cleanedData, authorName: data.authorName } };
     }
     case EventTypes.MESSAGE_REACTION_SENT: {
       const remove = data.remove
-      const cleanedData = buildData(data, [
-        'roomId',
-        'authorId',
-        'reaction',
-        'createdAt',
-        'toMessageId',
-      ]);
-      return {
-        meta,
-        data: { ...cleanedData, remove }
-      };
+      const cleanedData = buildData(data, [ 'roomId', 'authorId', 'reaction', 'createdAt', 'toMessageId']);
+      return { meta, data: { ...cleanedData, remove } };
     }
     case EventTypes.MESSAGE_DELETED: {
       return { meta, data: buildData(data, ['messageId', 'roomId']) };
