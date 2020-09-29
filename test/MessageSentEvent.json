@@ -28,6 +28,6 @@
     "connectionId": "LJQtNfaILPECFyw=",
     "apiId": "o0y9gmaw4m"
   },
-  "body": "{\"message\":\"sendmessage\",\"data\":\"{\\\"meta\\\":{\\\"e\\\":\\\"MESSAGE_SENT\\\",\\\"ts\\\":1589105874195},\\\"data\\\":{\\\"createdAt\\\":\\\"2020-04-17T18:59:44.890Z\\\",\\\"authorId\\\":\\\"775e3aeb-d1eb-4360-935f-1005c3a80cae\\\",\\\"roomId\\\":\\\"8b1c9957-ad24-4a60-8592-53cbe095842e\\\",\\\"text\\\":\\\"una vez mas\\\",\\\"messageId\\\":\\\"6762920d-c71e-4a09-91d9-d1fd5819667e\\\"}}\"}",
+  "body": "{\"message\":\"sendmessage\",\"data\":\"{\\\"meta\\\":{\\\"e\\\":\\\"MESSAGE_SENT\\\",\\\"ts\\\":1589105874195},\\\"data\\\":{\\\"createdAt\\\":\\\"2020-04-17T18:59:44.890Z\\\",\\\"authorId\\\":\\\"775e3aeb-d1eb-4360-935f-1005c3a80cae\\\",\\\"authorName\\\":\\\"jonathanmv\\\",\\\"roomId\\\":\\\"8b1c9957-ad24-4a60-8592-53cbe095842e\\\",\\\"text\\\":\\\"una vez mas\\\",\\\"messageId\\\":\\\"6762920d-c71e-4a09-91d9-d1fd5819667e\\\"}}\"}",
   "isBase64Encoded": false
 }
