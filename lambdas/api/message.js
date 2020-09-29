@@ -19,7 +19,9 @@ const cleanupEvent = ({ meta, data }) => {
 
   switch (meta.e) {
     case EventTypes.MESSAGE_SENT: {
-      return { meta, data: buildData(data, ['messageId', 'roomId', 'authorId', 'text', 'createdAt']) };
+      const { authorName } = data
+      const cleanedData = buildData(data, ['messageId', 'roomId', 'authorId', 'text', 'createdAt'])
+      return { meta, data: { ...cleanedData, authorName } };
     }
     case EventTypes.MESSAGE_BATCH_SENT: {
       return { meta, data };
