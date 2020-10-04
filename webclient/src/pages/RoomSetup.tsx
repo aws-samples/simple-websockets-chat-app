@@ -4,7 +4,8 @@ import { RoomSetupState, ChatFeaturesState } from '../interfaces'
 import { RoomSetupContext, RoomSetupProvider } from '../context/roomSetupContext'
 
 export const RoomSetupForm: React.FC = () => {
-  const { roomId, welcomeMessage, chatFeatures, setRoomSetupInfo } = React.useContext(RoomSetupContext)
+  const { roomId, roomName: name, welcomeMessage, chatFeatures, setRoomSetupInfo } = React.useContext(RoomSetupContext)
+  const [roomName, setRoomName] = React.useState(name);
   const [welcome, setWelcome] = React.useState({
     title: welcomeMessage.title,
     message: welcomeMessage.message,
@@ -19,6 +20,7 @@ export const RoomSetupForm: React.FC = () => {
     event.preventDefault();
     const info: RoomSetupState = {
       roomId,
+      roomName,
       welcomeMessage: welcome,
       chatFeatures: features
     }
@@ -32,14 +34,23 @@ export const RoomSetupForm: React.FC = () => {
     if (chatFeatures) {
       setFeatures(chatFeatures)
     }
-  }, [welcomeMessage, chatFeatures])
+    if (name) {
+      setRoomName(name)
+    }
+  }, [welcomeMessage, chatFeatures, name])
 
   return (
     <div className="room-setup">
       <h1>Set up chat room</h1>
       <form onSubmit={onSubmit}>
-        <label>id</label>
-        <input type="text" readOnly value={roomId}/>
+        <label>
+          id
+          <input type="text" readOnly value={roomId}/>
+        </label>
+        <label>
+          name
+          <input type="text" value={roomName} onChange={e => setRoomName(e.currentTarget.value)}/>
+        </label>
         <h2>Welcome message</h2>
         <label>title</label>
         <input type="text" value={welcome.title} onChange={e => setWelcome({ ...welcome, title: e.currentTarget.value })}/>

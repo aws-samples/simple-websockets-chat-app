@@ -7,6 +7,7 @@ import Chat from './components/Chat'
 import { RoomProvider } from './context/roomContext'
 import { getOrInitRoomData } from './store'
 import { Link } from 'react-router-dom'
+import { RoomSetupContext } from './context/roomSetupContext'
 
 const App: React.FC<{ roomId: string }> = ({ roomId }) => {
   const { authorId, authorName } = getOrInitRoomData(roomId)
@@ -20,7 +21,11 @@ const App: React.FC<{ roomId: string }> = ({ roomId }) => {
               <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
             </svg>
           </Link>
-          <h1>dilo</h1>
+          <h1>
+            <RoomSetupContext.Consumer>
+              {value => value.roomName || "dilo"}
+            </RoomSetupContext.Consumer>
+          </h1>
         </div>
         <Chat />
       </div>

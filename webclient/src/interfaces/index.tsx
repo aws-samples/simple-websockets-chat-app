@@ -121,6 +121,7 @@ export interface MessagesState {
 
 export interface RoomSetupState {
   roomId: string;
+  roomName?: string;
   welcomeMessage: {
     title: string;
     message: string;
