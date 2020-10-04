@@ -11,6 +11,7 @@ interface RoomSetupStateContext extends RoomSetupState {
 
 const DEFAULT_ROOM_SETUP_STATE_CONTEXT: RoomSetupStateContext = {
   roomId: 'ignore',
+  roomName: undefined,
   welcomeMessage: { title: '', message: '' },
   chatFeatures: {
     shareOptionsDisabled: false,
