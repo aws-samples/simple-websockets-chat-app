@@ -61,3 +61,11 @@ export const getOrInitRoomData = (roomId: string): RoomData => {
   setRoomData(roomId, { authorId: uuid(), authorName: undefined })
   return getRoomData(roomId)!
 }
+
+export const getRoomIds = (): string[] => {
+  return Object.keys(getData().rooms)
+}
+
+export const getRoomIdsWithoutHome = (): string[] => {
+  return getRoomIds().filter(id => id !== 'home')
+}

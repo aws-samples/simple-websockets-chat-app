@@ -6,7 +6,9 @@ import Chat from '../components/Chat'
 import { RoomContext, RoomProvider } from '../context/roomContext';
 import { clsn } from '../helpers/color'
 import uuid from '../helpers/uuid';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+
+import { getRoomIdsWithoutHome } from '../store'
 
 const Navbar: React.FC = () => {
   const { getNewRoomUrl } = React.useContext(RoomContext);
@@ -113,6 +115,11 @@ const Section: React.FC<{white?: boolean}> = ({ white, children }) => {
 
 export const Home: React.FC = () => {
   const [authorId] = React.useState(uuid());
+
+  if (getRoomIdsWithoutHome().length > 0) {
+    return <Redirect to={`/o`} />
+  }
+
   return (
     <RoomProvider authorId={authorId} roomId="home" peopleInRoom={0}>
       <div className="home">
