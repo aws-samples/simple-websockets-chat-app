@@ -65,3 +65,7 @@ export const getOrInitRoomData = (roomId: string): RoomData => {
 export const getRoomIds = (): string[] => {
   return Object.keys(getData().rooms)
 }
+
+export const getRoomIdsWithoutHome = (): string[] => {
+  return getRoomIds().filter(id => id !== 'home')
+}

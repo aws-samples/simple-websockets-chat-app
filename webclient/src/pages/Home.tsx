@@ -8,7 +8,7 @@ import { clsn } from '../helpers/color'
 import uuid from '../helpers/uuid';
 import { Link, Redirect } from 'react-router-dom';
 
-import { getRoomIds } from '../store'
+import { getRoomIdsWithoutHome } from '../store'
 
 const Navbar: React.FC = () => {
   const { getNewRoomUrl } = React.useContext(RoomContext);
@@ -116,14 +116,7 @@ const Section: React.FC<{white?: boolean}> = ({ white, children }) => {
 export const Home: React.FC = () => {
   const [authorId] = React.useState(uuid());
 
-  const [redirectToRooms, setRedirectToRooms] = React.useState(false);
-  React.useEffect(() => {
-    if (getRoomIds()) {
-      setRedirectToRooms(true)
-    }
-  }, []);
-
-  if (redirectToRooms) {
+  if (getRoomIdsWithoutHome().length > 0) {
     return <Redirect to={`/o`} />
   }
 

@@ -1,12 +1,16 @@
 import * as React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Redirect } from 'react-router-dom'
 import { colorFromUuid } from '../helpers/color'
-import { getData } from '../store'
+import { getRoomIdsWithoutHome } from '../store'
 import './Rooms.css'
 
 
 export const Rooms = () => {
-  const rooms: string[] = Object.keys(getData().rooms)
+  const rooms = getRoomIdsWithoutHome()
+
+  if (rooms.length === 1) {
+    return <Redirect to={`/r/` + rooms[0]} />
+  }
 
   return <div className="room">
     <ul className="rooms__list">{
