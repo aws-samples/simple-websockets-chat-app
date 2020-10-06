@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { colorFromUuid } from '../helpers/color'
 import { getData } from '../store'
 import './Rooms.css'
