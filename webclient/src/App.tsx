@@ -8,12 +8,14 @@ import { RoomProvider } from './context/roomContext'
 import { getOrInitRoomData, getRoomIdsWithoutHome } from './store'
 import { Link } from 'react-router-dom'
 import { RoomSetupContext } from './context/roomSetupContext'
+import { WebManifest } from './components/WebManifest'
 
 const App: React.FC<{ roomId: string }> = ({ roomId }) => {
   const { authorId, authorName } = getOrInitRoomData(roomId)
 
   return (
     <RoomProvider authorId={authorId} authorName={authorName} roomId={roomId} peopleInRoom={0}>
+      <WebManifest start_url={'/r/' + roomId} />
       <div className="room">
         <div className="top-bar">
           {getRoomIdsWithoutHome().length > 1 && (
