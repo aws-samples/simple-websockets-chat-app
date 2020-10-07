@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { RoomContext } from '../context/roomContext';
+import { RoomSetupContext } from '../context/roomSetupContext';
 import { MessagesContext } from '../context/messagesContext';
 
 const newMessageSound:string = require('../../public/sounds/new_message.mp3');
@@ -12,6 +13,7 @@ const buildTitle = (newMessages: number, originalTitle: string): string => {
 }
 
 const WhenDocumentIsHidden = () => {
+  const { roomName } = React.useContext(RoomSetupContext);
   const { authorId } = React.useContext(RoomContext);
   const { messages } = React.useContext(MessagesContext);
   const otherMessagesCount = messages.filter(message => message.authorId != authorId).length;
@@ -35,13 +37,13 @@ const WhenDocumentIsHidden = () => {
 
   React.useEffect(() => {
     const newMessages = otherMessagesCount - lastMessageCount;
+    const title = roomName ? roomName + ' Chat' : originalTitle;
     if (newMessages && isEnabled) {
-      const title = buildTitle(newMessages, originalTitle);
-      document.title = title;
+      document.title = buildTitle(newMessages, title);
       audioEl.current && audioEl.current.play();
     }
     if (!isEnabled) {
-      document.title = originalTitle;
+      document.title = title;
       setLastMessageCount(otherMessagesCount);
     }
   }, [lastMessageCount, otherMessagesCount, isEnabled])

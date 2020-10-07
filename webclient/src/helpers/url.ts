@@ -5,9 +5,7 @@ export const getRoomUrl = (room: string): string => {
   return roomUrl.toString();
 };
 
-export const getNewRoomUrl = () => {
-  return getRoomUrl(uuid());
-}
+export const getNewRoomUrl = () => 'r/' + uuid();
 
 export const getQrUrl = (url: string) => {
   const data = encodeURIComponent(url);
