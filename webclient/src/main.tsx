@@ -40,12 +40,16 @@ render(
       <Route
         exact={true}
         path={"/r/whats-up-lisbon"}
-        render={() => <Redirect to={'/r/lisboacentralhostel'}  />}
+        render={() => <Redirect to={'/r/lisboacentralhostel'} />}
       />
       <Route
         exact={true}
         path="/r/:roomId"
-        render={(props) => <App roomId={props.match.params.roomId} />}
+        render={(props) => {
+          let { roomId } = props.match.params
+          roomId = roomId === 'whats-up-lisbon' ? 'lisboacentralhostel' : roomId;
+          return <App roomId={roomId} />
+        }}
       />
     </ConnectionProvider>
   </BrowserRouter>,
