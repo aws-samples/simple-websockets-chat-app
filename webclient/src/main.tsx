@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { render } from 'react-dom'
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 
 import App from './App'
 
@@ -36,6 +36,11 @@ render(
         exact={true}
         path="/r/:roomId/setup"
         render={(props) => <RoomSetup roomId={props.match.params.roomId} />}
+      />
+      <Route
+        exact={true}
+        path={"/r/whats-up-lisbon"}
+        render={() => <Redirect to={'/r/lisboacentralhostel'}  />}
       />
       <Route
         exact={true}

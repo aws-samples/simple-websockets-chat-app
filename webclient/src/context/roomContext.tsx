@@ -41,8 +41,9 @@ const RoomProvider: React.FC<RoomState> = ({
   peopleInRoom: initialPeopleInRoom,
   children
 }) => {
-  const [peopleInRoom, setPeopleInRoom] = React.useState(initialPeopleInRoom);
+  initialRoomId = initialRoomId === 'whats-up-lisbon' ? 'lisboacentralhostel' : initialRoomId;
   const [roomId, setRoomId] = React.useState(initialRoomId);
+  const [peopleInRoom, setPeopleInRoom] = React.useState(initialPeopleInRoom);
   const [authorName, changeAuthorName] = React.useState<string | undefined>(initialAuthorName);
 
   const events = React.useContext(EventContext);
@@ -80,8 +81,8 @@ const RoomProvider: React.FC<RoomState> = ({
     }
 
     joinRoom(initialRoomId)
-    return () => leaveRoom(initialRoomId)
-  }, [])
+    return () => leaveRoom(initialRoomId!)
+  }, [initialRoomId])
 
   const state: RoomStateContext = {
     roomId,
