@@ -40,7 +40,7 @@ const TextBox: React.FC = () => {
   if (needsToSetName()) {
     return (
       <div className="textbox-wrapper" style={style}>
-        <SetAuthorName text="choose a name to chat" open={true} />
+        <SetAuthorName text="What's your name?" open={true} />
       </div>
     )
   }
@@ -82,7 +82,7 @@ const TextBox: React.FC = () => {
           />
       }
       <ReplyToMessage />
-      <SetAuthorName text={ (requiresAuthorNameToWrite ? "" : "(optional) ") + "choose a name"} />
+      <SetAuthorName text={ (requiresAuthorNameToWrite ? "" : "(optional) ") + "What's your name?"} />
       <form className="textbox" onSubmit={onSubmit}>
         {peopleInRoom > 0 && (
           <div className="textbox-ppl slide-out-top" key={peopleInRoom}>
