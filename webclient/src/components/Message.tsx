@@ -32,10 +32,17 @@ export const ReplyComponent: React.FC<{ reply: interfaces.MessageReply }> = ({ r
   </div>
 )
 
+const months = [
+  'jan', 'feb', 'mar', 'apr', 'may', 'jun',
+  'jul', 'ago', 'sep', 'oct', 'nov', 'dec'
+]
+
 const time = (date: string): string => {
   const time = new Date(date)
   const mins = (time.getMinutes() < 10 ? '0' : '') + time.getMinutes()
-  return time.getHours() + ":" + mins
+  const timeOfDay = time.getHours() + ":" + mins;
+  const dayOfMonth = months[time.getUTCMonth()] + ' ' + time.getDate();
+  return `${timeOfDay} ${dayOfMonth}`;
 }
 
 export const MessageComponent: React.FC<MessageComponentProps> = ({
