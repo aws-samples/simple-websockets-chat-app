@@ -108,8 +108,8 @@ Resources:
       - AttributeName: "connectionId"
         KeyType: "HASH"
       ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
+        ReadCapacityUnits: 5 #check the AWS DynamoDB Provision pricing before change it!
+        WriteCapacityUnits: 5 #check the AWS DynamoDB Provision pricing before change it!
       SSESpecification:
         SSEEnabled: True
       TableName: !Ref TableName
