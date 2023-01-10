@@ -1,6 +1,9 @@
 # simple-websockets-chat-app
 
-This is the code and template for the simple-websocket-chat-app.  There are three functions contained within the directories and a SAM template that wires them up to a DynamoDB table and provides the minimal set of permissions needed to run the app:
+**Update**: *We have released an updated and more feature-rich Websocket chat application sample using AWS CDK that you can find [here](https://github.com/aws-samples/websocket-chat-application).*
+
+This is the code and template for the simple-websocket-chat-app.
+There are three functions contained within the directories and a SAM template that wires them up to a DynamoDB table and provides the minimal set of permissions needed to run the app:
 
 ```
 .
