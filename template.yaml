@@ -119,7 +119,7 @@ Resources:
       CodeUri: onconnect/
       Handler: app.handler
       MemorySize: 256
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -140,7 +140,7 @@ Resources:
       CodeUri: ondisconnect/
       Handler: app.handler
       MemorySize: 256
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -161,7 +161,7 @@ Resources:
       CodeUri: sendmessage/
       Handler: app.handler
       MemorySize: 256
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
