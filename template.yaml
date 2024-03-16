@@ -110,11 +110,13 @@ Resources:
       SSESpecification:
         SSEEnabled: True
       TableName: !Ref TableName
+
+    # ! ON CONNECT FUNCTION
   OnConnectFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: onconnect/
-      Handler: app.handler
+      CodeUri: ./
+      Handler: ./handler/onconnect.handler
       MemorySize: 256
       Runtime: nodejs20.x
       Environment:
@@ -134,8 +136,8 @@ Resources:
   OnDisconnectFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ondisconnect/
-      Handler: app.handler
+      CodeUri: ./
+      Handler: ./handler/ondisconnect.handler
       MemorySize: 256
       Runtime: nodejs20.x
       Environment:
@@ -152,11 +154,13 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref OnDisconnectFunction
       Principal: apigateway.amazonaws.com
+
+      #! SEND MESSAGE FUNCTION
   SendMessageFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: sendmessage/
-      Handler: app.handler
+      CodeUri: ./
+      Handler: ./handler/sendmessage.handler
       MemorySize: 256
       Runtime: nodejs20.x
       Environment:
