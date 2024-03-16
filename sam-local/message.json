@@ -1,0 +1,22 @@
+{
+  "requestContext": {
+    "routeKey": "sendmessage",
+    "messageId": "UuKwCfoRoAMCJNw=",
+    "eventType": "MESSAGE",
+    "extendedRequestId": "UuKwCH1gIAMFTzg=",
+    "requestTime": "16/Mar/2024:12:06:11 +0000",
+    "messageDirection": "IN",
+    "stage": "Prod",
+    "connectedAt": 1710590768864,
+    "requestTimeEpoch": 1710590771123,
+    "identity": {
+      "sourceIp": "108.41.138.159"
+    },
+    "requestId": "UuKwCH1gIAMFTzg=",
+    "domainName": "4vpdzfa4u1.execute-api.us-east-1.amazonaws.com",
+    "connectionId": "UuKvrfn7oAMCJNw=",
+    "apiId": "4vpdzfa4u1"
+  },
+  "body": "{\n    \"action\":\"sendmessage\", \n    \"data\":\"user X is working on enity Y\"\n}\n",
+  "isBase64Encoded": false
+}

@@ -1,0 +1,15 @@
+{
+  "name": "simple-websockets-chat-app",
+  "type": "module",
+  "version": "1.0.0",
+  "author": "SAM CLI",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.535.0",
+    "@aws-sdk/client-dynamodb": "^3.535.0"
+  }
+}
