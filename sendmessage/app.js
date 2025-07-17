@@ -23,7 +23,8 @@ export const handler = async (event) => {
   }
   
   const apigwManagementApi = new ApiGatewayManagementApiClient({
-    endpoint: `https://${event.requestContext.domainName}/${event.requestContext.stage}`
+        // The endpoint is intentionally constructed using the API ID and stage from the event to account for custom domains
+    endpoint: `https://${event.requestContext.apiId}.execute-api.${process.env.AWS_REGION}.amazonaws.com/${event.requestContext.stage}`
   });
   
   const postData = JSON.parse(event.body).data;
