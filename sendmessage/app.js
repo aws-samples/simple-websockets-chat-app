@@ -1,35 +1,52 @@
 // Copyright 2018-2020Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-const AWS = require('aws-sdk');
+import { DynamoDBClient, DeleteItemCommand} from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
 
-const ddb = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10', region: process.env.AWS_REGION });
+const ddb = new DynamoDBClient({ region: process.env.AWS_REGION });
+const docClient = DynamoDBDocumentClient.from(ddb);
 
 const { TABLE_NAME } = process.env;
 
-exports.handler = async event => {
-  let connectionData;
+// ES6 type module syntax
+export const handler = async (event) => {
   
+  const scanCmd = new ScanCommand({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId' });
+
+  let connectionData;
   try {
-    connectionData = await ddb.scan({ TableName: TABLE_NAME, ProjectionExpression: 'connectionId' }).promise();
+    connectionData = await docClient.send(scanCmd);
   } catch (e) {
     return { statusCode: 500, body: e.stack };
   }
   
-  const apigwManagementApi = new AWS.ApiGatewayManagementApi({
-    apiVersion: '2018-11-29',
-    endpoint: `${event.requestContext.apiId}.execute-api.${process.env.AWS_REGION}.amazonaws.com/${event.requestContext.stage}`
+  const apigwManagementApi = new ApiGatewayManagementApiClient({
+        // The endpoint is intentionally constructed using the API ID and stage from the event to account for custom domains
+    endpoint: `https://${event.requestContext.apiId}.execute-api.${process.env.AWS_REGION}.amazonaws.com/${event.requestContext.stage}`
   });
   
   const postData = JSON.parse(event.body).data;
   
   const postCalls = connectionData.Items.map(async ({ connectionId }) => {
     try {
-      await apigwManagementApi.postToConnection({ ConnectionId: connectionId, Data: postData }).promise();
+      const postCmd = new PostToConnectionCommand({ ConnectionId: connectionId, Data: postData });
+      await apigwManagementApi.send(postCmd);
     } catch (e) {
       if (e.statusCode === 410) {
+        
         console.log(`Found stale connection, deleting ${connectionId}`);
-        await ddb.delete({ TableName: TABLE_NAME, Key: { connectionId } }).promise();
+    
+        const deleteParams = {
+          TableName: process.env.TABLE_NAME,
+          Key: {
+            connectionId: { S: event.requestContext.connectionId }
+          }
+        };
+        const delCmd = new DeleteItemCommand(deleteParams);
+        await ddb.send(delCmd);
+
       } else {
         throw e;
       }

@@ -5,8 +5,5 @@
   "main": "src/app.js",
   "author": "SAM CLI",
   "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {
-    "aws-sdk": "^2.1563.0"
-  }
+  "type": "module"
 }
